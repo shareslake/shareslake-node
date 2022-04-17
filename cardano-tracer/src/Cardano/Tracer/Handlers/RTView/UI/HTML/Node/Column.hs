@@ -95,7 +95,7 @@ logsSettings loggingConfig anId =
                                  <> " has-tooltip-multiline has-tooltip-top rt-view-logs-path")
                              # set dataTooltip (pathToSubdir
                                                 <> " is the path to a directory with logs from this node")
-                             # set text (shorten pathToSubdir)
+                             # set text (shortenPath pathToSubdir)
                    , element copyPath
                    , UI.span #. ("tag is-warning is-light is-rounded ml-3 "
                                  <> "has-tooltip-multiline has-tooltip-top rt-view-logs-format")
@@ -111,18 +111,13 @@ logsSettings loggingConfig anId =
                    [ UI.span #. ("tag is-info is-light is-rounded mr-3"
                                  <> " has-tooltip-multiline has-tooltip-top")
                              # set dataTooltip (anId <> " is the syslog identifier for this node")
-                             # set text (shorten anId)
+                             # set text (shortenPath anId)
                    , element copyId
                    , UI.span #. ("tag is-warning is-light is-rounded ml-3 "
                                  <> "has-tooltip-multiline has-tooltip-top")
                              # set dataTooltip "Logs from this node are written in systemd's journal"
                              # set text "JRNL"
                    ]
- where
-  shorten t =
-    if length t > 20
-      then take 20 t <> "..."
-      else t
 
 -- | The node was disconnected, so its column should be deleted.
 deleteNodeColumn

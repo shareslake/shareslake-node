@@ -11,7 +11,7 @@ import           Graphics.UI.Threepenny.Core
 
 import           Cardano.Tracer.Configuration
 import           Cardano.Tracer.Handlers.RTView.UI.Img.Icons
-import           Cardano.Tracer.Handlers.RTView.UI.HTML.OwnInfo
+import           Cardano.Tracer.Handlers.RTView.UI.HTML.About
 import           Cardano.Tracer.Handlers.RTView.UI.Theme
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
 
@@ -102,12 +102,11 @@ mkPageBody window networkConfig =
 
 topNavigation :: UI.Window -> UI Element
 topNavigation window = do
-  closeInfo <- UI.button #. "modal-close is-large" #+ []
-  info <- mkOwnInfo closeInfo
+  info <- mkAboutInfo
   infoIcon <- image "has-tooltip-multiline has-tooltip-bottom rt-view-info-icon" rtViewInfoLightSVG
                     ## "info-icon"
                     # set dataTooltip "RTView info"
-  registerClicksForModal info infoIcon closeInfo
+  on UI.click infoIcon . const $ element info #. "modal is-active"
 
   --closeNotifications <- UI.button #. "modal-close is-large" #+ []
   --notifications <- mkOwnInfo closeNotifications
@@ -139,10 +138,6 @@ topNavigation window = do
             ]
         ]
     ]
- where
-  registerClicksForModal modal iconToOpen iconToClose = do
-    on UI.click iconToOpen  . const $ element modal #. "modal is-active"
-    on UI.click iconToClose . const $ element modal #. "modal"
 
 -- | If the user doesn't see connected nodes - possible reason of it is
 --   misconfiguration of 'cardano-tracer' and/or 'cardano-node'.

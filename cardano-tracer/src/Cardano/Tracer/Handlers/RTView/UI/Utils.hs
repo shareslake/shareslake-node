@@ -18,6 +18,7 @@ module Cardano.Tracer.Handlers.RTView.UI.Utils
   , hideIt
   , pageTitle
   , pageTitleNotify
+  , shortenPath
   ) where
 
 import           Data.Text (Text, unpack)
@@ -105,3 +106,9 @@ dataAttr name = mkReadWriteAttr getData setData
 
 image :: String -> String -> UI Element
 image imgClass svg = UI.span #. imgClass # set html svg
+
+shortenPath :: FilePath -> FilePath
+shortenPath p =
+  if length p > 20
+    then take 20 p <> "..."
+    else p

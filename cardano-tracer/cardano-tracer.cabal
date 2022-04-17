@@ -56,7 +56,7 @@ library
                        Cardano.Tracer.Handlers.RTView.UI.CSS.Own
                        Cardano.Tracer.Handlers.RTView.UI.HTML.Node.Column
                        Cardano.Tracer.Handlers.RTView.UI.HTML.Node.Peers
-                       Cardano.Tracer.Handlers.RTView.UI.HTML.OwnInfo
+                       Cardano.Tracer.Handlers.RTView.UI.HTML.About
                        Cardano.Tracer.Handlers.RTView.UI.HTML.Body
                        Cardano.Tracer.Handlers.RTView.UI.JS.Utils
                        Cardano.Tracer.Handlers.RTView.UI.Img.Icons

@@ -238,6 +238,23 @@ span[data-tooltip] {
   max-width: 600px !important;
   margin-top: 80px;
 }
+
+.rt-view-about-head {
+  color: whitesmoke;
+  background-color: #282841;
+  border-bottom: 1px solid #555;
+}
+
+.rt-view-about-title {
+  color: whitesmoke;
+}
+
+.rt-view-about-body {
+  color: whitesmoke;
+  background-color: #131325;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
 |]
 
 hrefLight
