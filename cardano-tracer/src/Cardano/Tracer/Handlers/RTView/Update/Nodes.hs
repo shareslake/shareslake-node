@@ -3,7 +3,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Cardano.Tracer.Handlers.RTView.Update.Nodes
-  ( updateNodes
+  ( updateNodesUI
   ) where
 
 import           Control.Concurrent.STM (atomically)
@@ -29,7 +29,7 @@ import           Cardano.Tracer.Handlers.RTView.UI.Utils
 import           Cardano.Tracer.Handlers.RTView.Update.NodeInfo
 import           Cardano.Tracer.Types
 
-updateNodes
+updateNodesUI
   :: UI.Window
   -> ConnectedNodes
   -> DisplayedElements
@@ -37,7 +37,7 @@ updateNodes
   -> PageReloadedFlag
   -> NonEmpty LoggingParams
   -> UI ()
-updateNodes window connectedNodes displayedElements dpRequestors reloadFlag loggingConfig = do
+updateNodesUI window connectedNodes displayedElements dpRequestors reloadFlag loggingConfig = do
   (connected, displayedEls, afterReload) <- liftIO . atomically $ (,,)
     <$> readTVar connectedNodes
     <*> readTVar displayedElements
@@ -114,6 +114,6 @@ setUptimeForNodes window connected displayedElements = do
                                -- Show days only if 'uptime' > 23:59:59.
                                then show daysNum <> "d " <> uptimeFormatted
                                else uptimeFormatted
-        findAndSet (set text uptimeWithDays) window nodeUptimeElId
+        findAndSetText (T.pack uptimeWithDays) window nodeUptimeElId
  where
   nullTime = UTCTime (ModifiedJulianDay 0) 0

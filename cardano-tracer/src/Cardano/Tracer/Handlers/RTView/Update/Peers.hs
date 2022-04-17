@@ -34,12 +34,12 @@ updatePeers window (NodeId anId) _displayedElements trObValue =
           liftIO . traceIO $ "__CheckPeer11: " <> T.unpack trObValue
           -- 54.241.71.219   ready      ???      0      0       0
           -- 3.23.160.18     ready    4492799    1      1     636
-          findAndSet (set text $ T.unpack addr)      window $ anId <> "__peer_addr"
-          findAndSet (set text $ T.unpack status)    window $ anId <> "__peer_status"
-          findAndSet (set text $ T.unpack slotNo)    window $ anId <> "__peer_slotNo"
-          findAndSet (set text $ T.unpack reqsInF)   window $ anId <> "__peer_reqsInF"
-          findAndSet (set text $ T.unpack blocksInF) window $ anId <> "__peer_blocksInF"
-          findAndSet (set text $ T.unpack bytesInF)  window $ anId <> "__peer_bytesInF"
+          findAndSetText addr      window $ anId <> "__peer_addr"
+          findAndSetText status    window $ anId <> "__peer_status"
+          findAndSetText slotNo    window $ anId <> "__peer_slotNo"
+          findAndSetText reqsInF   window $ anId <> "__peer_reqsInF"
+          findAndSetText blocksInF window $ anId <> "__peer_blocksInF"
+          findAndSetText bytesInF  window $ anId <> "__peer_bytesInF"
         _ -> do
           liftIO . traceIO $ "__CheckPeer22: " <> T.unpack trObValue
           return () -- It's strange: wrong format of peers info, ignore it.

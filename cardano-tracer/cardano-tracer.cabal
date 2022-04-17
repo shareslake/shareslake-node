@@ -62,13 +62,13 @@ library
                        Cardano.Tracer.Handlers.RTView.UI.Img.Icons
                        Cardano.Tracer.Handlers.RTView.UI.Theme
                        Cardano.Tracer.Handlers.RTView.UI.Utils
-                       Cardano.Tracer.Handlers.RTView.Update
                        Cardano.Tracer.Handlers.RTView.Update.Errors
                        Cardano.Tracer.Handlers.RTView.Update.Historical
                        Cardano.Tracer.Handlers.RTView.Update.NodeInfo
                        Cardano.Tracer.Handlers.RTView.Update.Nodes
                        Cardano.Tracer.Handlers.RTView.Update.Peers
                        Cardano.Tracer.Handlers.RTView.Update.Resources
+                       Cardano.Tracer.Handlers.RTView.Update.UI
                        Cardano.Tracer.Handlers.RTView.Update.Utils
 
                        Cardano.Tracer.CLI

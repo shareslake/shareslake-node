@@ -2,8 +2,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Cardano.Tracer.Handlers.RTView.Update
-  ( update
+module Cardano.Tracer.Handlers.RTView.Update.UI
+  ( updateUI
   ) where
 
 import           Control.Concurrent.STM.TVar (readTVarIO)
@@ -20,7 +20,7 @@ import           Cardano.Tracer.Handlers.RTView.Update.Nodes
 import           Cardano.Tracer.Handlers.RTView.Update.Peers
 import           Cardano.Tracer.Types
 
-update
+updateUI
   :: UI.Window
   -> ConnectedNodes
   -> DisplayedElements
@@ -29,40 +29,38 @@ update
   -> PageReloadedFlag
   -> NonEmpty LoggingParams
   -> UI ()
-update window connectedNodes displayedElements savedTO dpRequestors reloadFlag loggingConfig = do
-  updateNodes
+updateUI window connectedNodes displayedElements savedTO dpRequestors reloadFlag loggingConfig = do
+  updateNodesUI
     window
     connectedNodes
     displayedElements
     dpRequestors
     reloadFlag
     loggingConfig
-  checkSavedTraceObjects
- where
-  checkSavedTraceObjects = do
-    savedTraceObjects <- liftIO $ readTVarIO savedTO
-    forM_ (M.toList savedTraceObjects) $ \(nodeId, savedTOForNode) ->
-      forM_ (M.toList savedTOForNode) $ \(namespace, trObValue) ->
-        case namespace of
-          "Cardano.Node.Peers" -> updatePeers window nodeId displayedElements trObValue
-          "density" -> return () -- updateElement
-          "slotNum" -> return ()
-          "blockNum" -> return ()
-          "slotInEpoch" -> return ()
-          "epoch" -> return ()
-          "forks" -> return ()
-          "txsInMempool"  -> return ()
-          "mempoolBytes"  -> return ()
-          "txsProcessedNum"  -> return ()
-          "blocksForgedNum"  -> return ()
-          "nodeCannotForge"  -> return ()
-          "nodeIsLeaderNum"  -> return ()
-          "slotsMissedNum" -> return ()
-          "operationalCertificateStartKESPeriod"  -> return ()
-          "operationalCertificateExpiryKESPeriod"  -> return ()
-          "currentKESPeriod"  -> return ()
-          "remainingKESPeriods" -> return ()
-          _ -> return ()
+  --
+  savedTraceObjects <- liftIO $ readTVarIO savedTO
+  forM_ (M.toList savedTraceObjects) $ \(nodeId, savedTOForNode) ->
+    forM_ (M.toList savedTOForNode) $ \(namespace, trObValue) ->
+      case namespace of
+        "Cardano.Node.Peers" -> updatePeers window nodeId displayedElements trObValue
+        "density" -> return () -- updateElement
+        "slotNum" -> return ()
+        "blockNum" -> return ()
+        "slotInEpoch" -> return ()
+        "epoch" -> return ()
+        "forks" -> return ()
+        "txsInMempool"  -> return ()
+        "mempoolBytes"  -> return ()
+        "txsProcessedNum"  -> return ()
+        "blocksForgedNum"  -> return ()
+        "nodeCannotForge"  -> return ()
+        "nodeIsLeaderNum"  -> return ()
+        "slotsMissedNum" -> return ()
+        "operationalCertificateStartKESPeriod"  -> return ()
+        "operationalCertificateExpiryKESPeriod"  -> return ()
+        "currentKESPeriod"  -> return ()
+        "remainingKESPeriods" -> return ()
+        _ -> return ()
 
 {-
 updateElement = do
@@ -78,6 +76,6 @@ updateElement = do
         setAndSave elId elValue
  where
    setAndSave elId elValue = do
-    findAndSet (set text $ T.unpack elValue) window elId
+    findAndSetText elValue window elId
     liftIO $ saveDisplayedValue displayedElements nodeId elId elValue
 -}

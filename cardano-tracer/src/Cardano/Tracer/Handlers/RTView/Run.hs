@@ -16,7 +16,7 @@ import qualified Data.Text as T
 import           Data.Text.Encoding (encodeUtf8)
 import           Data.Time.Clock (secondsToNominalDiffTime)
 import qualified Graphics.UI.Threepenny as UI
-import           Graphics.UI.Threepenny.Core (UI, liftIO, on, set, (#), (#+))
+import           Graphics.UI.Threepenny.Core
 import           System.Time.Extra (sleep)
 
 import           Cardano.Tracer.Configuration
@@ -29,7 +29,7 @@ import           Cardano.Tracer.Handlers.RTView.UI.CSS.Own
 import           Cardano.Tracer.Handlers.RTView.UI.HTML.Body
 import           Cardano.Tracer.Handlers.RTView.UI.Img.Icons
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
-import           Cardano.Tracer.Handlers.RTView.Update
+import           Cardano.Tracer.Handlers.RTView.Update.UI
 import           Cardano.Tracer.Handlers.RTView.Update.Historical
 import           Cardano.Tracer.Handlers.RTView.Update.Resources
 import           Cardano.Tracer.Types
@@ -128,7 +128,7 @@ mkMainPage connectedNodes displayedElements savedTO
   -- Prepare and run the timer, which will call 'update' function every second.
   uiUpdateTimer <- UI.timer # set UI.interval 1000
   on UI.tick uiUpdateTimer . const $
-    update
+    updateUI
       window
       connectedNodes
       displayedElements
