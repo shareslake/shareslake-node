@@ -5,6 +5,10 @@ module Cardano.Tracer.Handlers.RTView.UI.CSS.Own
   -- Helpers
   , backgroundDark
   , backgroundLight
+  , borderDark
+  , borderLight
+  , greyDark
+  , greyLight
   , hrefDark
   , hrefLight
   , nameDark
@@ -264,7 +268,11 @@ hrefLight
   , nameLight
   , nameDark
   , backgroundLight
-  , backgroundDark :: String
+  , backgroundDark
+  , greyDark
+  , greyLight
+  , borderDark
+  , borderLight :: String
 hrefLight       = "#607bf7"
 hrefDark        = "#264af0"
 textLight       = "whitesmoke"
@@ -273,3 +281,7 @@ nameLight       = "whitesmoke"
 nameDark        = "#0033ad"
 backgroundLight = "whitesmoke"
 backgroundDark  = "#131325"
+greyDark        = "#282841"
+greyLight       = "#efefef"
+borderDark      = "1px solid #555"
+borderLight     = "1px solid #dbdbdb"

@@ -95,6 +95,30 @@ switchTheme window themeIcon = do
     findByClassAndSet (set UI.html (if toBeLight
                                       then copyDarkSVG
                                       else copyLightSVG)) window "rt-view-copy-icon"
+    -- About modal
+    findByClassAndSet (set style [ ("background-color", if toBeLight
+                                                          then backgroundLight
+                                                          else backgroundDark)
+                                 , ("color", if toBeLight
+                                              then textDark
+                                              else textLight)
+                                 ]
+                      ) window "rt-view-about-body"
+    findByClassAndSet (set style [ ("background-color", if toBeLight
+                                                          then greyLight
+                                                          else greyDark)
+                                 , ("color", if toBeLight
+                                              then textDark
+                                              else textLight)
+                                 , ("border-bottom", if toBeLight
+                                                       then borderLight
+                                                       else borderDark)
+                                 ]
+                      ) window "rt-view-about-head"
+    findByClassAndSet (set style [("color", if toBeLight
+                                              then textDark
+                                              else textLight)]) window "rt-view-about-title"
+
 
 lightState, darkState :: String
 lightState = "light"

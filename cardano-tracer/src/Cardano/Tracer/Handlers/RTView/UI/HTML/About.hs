@@ -30,7 +30,6 @@ mkAboutInfo = do
                     # set dataTooltip "Click to copy the path"
   on UI.click copyPath . const $
     UI.runFunction $ UI.ffi copyTextToClipboard pathToConfig
-  let commit = T.unpack . T.take 7 $ gitRev
   closeIt <- UI.button #. "delete"
   info <-
     UI.div #. "modal" #+
@@ -70,7 +69,11 @@ mkAboutInfo = do
                                # set dataTooltip "Browse repository on this commit"
                                # set text commit
                           ]
-                      , UI.p #. "mb-3" #+ [string platform]
+                      , UI.p #. "mb-3" #+
+                          [ string $ if | isWindows -> "Windows"
+                                        | isMac     -> "macOS"
+                                        | otherwise -> "Linux"
+                          ]
                       , UI.p #. "mb-1" #+
                           [ UI.span #. ("tag is-info is-light is-rounded is-medium mr-3"
                                         <> " has-tooltip-multiline has-tooltip-top rt-view-logs-path")
@@ -86,7 +89,4 @@ mkAboutInfo = do
   on UI.click closeIt . const $ element info #. "modal"
   return info
  where
-  platform =
-    if | isWindows -> "Windows"
-       | isMac     -> "macOS"
-       | otherwise -> "Linux"
+  commit = T.unpack . T.take 7 $ gitRev
