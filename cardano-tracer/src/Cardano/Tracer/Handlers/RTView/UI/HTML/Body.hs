@@ -79,21 +79,21 @@ mkPageBody window networkConfig =
                                    , string "Logs"
                                    ]
                         ]
-                    , UI.tr ## "node-peers-row" #+
-                        [ UI.td #+ [ image "rt-view-overview-icon" peersSVG
-                                   , string "Peers"
-                                   ]
-                        ]
+                    --, UI.tr ## "node-peers-row" #+
+                    --    [ UI.td #+ [ image "rt-view-overview-icon" peersSVG
+                    --               , string "Peers"
+                    --               ]
+                    --    ]
                     , UI.tr ## "node-chain-row" #+
                         [ UI.td #+ [ image "rt-view-overview-icon" chainSVG
                                    , string "Chain"
                                    ]
                         ]
-                    , UI.tr ## "node-errors-row" #+
-                        [ UI.td #+ [ image "rt-view-overview-icon" errorsSVG
-                                   , string "Errors"
-                                   ]
-                        ]
+                    --, UI.tr ## "node-errors-row" #+
+                    --    [ UI.td #+ [ image "rt-view-overview-icon" errorsSVG
+                    --               , string "Errors"
+                    --               ]
+                    --    ]
                     ]
                 ]
             ]

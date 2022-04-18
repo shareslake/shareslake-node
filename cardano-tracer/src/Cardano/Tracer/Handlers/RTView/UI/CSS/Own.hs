@@ -223,7 +223,7 @@ span[data-tooltip] {
 }
 
 .rt-view-main-table-description {
-  min-width: 300px;
+  min-width: 350px;
 }
 
 .rt-view-peers-table-container {
