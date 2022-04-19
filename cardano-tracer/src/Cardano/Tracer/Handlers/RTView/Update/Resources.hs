@@ -13,7 +13,6 @@ import           Control.Monad (forM_, unless)
 import           Control.Monad.Extra (whenJust)
 import qualified Data.Map.Strict as M
 import           Data.Time.Clock (getCurrentTime)
-import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
 import           Data.Text (unpack)
 import           Text.Read (readMaybe)
@@ -68,18 +67,40 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
                     }
 
 updateResourcesCharts
-  :: UI.Window
-  -> ConnectedNodes
+  :: ConnectedNodes
   -> ResourcesHistory
   -> DatasetsIndices
+  -> DatasetsTimestamps
   -> UI ()
-updateResourcesCharts _window connectedNodes (ResHistory rHistory) datasetIndices = do
+updateResourcesCharts connectedNodes (ResHistory rHistory) datasetIndices datasetTimestamps = do
   connected <- liftIO $ readTVarIO connectedNodes
-  forM_ connected $ \nodeId -> do
-    cpuHistory <- liftIO $ getHistoricalData rHistory nodeId "CPU"
-    unless (null cpuHistory) $
-      addNewPointToChart "cpu-chart" nodeId datasetIndices $ last cpuHistory
-  -- TODO
-  -- To avoid the rendering of the same points again,
-  -- remember 'newestTS', so the next time only the newer
-  -- points will be rendered.
+  forM_ connected $ \nodeId ->
+    addPointsToAChart nodeId "CPU" "cpu-chart"
+ where
+  addPointsToAChart nodeId dataName chartId = do
+    history <- liftIO $ getHistoricalData rHistory nodeId dataName
+    unless (null history) $ do
+      getLatestDisplayedTS datasetTimestamps nodeId dataName >>= \case
+        Nothing ->
+          -- There is no saved latestTS for this node and chart yet,
+          -- so display all the history and remember the latestTS.
+          addPointsToChart chartId nodeId datasetIndices history
+        Just storedTS -> do
+          -- Some of the history for this node and chart is already displayed,
+          -- so cut displayed points first. The only points we should add now
+          -- are the points with 'ts' that is bigger than 'storedTS'.
+          let onlyNewPoints = cutOldPoints storedTS history
+          addPointsToChart chartId nodeId datasetIndices onlyNewPoints
+      let (latestTS, _) = last history
+      saveLatestDisplayedTS datasetTimestamps nodeId dataName latestTS  
+
+  cutOldPoints _ [] = []
+  cutOldPoints oldTS (point@(ts, _):newerPoints) =
+    if ts > oldTS
+      then 
+        -- This point is newer than 'oldTS', take it and all the following
+        -- as well, because they are definitely newer (points are sorted by ts).
+        point : newerPoints
+      else
+        -- This point are older than 'oldTS', it means that it already was displayed.
+        cutOldPoints oldTS newerPoints

@@ -121,6 +121,7 @@ mkMainPage connectedNodes displayedElements savedTO
 
   colors <- initColors
   datasetIndices <- initDatasetsIndices
+  datasetTimestamps <- initDatasetsTimestamps
 
   -- Prepare and run the timer, which will hide the page preloader.
   preloaderTimer <- UI.timer # set UI.interval 10
@@ -152,10 +153,10 @@ mkMainPage connectedNodes displayedElements savedTO
   uiUpdateResourcesTimer <- UI.timer # set UI.interval ekgIntervalInMs
   on UI.tick uiUpdateResourcesTimer . const $
     updateResourcesCharts
-      window
       connectedNodes
       resourcesHistory
       datasetIndices
+      datasetTimestamps
   UI.start uiUpdateResourcesTimer
 
   on UI.disconnect window . const $ do

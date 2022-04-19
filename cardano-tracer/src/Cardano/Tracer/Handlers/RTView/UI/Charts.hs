@@ -6,11 +6,15 @@ module Cardano.Tracer.Handlers.RTView.UI.Charts
   ( Color
   , Colors
   , DatasetsIndices
+  , DatasetsTimestamps
   , initColors
   , initDatasetsIndices
+  , initDatasetsTimestamps
   , getDatasetIx
   , addNodeDatasets
-  , addNewPointToChart
+  , addPointsToChart
+  , getLatestDisplayedTS
+  , saveLatestDisplayedTS
   ) where
 
 -- | The module 'Cardano.Tracer.Handlers.RTView.UI.JS.Charts' contains the tools
@@ -106,13 +110,56 @@ addNodeDatasets nodeId@(NodeId anId) colors datasetIndices displayedElements =
     [ "cpu-chart"
     ]
 
+-- | When we add points to chart, we have to remember the timestamp of the latest point,
+--   for each chart, to avoid duplicated rendering of the same points.
+type LatestTimestamps   = Map DataName POSIXTime
+type DatasetsTimestamps = TVar (Map NodeId LatestTimestamps)
+
+initDatasetsTimestamps :: UI DatasetsTimestamps
+initDatasetsTimestamps = liftIO . newTVarIO $ M.empty
+
+saveLatestDisplayedTS
+  :: DatasetsTimestamps
+  -> NodeId
+  -> DataName
+  -> POSIXTime
+  -> UI ()
+saveLatestDisplayedTS tss nodeId dataName ts = liftIO . atomically $
+  modifyTVar' tss $ \currentTimestamps ->
+    case M.lookup nodeId currentTimestamps of
+      Nothing ->
+        -- There is no latest timestamps for charts for this node yet.
+        let newTSForNode = M.singleton dataName ts
+        in M.insert nodeId newTSForNode currentTimestamps
+      Just tssForNode ->
+        let newTSForNode =
+              case M.lookup dataName tssForNode of
+                Nothing -> 
+                  -- There is no latest timestamps for this dataName yet.
+                  M.insert dataName ts tssForNode
+                Just _ ->
+                  M.adjust (const ts) dataName tssForNode
+        in M.adjust (const newTSForNode) nodeId currentTimestamps
+
+getLatestDisplayedTS
+  :: DatasetsTimestamps
+  -> NodeId
+  -> DataName
+  -> UI (Maybe POSIXTime)
+getLatestDisplayedTS tss nodeId dataName = liftIO $
+  (M.lookup nodeId <$> readTVarIO tss) >>= \case
+    Nothing         -> return Nothing
+    Just tssForNode -> return $ M.lookup dataName tssForNode
+
 -- | ...
-addNewPointToChart
+addPointsToChart
   :: String
   -> NodeId
   -> DatasetsIndices
-  -> (POSIXTime, ValueH)
+  -> [(POSIXTime, ValueH)]
   -> UI ()
-addNewPointToChart chartId nodeId datasetIndices (ts, valueH) =
-  whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx -> do
-    UI.runFunction $ UI.ffi Chart.addNewPointChartJS chartId (show ts) datasetIx (show valueH)
+addPointsToChart _ _ _ [] = return ()
+addPointsToChart chartId nodeId datasetIndices points =
+  whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx ->
+    forM_ points $ \(ts, valueH) ->
+      UI.runFunction $ UI.ffi Chart.addNewPointChartJS chartId (show ts) datasetIx (show valueH)
