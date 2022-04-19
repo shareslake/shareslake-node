@@ -17,6 +17,8 @@ import           Graphics.UI.Threepenny.Core
 import           Data.Text (unpack)
 import           Text.Read (readMaybe)
 
+import Debug.Trace
+
 import           Cardano.Tracer.Handlers.Metrics.Utils
 import           Cardano.Tracer.Handlers.RTView.State.Historical
 import           Cardano.Tracer.Handlers.RTView.State.Last
@@ -81,23 +83,26 @@ updateResourcesCharts connectedNodes (ResHistory rHistory) datasetIndices datase
     history <- liftIO $ getHistoricalData rHistory nodeId dataName
     unless (null history) $ do
       getLatestDisplayedTS datasetTimestamps nodeId dataName >>= \case
-        Nothing ->
+        Nothing -> do
+          liftIO $ traceIO $ "__CHECK_____NOTHING, hist: " <> show history
           -- There is no saved latestTS for this node and chart yet,
           -- so display all the history and remember the latestTS.
           addPointsToChart chartId nodeId datasetIndices history
+          liftIO $ traceIO "__CHECK_____NOTHING_OK"
         Just storedTS -> do
+          liftIO $ traceIO $ "__CHECK_____YEP: " <> show storedTS
           -- Some of the history for this node and chart is already displayed,
           -- so cut displayed points first. The only points we should add now
           -- are the points with 'ts' that is bigger than 'storedTS'.
           let onlyNewPoints = cutOldPoints storedTS history
           addPointsToChart chartId nodeId datasetIndices onlyNewPoints
       let (latestTS, _) = last history
-      saveLatestDisplayedTS datasetTimestamps nodeId dataName latestTS  
+      saveLatestDisplayedTS datasetTimestamps nodeId dataName latestTS
 
   cutOldPoints _ [] = []
   cutOldPoints oldTS (point@(ts, _):newerPoints) =
     if ts > oldTS
-      then 
+      then
         -- This point is newer than 'oldTS', take it and all the following
         -- as well, because they are definitely newer (points are sorted by ts).
         point : newerPoints

@@ -32,6 +32,9 @@ import           Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
 import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
+import           System.Time.Extra (sleep)
+
+import Debug.Trace
 
 import           Cardano.Tracer.Types (NodeId (..))
 
@@ -134,7 +137,7 @@ saveLatestDisplayedTS tss nodeId dataName ts = liftIO . atomically $
       Just tssForNode ->
         let newTSForNode =
               case M.lookup dataName tssForNode of
-                Nothing -> 
+                Nothing ->
                   -- There is no latest timestamps for this dataName yet.
                   M.insert dataName ts tssForNode
                 Just _ ->
@@ -160,6 +163,9 @@ addPointsToChart
   -> UI ()
 addPointsToChart _ _ _ [] = return ()
 addPointsToChart chartId nodeId datasetIndices points =
-  whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx ->
-    forM_ points $ \(ts, valueH) ->
+  whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx -> do
+    liftIO $ traceIO $ "points LEN: " <> show (length points)
+    forM_ points $ \(ts, valueH) -> do
+      liftIO $ traceIO $ "__CHECK___add_point: ts: " <> show ts <> ", val: " <> show valueH
       UI.runFunction $ UI.ffi Chart.addNewPointChartJS chartId (show ts) datasetIx (show valueH)
+      liftIO $ sleep 0.1
