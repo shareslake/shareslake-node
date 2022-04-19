@@ -2,6 +2,7 @@
 
 module Cardano.Tracer.Handlers.RTView.State.Historical
   ( BlockchainHistory (..)
+  , POSIXTime
   , ResourcesHistory (..)
   , TransactionsHistory (..)
   , ValueH (..)
@@ -30,7 +31,11 @@ import           Cardano.Tracer.Types (NodeId)
 --   where X axis is a time in UTC. An example: resource metrics, chain information,
 --   tx information, etc.
 type POSIXTime = Word64
-data ValueH = ValueD Double | ValueI Integer deriving (Eq, Ord, Show)
+data ValueH = ValueD Double | ValueI Integer deriving (Eq, Ord)
+instance Show ValueH where
+  show (ValueD d) = show d
+  show (ValueI i) = show i
+
 type HistoricalPoints = Set (POSIXTime, ValueH)
 
 -- | Historical points for particular data (for example, "CPU").

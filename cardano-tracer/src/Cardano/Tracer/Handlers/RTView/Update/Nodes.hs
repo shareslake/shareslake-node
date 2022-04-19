@@ -25,6 +25,7 @@ import           Text.Read (readMaybe)
 import           Cardano.Tracer.Configuration
 import           Cardano.Tracer.Handlers.RTView.State.Displayed
 import           Cardano.Tracer.Handlers.RTView.UI.HTML.Node.Column
+import           Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
 import           Cardano.Tracer.Handlers.RTView.Update.NodeInfo
 import           Cardano.Tracer.Types
@@ -36,8 +37,11 @@ updateNodesUI
   -> DataPointRequestors
   -> PageReloadedFlag
   -> NonEmpty LoggingParams
+  -> Colors
+  -> DatasetsIndices
   -> UI ()
-updateNodesUI window connectedNodes displayedElements dpRequestors reloadFlag loggingConfig = do
+updateNodesUI window connectedNodes displayedElements dpRequestors
+              reloadFlag loggingConfig colors datasetIndices = do
   (connected, displayedEls, afterReload) <- liftIO . atomically $ (,,)
     <$> readTVar connectedNodes
     <*> readTVar displayedElements
@@ -49,6 +53,7 @@ updateNodesUI window connectedNodes displayedElements dpRequestors reloadFlag lo
       addColumnsForConnected window connected loggingConfig
       checkNoNodesState window connected
       askNSetNodeInfo window dpRequestors connected displayedElements
+      addDatasetsForConnected window connected colors datasetIndices displayedElements
       liftIO $ updateDisplayedElements displayedElements connected
       liftIO $ pageWasNotReload reloadFlag
     else do
@@ -61,6 +66,7 @@ updateNodesUI window connectedNodes displayedElements dpRequestors reloadFlag lo
         addColumnsForConnected window newlyConnected loggingConfig
         checkNoNodesState window connected
         askNSetNodeInfo window dpRequestors newlyConnected displayedElements
+        addDatasetsForConnected window newlyConnected colors datasetIndices displayedElements
         liftIO $ updateDisplayedElements displayedElements connected
   setUptimeForNodes window connected displayedElements
 
@@ -74,6 +80,19 @@ addColumnsForConnected window newlyConnected loggingConfig = do
     findAndShow window "main-table-container"
   forM_ newlyConnected $ addNodeColumn window loggingConfig
 
+addDatasetsForConnected
+  :: UI.Window
+  -> Set NodeId
+  -> Colors
+  -> DatasetsIndices
+  -> DisplayedElements
+  -> UI ()
+addDatasetsForConnected window newlyConnected colors datasetIndices displayedElements = do
+  unless (S.null newlyConnected) $
+    findAndShow window "main-charts-container"
+  forM_ newlyConnected $ \nodeId ->
+    addNodeDatasets nodeId colors datasetIndices displayedElements
+
 deleteColumnsForDisconnected
   :: UI.Window
   -> Set NodeId
@@ -81,8 +100,12 @@ deleteColumnsForDisconnected
   -> UI ()
 deleteColumnsForDisconnected window connected disconnected = do
   forM_ disconnected $ deleteNodeColumn window
-  when (S.null connected) $
+  when (S.null connected) $ do
     findAndHide window "main-table-container"
+    findAndHide window "main-charts-container"
+  -- Please note that we don't remove historical data from charts
+  -- for disconnected node. Because the user may want to see the
+  -- historical data even for the node that already disconnected.
 
 checkNoNodesState :: UI.Window -> Set NodeId -> UI ()
 checkNoNodesState window connected =

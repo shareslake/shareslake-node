@@ -18,11 +18,10 @@ import           Graphics.UI.Threepenny.Core
 import           Data.Text (unpack)
 import           Text.Read (readMaybe)
 
---import Debug.Trace
-
 import           Cardano.Tracer.Handlers.Metrics.Utils
 import           Cardano.Tracer.Handlers.RTView.State.Historical
 import           Cardano.Tracer.Handlers.RTView.State.Last
+import           Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Cardano.Tracer.Handlers.RTView.Update.Utils
 import           Cardano.Tracer.Types
 
@@ -72,15 +71,15 @@ updateResourcesCharts
   :: UI.Window
   -> ConnectedNodes
   -> ResourcesHistory
+  -> DatasetsIndices
   -> UI ()
-updateResourcesCharts _window connectedNodes (ResHistory rHistory) = do
+updateResourcesCharts _window connectedNodes (ResHistory rHistory) datasetIndices = do
   connected <- liftIO $ readTVarIO connectedNodes
   forM_ connected $ \nodeId -> do
     cpuHistory <- liftIO $ getHistoricalData rHistory nodeId "CPU"
-    unless (null cpuHistory) $ do
-      let (_tsOfLastPoint, _) = last cpuHistory
-      -- To avoid the rendering of the same points again,
-      -- remember 'newestTS', so the next time only the newer
-      -- points will be rendered.
-      return ()
-
+    unless (null cpuHistory) $
+      addNewPointToChart "cpu-chart" nodeId datasetIndices $ last cpuHistory
+  -- TODO
+  -- To avoid the rendering of the same points again,
+  -- remember 'newestTS', so the next time only the newer
+  -- points will be rendered.

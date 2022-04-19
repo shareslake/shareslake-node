@@ -30,7 +30,9 @@ askNSetNodeInfo window dpRequestors newlyConnected displayedElements =
   unless (S.null newlyConnected) $
     forM_ newlyConnected $ \nodeId@(NodeId anId) ->
       whenJustM (liftIO $ askDataPoint dpRequestors nodeId "NodeInfo") $ \ni -> do
-        findAndSetText (niName ni) window (anId <> "__node-name")
+        let nodeNameElId = anId <> "__node-name"
+        findAndSetText (niName ni) window nodeNameElId
+        liftIO $ saveDisplayedValue displayedElements nodeId nodeNameElId (niName ni)
         findAndSetText (niVersion ni) window (anId <> "__node-version")
         setProtocol (niProtocol ni) (anId <> "__node-protocol")
         findAndSetText (T.take 7 $ niCommit ni) window (anId <> "__node-commit")
@@ -38,11 +40,7 @@ askNSetNodeInfo window dpRequestors newlyConnected displayedElements =
         let nodeStartElId = anId <> "__node-start-time"
         setTime (niStartTime ni) nodeStartElId
         setTime (niSystemStartTime ni) (anId <> "__node-system-start-time")
-        liftIO $ saveDisplayedValue
-                   displayedElements
-                   nodeId
-                   nodeStartElId
-                   (T.pack . show $ niStartTime ni)
+        liftIO $ saveDisplayedValue displayedElements nodeId nodeStartElId (T.pack . show $ niStartTime ni)
  where
   nodeLink commit = T.unpack $ "https://github.com/input-output-hk/cardano-node/commit/" <> T.take 7 commit
 

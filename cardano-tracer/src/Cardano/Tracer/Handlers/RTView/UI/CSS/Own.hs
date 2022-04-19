@@ -259,6 +259,14 @@ span[data-tooltip] {
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
 }
+
+.rt-view-charts-container {
+  
+}
+
+.rt-view-cpu-chart-area {
+  width: 100% !important;
+}
 |]
 
 hrefLight

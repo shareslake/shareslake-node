@@ -27,7 +27,9 @@ import           Cardano.Tracer.Handlers.RTView.State.TraceObjects
 import           Cardano.Tracer.Handlers.RTView.UI.CSS.Bulma
 import           Cardano.Tracer.Handlers.RTView.UI.CSS.Own
 import           Cardano.Tracer.Handlers.RTView.UI.HTML.Body
+import           Cardano.Tracer.Handlers.RTView.UI.JS.ChartJS
 import           Cardano.Tracer.Handlers.RTView.UI.Img.Icons
+import           Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
 import           Cardano.Tracer.Handlers.RTView.Update.UI
 import           Cardano.Tracer.Handlers.RTView.Update.Historical
@@ -63,7 +65,7 @@ runRTView TracerConfig{logging, network, hasRTView, ekgRequestFreq}
     -- show charts with historical data (where X axis is the time) for the
     -- period when RTView web-page wasn't opened.
     resourcesHistory <- initResourcesHistory
-    lastResources <- initLastResources 
+    lastResources <- initLastResources
     concurrently_
       (UI.startGUI (config host port) $
          mkMainPage
@@ -112,10 +114,13 @@ mkMainPage connectedNodes displayedElements savedTO
     , UI.mkElement "style" # set UI.html bulmaTooltipCSS
     , UI.mkElement "style" # set UI.html bulmaPageloaderCSS
     , UI.mkElement "style" # set UI.html ownCSS
-    -- , UI.mkElement "script" # set UI.html chartJS
+    , UI.mkElement "script" # set UI.html chartJS
     ]
 
   pageBody <- mkPageBody window networkConfig
+
+  colors <- initColors
+  datasetIndices <- initDatasetsIndices
 
   -- Prepare and run the timer, which will hide the page preloader.
   preloaderTimer <- UI.timer # set UI.interval 10
@@ -136,6 +141,8 @@ mkMainPage connectedNodes displayedElements savedTO
       dpRequestors
       reloadFlag
       loggingConfig
+      colors
+      datasetIndices
   UI.start uiUpdateTimer
 
   -- The user can setup EKG request frequency (in seconds) in tracer's configuration,
@@ -144,7 +151,11 @@ mkMainPage connectedNodes displayedElements savedTO
       ekgIntervalInMs = toMs . secondsToNominalDiffTime $ fromMaybe 1.0 ekgFreq
   uiUpdateResourcesTimer <- UI.timer # set UI.interval ekgIntervalInMs
   on UI.tick uiUpdateResourcesTimer . const $
-    updateResourcesCharts window connectedNodes resourcesHistory
+    updateResourcesCharts
+      window
+      connectedNodes
+      resourcesHistory
+      datasetIndices
   UI.start uiUpdateResourcesTimer
 
   on UI.disconnect window . const $ do

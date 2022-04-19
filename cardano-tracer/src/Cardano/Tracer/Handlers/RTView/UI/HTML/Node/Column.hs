@@ -58,7 +58,7 @@ addNodeColumn window loggingConfig (NodeId anId) = do
                                    # set text "—"
                          ]
   addNodeCell "logs"     [ UI.span ## (id' <> "__node-logs")
-                                   #+ ls -- logsSettings loggingConfig anId
+                                   #+ ls
                          ]
   addNodeCell "peers"    [ UI.span ## (id' <> "__node-peers")
                                    # set text "—"

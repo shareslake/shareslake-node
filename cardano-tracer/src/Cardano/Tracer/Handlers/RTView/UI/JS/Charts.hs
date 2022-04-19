@@ -1,17 +1,21 @@
-module Cardano.RTView.GUI.JS.Charts
-    ( prepareChartsJS
-    -- Charts JS snippets.
-    , memoryUsageChartJS
-    , cpuUsageChartJS
-    , diskUsageChartJS
-    , networkUsageChartJS
-    -- Charts updaters.
-    , updateMemoryUsageChartJS
-    , updateCPUUsageChartJS
-    , updateDiskUsageChartJS
-    , updateNetworkUsageChartJS
-    , resizeChartJS
-    ) where
+module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
+  ( prepareChartsJS
+  -- Charts JS snippets.
+  , memoryUsageChartJS
+  , cpuUsageChartJS
+  , diskUsageChartJS
+  , networkUsageChartJS
+  -- Charts updaters.
+  , updateMemoryUsageChartJS
+  , updateCPUUsageChartJS
+  , addDatasetChartJS
+  , getDatasetsLengthChartJS
+  , addNewPointChartJS
+
+  , updateDiskUsageChartJS
+  , updateNetworkUsageChartJS
+  , resizeChartJS
+  ) where
 
 prepareChartsJS :: String
 prepareChartsJS =
@@ -64,25 +68,7 @@ cpuUsageChartJS = concat
   , "  type: 'line',"
   , "  data: {"
   , "    labels: [],"
-  , "    datasets: [{"
-  , "      label: 'CPU | total',"
-  , "      backgroundColor: '#FE2E2E',"
-  , "      borderColor: '#FE2E2E',"
-  , "      data: [],"
-  , "      fill: false"
-  , "    },{"
-  , "      label: 'CPU | code',"
-  , "      backgroundColor: '#008B8B',"
-  , "      borderColor: '#008B8B',"
-  , "      data: [],"
-  , "      fill: false"
-  , "    },{"
-  , "      label: 'CPU | GC',"
-  , "      backgroundColor: '#8B0000',"
-  , "      borderColor: '#8B0000',"
-  , "      data: [],"
-  , "      fill: false"
-  , "    }]"
+  , "    datasets: []"
   , "  },"
   , "  options: {"
   , "    responsive: true,"
@@ -189,13 +175,46 @@ networkUsageChartJS = concat
 -- This is a temporary solution, it will be improved in the future releases.
 
 updateMemoryUsageChartJS
-  , updateCPUUsageChartJS
   , updateDiskUsageChartJS
   , updateNetworkUsageChartJS :: String
 updateMemoryUsageChartJS  = updateDoubleDatasetChartJS
-updateCPUUsageChartJS     = updateThreeDatasetsChartJS
 updateDiskUsageChartJS    = updateDoubleDatasetChartJS
 updateNetworkUsageChartJS = updateDoubleDatasetChartJS
+
+updateCPUUsageChartJS :: String
+updateCPUUsageChartJS = concat
+  [ "window.charts.get(%1).data.labels.push(%2);"
+  , "window.charts.get(%1).data.datasets[0].data.push(%3);"
+  , "window.charts.get(%1).update({duration: 0});"
+  , "window.charts.get(%1).resize();"
+  ]
+
+addDatasetChartJS :: String
+addDatasetChartJS = concat
+  [ "const newDataset = {"
+  , "  label: %2,"
+  , "  backgroundColor: %3,"
+  , "  borderColor: %3,"
+  , "  data: [],"
+  , "  fill: false"
+  , "};"
+  , "window.charts.get(%1).data.datasets.push(newDataset);"
+  , "window.charts.get(%1).update({duration: 0});"
+  , "window.charts.get(%1).resize();"
+  ]
+
+getDatasetsLengthChartJS :: String
+getDatasetsLengthChartJS = concat
+  [ "window.charts.get(%1).data.datasets.length;"
+  ]
+
+addNewPointChartJS :: String
+addNewPointChartJS = concat
+  [ "window.charts.get(%1).data.labels.push(%2);"
+  , "window.charts.get(%1).data.datasets[%3].data.push(%4);"
+  , "window.charts.get(%1).update({duration: 0});"
+  , "window.charts.get(%1).resize();"
+  ]
 
 {-
 updateSingleDatasetChartJS :: String
@@ -227,6 +246,7 @@ updateDoubleDatasetChartJS = concat
   , "window.charts.get(%1).resize();"
   ]
 
+{-
 updateThreeDatasetsChartJS :: String
 updateThreeDatasetsChartJS = concat
   [ "window.charts.get(%1).data.labels.push(%2);"
@@ -243,6 +263,7 @@ updateThreeDatasetsChartJS = concat
   , "window.charts.get(%1).update({duration: 0});"
   , "window.charts.get(%1).resize();"
   ]
+-}
 
 -- During changing of panes' size we have to explicitly recise charts.
 resizeChartJS :: String

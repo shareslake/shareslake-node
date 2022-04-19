@@ -16,6 +16,7 @@ import           Graphics.UI.Threepenny.Core
 import           Cardano.Tracer.Configuration
 import           Cardano.Tracer.Handlers.RTView.State.Displayed
 import           Cardano.Tracer.Handlers.RTView.State.TraceObjects
+import           Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Cardano.Tracer.Handlers.RTView.Update.Nodes
 import           Cardano.Tracer.Handlers.RTView.Update.Peers
 import           Cardano.Tracer.Types
@@ -28,8 +29,11 @@ updateUI
   -> DataPointRequestors
   -> PageReloadedFlag
   -> NonEmpty LoggingParams
+  -> Colors
+  -> DatasetsIndices
   -> UI ()
-updateUI window connectedNodes displayedElements savedTO dpRequestors reloadFlag loggingConfig = do
+updateUI window connectedNodes displayedElements savedTO
+         dpRequestors reloadFlag loggingConfig colors datasetIndices = do
   updateNodesUI
     window
     connectedNodes
@@ -37,6 +41,8 @@ updateUI window connectedNodes displayedElements savedTO dpRequestors reloadFlag
     dpRequestors
     reloadFlag
     loggingConfig
+    colors
+    datasetIndices
   --
   savedTraceObjects <- liftIO $ readTVarIO savedTO
   forM_ (M.toList savedTraceObjects) $ \(nodeId, savedTOForNode) ->
