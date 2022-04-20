@@ -3,7 +3,10 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Cardano.Tracer.Handlers.RTView.Update.Nodes
-  ( updateNodesUI
+  ( addColumnsForConnected
+  , addDatasetsForConnected
+  , checkNoNodesState
+  , updateNodesUI
   ) where
 
 import           Control.Concurrent.STM (atomically)
@@ -35,39 +38,26 @@ updateNodesUI
   -> ConnectedNodes
   -> DisplayedElements
   -> DataPointRequestors
-  -> PageReloadedFlag
   -> NonEmpty LoggingParams
   -> Colors
   -> DatasetsIndices
   -> UI ()
 updateNodesUI window connectedNodes displayedElements dpRequestors
-              reloadFlag loggingConfig colors datasetIndices = do
-  (connected, displayedEls, afterReload) <- liftIO . atomically $ (,,)
+              loggingConfig colors datasetIndices = do
+  (connected, displayedEls) <- liftIO . atomically $ (,)
     <$> readTVar connectedNodes
     <*> readTVar displayedElements
-    <*> readTVar reloadFlag
-  if afterReload
-    then do
-      -- Ok, web-page was reload (i.e. it's the first update after DOM-rendering),
-      -- so displayed state should be restored immediately.
-      addColumnsForConnected window connected loggingConfig
-      checkNoNodesState window connected
-      askNSetNodeInfo window dpRequestors connected displayedElements
-      addDatasetsForConnected window connected colors datasetIndices displayedElements
-      liftIO $ updateDisplayedElements displayedElements connected
-      liftIO $ pageWasNotReload reloadFlag
-    else do
-      -- Check connected/disconnected nodes since previous UI's update.
-      let displayed = S.fromList $ M.keys displayedEls
-      when (connected /= displayed) $ do
-        let disconnected   = displayed \\ connected -- In 'displayed' but not in 'connected'.
-            newlyConnected = connected \\ displayed -- In 'connected' but not in 'displayed'.
-        deleteColumnsForDisconnected window connected disconnected
-        addColumnsForConnected window newlyConnected loggingConfig
-        checkNoNodesState window connected
-        askNSetNodeInfo window dpRequestors newlyConnected displayedElements
-        addDatasetsForConnected window newlyConnected colors datasetIndices displayedElements
-        liftIO $ updateDisplayedElements displayedElements connected
+  -- Check connected/disconnected nodes since previous UI's update.
+  let displayed = S.fromList $ M.keys displayedEls
+  when (connected /= displayed) $ do
+    let disconnected   = displayed \\ connected -- In 'displayed' but not in 'connected'.
+        newlyConnected = connected \\ displayed -- In 'connected' but not in 'displayed'.
+    deleteColumnsForDisconnected window connected disconnected
+    addColumnsForConnected window newlyConnected loggingConfig
+    checkNoNodesState window connected
+    askNSetNodeInfo window dpRequestors newlyConnected displayedElements
+    addDatasetsForConnected window newlyConnected colors datasetIndices displayedElements
+    liftIO $ updateDisplayedElements displayedElements connected
   setUptimeForNodes window connected displayedElements
 
 addColumnsForConnected

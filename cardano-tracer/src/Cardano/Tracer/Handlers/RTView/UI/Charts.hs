@@ -32,9 +32,6 @@ import           Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
 import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
---import           System.Time.Extra (sleep)
-
-import Debug.Trace
 
 import           Cardano.Tracer.Types (NodeId (..))
 
@@ -106,8 +103,6 @@ addNodeDatasetsToCharts nodeId@(NodeId anId) colors datasetIndices displayedElem
     newColor <- getNewColor colors
     UI.runFunction $ UI.ffi Chart.addDatasetChartJS chartId (maybe anId id nodeName) newColor
     saveDatasetIx datasetIndices nodeId newIx
-    indices <- liftIO $ readTVarIO datasetIndices
-    liftIO $ traceIO $ "__CHEECK_indices: " <> show indices
  where
   chartsIds :: [String]
   chartsIds =
@@ -163,12 +158,7 @@ addPointsToChart
   -> [(POSIXTime, ValueH)]
   -> UI ()
 addPointsToChart _ _ _ [] = return ()
-addPointsToChart chartId nodeId datasetIndices points = do
-  indices <- liftIO $ readTVarIO datasetIndices
-  liftIO $ traceIO $ "__CHEECK_222_indices: " <> show indices
-  whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx -> do
-    liftIO $ traceIO $ "points LEN: " <> show (length points)
-    forM_ points $ \(ts, valueH) -> do
-      liftIO $ traceIO $ "__CHECK___add_point: ts: " <> show ts <> ", val: " <> show valueH
+addPointsToChart chartId nodeId datasetIndices points =
+  whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx ->
+    forM_ points $ \(ts, valueH) ->
       UI.runFunction $ UI.ffi Chart.addNewPointChartJS chartId (show ts) datasetIx (show valueH)
-      -- liftIO $ sleep 0.1

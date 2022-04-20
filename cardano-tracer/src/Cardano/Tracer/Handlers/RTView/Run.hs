@@ -7,8 +7,9 @@ module Cardano.Tracer.Handlers.RTView.Run
   ) where
 
 import           Control.Concurrent.Async (concurrently_)
+import           Control.Concurrent.STM.TVar (readTVarIO)
 import           Control.Monad (void)
-import           Control.Monad.Extra (whenJust)
+import           Control.Monad.Extra (whenJust, whenM)
 import           Data.Fixed (Pico)
 import           Data.List.NonEmpty (NonEmpty)
 import           Data.Maybe (fromMaybe)
@@ -126,10 +127,21 @@ mkMainPage connectedNodes displayedElements savedTO
   -- Prepare and run the timer, which will hide the page preloader.
   preloaderTimer <- UI.timer # set UI.interval 10
   on UI.tick preloaderTimer . const $ do
-    liftIO $ sleep 1.0
+    liftIO $ sleep 0.8
     findAndSet (set UI.class_ "pageloader") window "preloader"
     UI.stop preloaderTimer
   UI.start preloaderTimer
+
+  whenM (liftIO $ readTVarIO reloadFlag) $ do
+    updateUIAfterReload
+      window
+      connectedNodes
+      displayedElements
+      dpRequestors
+      loggingConfig
+      colors
+      datasetIndices
+    liftIO $ pageWasNotReload reloadFlag
 
   -- Prepare and run the timer, which will call 'update' function every second.
   uiUpdateTimer <- UI.timer # set UI.interval 1000
@@ -140,7 +152,6 @@ mkMainPage connectedNodes displayedElements savedTO
       displayedElements
       savedTO
       dpRequestors
-      reloadFlag
       loggingConfig
       colors
       datasetIndices

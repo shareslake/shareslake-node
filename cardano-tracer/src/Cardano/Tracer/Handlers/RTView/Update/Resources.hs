@@ -16,9 +16,6 @@ import           Data.Time.Clock (getCurrentTime)
 import           Graphics.UI.Threepenny.Core
 import           Data.Text (unpack)
 import           Text.Read (readMaybe)
-import           System.Time.Extra (sleep)
-
-import Debug.Trace
 
 import           Cardano.Tracer.Handlers.Metrics.Utils
 import           Cardano.Tracer.Handlers.RTView.State.Historical
@@ -76,7 +73,6 @@ updateResourcesCharts
   -> DatasetsTimestamps
   -> UI ()
 updateResourcesCharts connectedNodes (ResHistory rHistory) datasetIndices datasetTimestamps = do
-  liftIO $ sleep 0.5
   connected <- liftIO $ readTVarIO connectedNodes
   forM_ connected $ \nodeId ->
     addPointsToAChart nodeId "CPU" "cpu-chart"
@@ -85,14 +81,11 @@ updateResourcesCharts connectedNodes (ResHistory rHistory) datasetIndices datase
     history <- liftIO $ getHistoricalData rHistory nodeId dataName
     unless (null history) $ do
       getLatestDisplayedTS datasetTimestamps nodeId dataName >>= \case
-        Nothing -> do
-          liftIO $ traceIO $ "__CHECK_____NOTHING, hist: " <> show history
+        Nothing ->
           -- There is no saved latestTS for this node and chart yet,
           -- so display all the history and remember the latestTS.
           addPointsToChart chartId nodeId datasetIndices history
-          liftIO $ traceIO "__CHECK_____NOTHING_OK"
         Just storedTS -> do
-          liftIO $ traceIO $ "__CHECK_____YEP: " <> show storedTS
           -- Some of the history for this node and chart is already displayed,
           -- so cut displayed points first. The only points we should add now
           -- are the points with 'ts' that is bigger than 'storedTS'.
