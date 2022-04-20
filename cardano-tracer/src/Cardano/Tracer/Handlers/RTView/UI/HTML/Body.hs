@@ -119,7 +119,7 @@ mkPageBody window networkConfig = do
 
   UI.runFunction $ UI.ffi Chart.prepareChartsJS
 
-  UI.runFunction $ UI.ffi Chart.cpuUsageChartJS ("cpu-chart" :: String)
+  UI.runFunction $ UI.ffi Chart.cpuUsageChartJS2 ("cpu-chart" :: String)
 
   return body
 

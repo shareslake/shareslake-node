@@ -5,6 +5,7 @@ module Cardano.Tracer.Handlers.RTView.Update.Utils
   ( askDataPoint
   , utc2ns
   , utc2s
+  , s2utc
   ) where
 
 import           Control.Concurrent.STM.TVar (readTVarIO)
@@ -12,7 +13,7 @@ import           Data.Aeson (FromJSON, decode')
 import           Data.Functor ((<&>))
 import qualified Data.Map.Strict as M
 import           Data.Time.Clock (UTCTime)
-import           Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
+import           Data.Time.Clock.POSIX
 import           Data.Word (Word64)
 
 import           Trace.Forward.Utils.DataPoint (askForDataPoints)
@@ -45,6 +46,9 @@ askDataPoint dpRequestors nodeId dpName =
 -- | Converts a timestamp to seconds since Unix epoch.
 utc2s :: UTCTime -> Word64
 utc2s utc = fromInteger . round $ utcTimeToPOSIXSeconds utc
+
+s2utc :: Word64 -> UTCTime
+s2utc posixTime = posixSecondsToUTCTime $ fromIntegral posixTime
 
 -- | Converts a timestamp to nanoseconds since Unix epoch.
 utc2ns :: UTCTime -> Word64

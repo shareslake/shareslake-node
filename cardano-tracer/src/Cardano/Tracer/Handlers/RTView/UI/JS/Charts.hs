@@ -3,6 +3,7 @@ module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
   -- Charts JS snippets.
   , memoryUsageChartJS
   , cpuUsageChartJS
+  , cpuUsageChartJS2
   , diskUsageChartJS
   , networkUsageChartJS
   -- Charts updaters.
@@ -11,6 +12,7 @@ module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
   , addDatasetChartJS
   , getDatasetsLengthChartJS
   , addNewPointChartJS
+  , addNewPointChartJS2
 
   , updateDiskUsageChartJS
   , updateNetworkUsageChartJS
@@ -81,6 +83,29 @@ cpuUsageChartJS = concat
   , "        },"
   , "        ticks: {"
   , "          min: 0"
+  , "        }"
+  , "      }]"
+  , "    }"
+  , "  }"
+  , "});"
+  , "window.charts.set(%1, chart);"
+  ]
+
+cpuUsageChartJS2 :: String
+cpuUsageChartJS2 = concat
+  [ "var ctx = document.getElementById(%1).getContext('2d');"
+  , "var chart = new Chart(ctx, {"
+  , "  type: 'line',"
+  , "  data: {"
+  , "    datasets: []"
+  , "  },"
+  , "  options: {"
+  , "    responsive: true,"
+  , "    scales: {"
+  , "      xAxes: [{"
+  , "        type: 'time',"
+  , "        time: {"
+  , "          tooltipFormat: 'T'"
   , "        }"
   , "      }]"
   , "    }"
@@ -212,6 +237,14 @@ addNewPointChartJS :: String
 addNewPointChartJS = concat
   [ "window.charts.get(%1).data.labels.push(%2);"
   , "window.charts.get(%1).data.datasets[%3].data.push(%4);"
+  , "window.charts.get(%1).update({duration: 0});"
+  , "window.charts.get(%1).resize();"
+  ]
+
+addNewPointChartJS2 :: String
+addNewPointChartJS2 = concat
+  [ -- "window.charts.get(%1).data.labels.push(%2);"
+    "window.charts.get(%1).data.datasets[%2].data.push({x: %3, y: %4});"
   , "window.charts.get(%1).update({duration: 0});"
   , "window.charts.get(%1).resize();"
   ]
