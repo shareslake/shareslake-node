@@ -11,7 +11,7 @@ module Cardano.Tracer.Handlers.RTView.UI.Charts
   , initDatasetsIndices
   , initDatasetsTimestamps
   , getDatasetIx
-  , addNodeDatasets
+  , addNodeDatasetsToCharts
   , addPointsToChart
   , getLatestDisplayedTS
   , saveLatestDisplayedTS
@@ -32,7 +32,7 @@ import           Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
 import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
-import           System.Time.Extra (sleep)
+--import           System.Time.Extra (sleep)
 
 import Debug.Trace
 
@@ -93,20 +93,21 @@ getDatasetIx indices nodeId = liftIO $
   M.lookup nodeId <$> readTVarIO indices
 
 -- | ...
-addNodeDatasets
+addNodeDatasetsToCharts
   :: NodeId
   -> Colors
   -> DatasetsIndices
   -> DisplayedElements
   -> UI ()
-addNodeDatasets nodeId@(NodeId anId) colors datasetIndices displayedElements =
+addNodeDatasetsToCharts nodeId@(NodeId anId) colors datasetIndices displayedElements =
   forM_ chartsIds $ \chartId -> do
     (newIx :: Int) <- UI.callFunction $ UI.ffi Chart.getDatasetsLengthChartJS chartId
     nodeName <- liftIO $ getDisplayedValue displayedElements nodeId (anId <> "__node-name")
-    let finalNodeName = maybe anId id nodeName
     newColor <- getNewColor colors
-    UI.runFunction $ UI.ffi Chart.addDatasetChartJS chartId finalNodeName newColor
+    UI.runFunction $ UI.ffi Chart.addDatasetChartJS chartId (maybe anId id nodeName) newColor
     saveDatasetIx datasetIndices nodeId newIx
+    indices <- liftIO $ readTVarIO datasetIndices
+    liftIO $ traceIO $ "__CHEECK_indices: " <> show indices
  where
   chartsIds :: [String]
   chartsIds =
@@ -162,10 +163,12 @@ addPointsToChart
   -> [(POSIXTime, ValueH)]
   -> UI ()
 addPointsToChart _ _ _ [] = return ()
-addPointsToChart chartId nodeId datasetIndices points =
+addPointsToChart chartId nodeId datasetIndices points = do
+  indices <- liftIO $ readTVarIO datasetIndices
+  liftIO $ traceIO $ "__CHEECK_222_indices: " <> show indices
   whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx -> do
     liftIO $ traceIO $ "points LEN: " <> show (length points)
     forM_ points $ \(ts, valueH) -> do
       liftIO $ traceIO $ "__CHECK___add_point: ts: " <> show ts <> ", val: " <> show valueH
       UI.runFunction $ UI.ffi Chart.addNewPointChartJS chartId (show ts) datasetIx (show valueH)
-      liftIO $ sleep 0.1
+      -- liftIO $ sleep 0.1

@@ -16,6 +16,7 @@ import           Data.Time.Clock (getCurrentTime)
 import           Graphics.UI.Threepenny.Core
 import           Data.Text (unpack)
 import           Text.Read (readMaybe)
+import           System.Time.Extra (sleep)
 
 import Debug.Trace
 
@@ -75,6 +76,7 @@ updateResourcesCharts
   -> DatasetsTimestamps
   -> UI ()
 updateResourcesCharts connectedNodes (ResHistory rHistory) datasetIndices datasetTimestamps = do
+  liftIO $ sleep 0.5
   connected <- liftIO $ readTVarIO connectedNodes
   forM_ connected $ \nodeId ->
     addPointsToAChart nodeId "CPU" "cpu-chart"

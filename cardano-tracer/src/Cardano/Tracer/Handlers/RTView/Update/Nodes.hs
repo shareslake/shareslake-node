@@ -7,7 +7,7 @@ module Cardano.Tracer.Handlers.RTView.Update.Nodes
   ) where
 
 import           Control.Concurrent.STM (atomically)
-import           Control.Concurrent.STM.TVar (readTVar)
+import           Control.Concurrent.STM.TVar
 import           Control.Monad (forM_, unless, when)
 import           Control.Monad.Extra (whenJust, whenJustM)
 import           Data.List.NonEmpty (NonEmpty)
@@ -91,7 +91,7 @@ addDatasetsForConnected window newlyConnected colors datasetIndices displayedEle
   unless (S.null newlyConnected) $
     findAndShow window "main-charts-container"
   forM_ newlyConnected $ \nodeId ->
-    addNodeDatasets nodeId colors datasetIndices displayedElements
+    addNodeDatasetsToCharts nodeId colors datasetIndices displayedElements
 
 deleteColumnsForDisconnected
   :: UI.Window
