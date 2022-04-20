@@ -30,8 +30,6 @@ import           Control.Monad (forM_)
 import           Control.Monad.Extra (whenJustM)
 import           Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
-import           Data.Time.Format (defaultTimeLocale, formatTime)
-import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
 
 import           Cardano.Tracer.Types (NodeId (..))
@@ -39,7 +37,6 @@ import           Cardano.Tracer.Types (NodeId (..))
 import           Cardano.Tracer.Handlers.RTView.State.Displayed
 import           Cardano.Tracer.Handlers.RTView.State.Historical
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Charts as Chart
-import           Cardano.Tracer.Handlers.RTView.Update.Utils
 
 type Color = String
 type Colors = TBQueue Color
@@ -100,10 +97,10 @@ addNodeDatasetsToCharts
   -> UI ()
 addNodeDatasetsToCharts nodeId@(NodeId anId) colors datasetIndices displayedElements =
   forM_ chartsIds $ \chartId -> do
-    (newIx :: Int) <- UI.callFunction $ UI.ffi Chart.getDatasetsLengthChartJS chartId
+    (newIx :: Int) <- Chart.getDatasetsLengthChartJS chartId
     nodeName <- liftIO $ getDisplayedValue displayedElements nodeId (anId <> "__node-name")
     newColor <- getNewColor colors
-    UI.runFunction $ UI.ffi Chart.addDatasetChartJS chartId (maybe anId id nodeName) newColor
+    Chart.addDatasetChartJS chartId (maybe anId id nodeName) newColor
     saveDatasetIx datasetIndices nodeId newIx
  where
   chartsIds :: [String]
@@ -162,6 +159,4 @@ addPointsToChart
 addPointsToChart _ _ _ [] = return ()
 addPointsToChart chartId nodeId datasetIndices points =
   whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx ->
-    forM_ points $ \(ts, valueH) -> do
-      let (tsFormatted :: String) = formatTime defaultTimeLocale "%T" $ s2utc ts
-      UI.runFunction $ UI.ffi Chart.addNewPointChartJS2 chartId datasetIx tsFormatted (show valueH)
+    Chart.addPointsChartJS chartId datasetIx points

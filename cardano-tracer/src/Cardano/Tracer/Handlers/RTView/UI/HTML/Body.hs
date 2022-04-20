@@ -117,9 +117,9 @@ mkPageBody window networkConfig = do
           ]
       ]
 
-  UI.runFunction $ UI.ffi Chart.prepareChartsJS
+  Chart.prepareChartsJS
 
-  UI.runFunction $ UI.ffi Chart.cpuUsageChartJS2 ("cpu-chart" :: String)
+  Chart.newTimeChartJS "cpu-chart"
 
   return body
 
