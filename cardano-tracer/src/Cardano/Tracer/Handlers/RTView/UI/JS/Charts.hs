@@ -1,5 +1,4 @@
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 
 module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
   ( prepareChartsJS
@@ -99,7 +98,6 @@ const newDataset = {
 };
 window.charts.get(%1).data.datasets.push(newDataset);
 window.charts.get(%1).update({duration: 0});
-window.charts.get(%1).resize();
 |]
 
 getDatasetsLengthChartJS :: String -> UI Int
@@ -114,7 +112,6 @@ addPointsChartJS
 addPointsChartJS chartId datasetIx points = do
   UI.runFunction $ UI.ffi pushToDataset
   UI.runFunction $ UI.ffi "window.charts.get(%1).update({duration: 0});" chartId
-  UI.runFunction $ UI.ffi "window.charts.get(%1).resize();" chartId
  where
   pushToDataset =
     "window.charts.get('"
