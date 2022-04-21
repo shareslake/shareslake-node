@@ -69,7 +69,16 @@ var chart = new Chart(ctx, {
           display: true,
           text: %3
         }
-      },
+      }
+    }
+  }
+});
+window.charts.set(%1, chart);
+|]
+
+
+{-
+
       xAxes: [{
         type: 'time',
         time: {
@@ -79,12 +88,8 @@ var chart = new Chart(ctx, {
           unit: 'minute'
         }
       }]
-    }
-  }
-});
-window.charts.set(%1, chart);
-|]
 
+-}
 
 {-
           displayFormats: {
