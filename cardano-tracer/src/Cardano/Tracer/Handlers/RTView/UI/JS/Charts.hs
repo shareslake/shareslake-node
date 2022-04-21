@@ -11,7 +11,6 @@ module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
 import           Data.List (intercalate)
 import           Data.String.QQ
 import           Data.Text (Text)
-import           Data.Time.Format (defaultTimeLocale, formatTime)
 import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
 
@@ -59,9 +58,19 @@ var chart = new Chart(ctx, {
     },
     scales: {
       x: {
+        type: 'time',
         title: {
           display: true,
           text: 'Time in UTC'
+        },
+        time: {
+          displayFormats: {
+            millisecond: 'MMM D YYYY HH:mm:ss.SSS',
+            second:      'MMM D YYYY HH:mm:ss',
+            minute:      'MMM D YYYY HH:mm',
+            hour:        'MMM D YYYY hh a',
+          },
+          unit: 'minute'
         }
       },
       y: {
@@ -75,39 +84,6 @@ var chart = new Chart(ctx, {
 });
 window.charts.set(%1, chart);
 |]
-
-
-{-
-
-      xAxes: [{
-        type: 'time',
-        time: {
-          displayFormats: {
-            minute: 'HH:mm'
-          },
-          unit: 'minute'
-        }
-      }]
-
--}
-
-{-
-          displayFormats: {
-            'millisecond': 'MM DD YYYY',
-            'second': 'MM DD YYYY',
-            'minute': 'MM DD YYYY',
-            'hour': 'MM DD YYYY',
-            'day': 'MM DD YYYY',
-            'week': 'MM DD YYYY',
-            'month': 'MM DD YYYY',
-            'quarter': 'MM DD YYYY',
-            'year': 'MM DD YYYY'
-          }
--}
-
-{-
-
--}
 
 addDatasetChartJS
   :: String
@@ -153,5 +129,4 @@ addPointsChartJS chartId datasetIx points = do
     <> ");"
   pointsList = intercalate ", " $ map mkPointObject points
   mkPointObject (ts, valueH) =
-    let (tsFormatted) = formatTime defaultTimeLocale "%T" $ s2utc ts
-    in "{x: '" <> tsFormatted <> "', y: " <> show valueH <> "}"
+    "{x: '" <> show (s2utc ts) <> "', y: " <> show valueH <> "}"

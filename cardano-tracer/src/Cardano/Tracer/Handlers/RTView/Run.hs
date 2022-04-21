@@ -116,6 +116,7 @@ mkMainPage connectedNodes displayedElements savedTO
     , UI.mkElement "style" # set UI.html bulmaPageloaderCSS
     , UI.mkElement "style" # set UI.html ownCSS
     , UI.mkElement "script" # set UI.html chartJS
+    , UI.mkElement "script" # set UI.html chartJSMoment
     , UI.mkElement "script" # set UI.html chartJSAdapter
     ]
 
