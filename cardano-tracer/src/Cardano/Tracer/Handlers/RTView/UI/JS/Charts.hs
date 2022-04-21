@@ -22,9 +22,13 @@ prepareChartsJS :: UI ()
 prepareChartsJS =
   UI.runFunction $ UI.ffi "window.charts = new Map();"
 
-newTimeChartJS :: String -> UI ()
-newTimeChartJS chartId =
-  UI.runFunction $ UI.ffi newTimeChartJS' chartId
+newTimeChartJS
+  :: String
+  -> String
+  -> String
+  -> UI ()
+newTimeChartJS chartId chartName yValuesLabel =
+  UI.runFunction $ UI.ffi newTimeChartJS' chartId chartName yValuesLabel
 
 newTimeChartJS' :: String
 newTimeChartJS' = [s|
@@ -43,10 +47,46 @@ var chart = new Chart(ctx, {
       }
     },
     responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        align: 'start',
+        font: {
+          size: 18
+        },
+        text: %2
+      }
+    },
     scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Time in UTC'
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: %3
+        }
+      },
       xAxes: [{
         type: 'time',
         time: {
+          displayFormats: {
+            minute: 'HH:mm'
+          },
+          unit: 'minute'
+        }
+      }]
+    }
+  }
+});
+window.charts.set(%1, chart);
+|]
+
+
+{-
           displayFormats: {
             'millisecond': 'MM DD YYYY',
             'second': 'MM DD YYYY',
@@ -58,25 +98,10 @@ var chart = new Chart(ctx, {
             'quarter': 'MM DD YYYY',
             'year': 'MM DD YYYY'
           }
-        }
-      }]
-    }
-  }
-});
-window.charts.set(%1, chart);
-|]
+-}
 
 {-
-  , "      yAxes: [{"
-  , "        display: true,"
-  , "        scaleLabel: {"
-  , "          display: true,"
-  , "          labelString: 'KB/s'"
-  , "        },"
-  , "        ticks: {"
-  , "          min: 0"
-  , "        }"
-  , "      }]"
+
 -}
 
 addDatasetChartJS

@@ -105,10 +105,7 @@ mkPageBody window networkConfig = do
                # hideIt #+
           [ UI.div #. "columns" #+
               [ UI.div #. "column" #+
-                  [ UI.p #. "rt-view-cpu-chart-title" #+
-                      [ string "CPU Usage"
-                      ]
-                  , UI.canvas ## "cpu-chart" #. "rt-view-cpu-chart-area" #+ []
+                  [ UI.canvas ## "cpu-chart" #. "rt-view-cpu-chart-area" #+ []
                   ]
               , UI.div #. "column" #+
                   [
@@ -119,7 +116,7 @@ mkPageBody window networkConfig = do
 
   Chart.prepareChartsJS
 
-  Chart.newTimeChartJS "cpu-chart"
+  Chart.newTimeChartJS "cpu-chart" "CPU Usage" "Percent"
 
   return body
 

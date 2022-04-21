@@ -28,10 +28,11 @@ chartJS = [s|
 chartJSAdapter :: String
 chartJSAdapter = [s|
 /*!
- * chartjs-adapter-luxon v1.1.0
- * https://www.chartjs.org
- * (c) 2021 chartjs-adapter-luxon Contributors
- * Released under the MIT license
- */
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(require("chart.js"),require("luxon")):"function"==typeof define&&define.amd?define(["chart.js","luxon"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).Chart,e.luxon)}(this,(function(e,t){"use strict";const n={datetime:t.DateTime.DATETIME_MED_WITH_SECONDS,millisecond:"h:mm:ss.SSS a",second:t.DateTime.TIME_WITH_SECONDS,minute:t.DateTime.TIME_SIMPLE,hour:{hour:"numeric"},day:{day:"numeric",month:"short"},week:"DD",month:{month:"short",year:"numeric"},quarter:"'Q'q - yyyy",year:{year:"numeric"}};e._adapters._date.override({_id:"luxon",_create:function(e){return t.DateTime.fromMillis(e,this.options)},formats:function(){return n},parse:function(e,n){const r=this.options;if(null==e)return null;const i=typeof e;return"number"===i?e=this._create(e):"string"===i?e="string"==typeof n?t.DateTime.fromFormat(e,n,r):t.DateTime.fromISO(e,r):e instanceof Date?e=t.DateTime.fromJSDate(e,r):"object"!==i||e instanceof t.DateTime||(e=t.DateTime.fromObject(e)),e.isValid?e.valueOf():null},format:function(e,t){const n=this._create(e);return"string"==typeof t?n.toFormat(t,this.options):n.toLocaleString(t)},add:function(e,t,n){const r={};return r[n]=t,this._create(e).plus(r).valueOf()},diff:function(e,t,n){return this._create(e).diff(this._create(t)).as(n).valueOf()},startOf:function(e,t,n){if("isoWeek"===t){n=Math.trunc(Math.min(Math.max(0,n),6));const t=this._create(e);return t.minus({days:(t.weekday-n+7)%7}).startOf("day").valueOf()}return t?this._create(e).startOf(t).valueOf():e},endOf:function(e,t){return this._create(e).endOf(t).valueOf()}})}));
+  * chartjs-adapter-moment v1.0.0
+  * https://www.chartjs.org
+  * (c) 2021 chartjs-adapter-moment Contributors
+  * Released under the MIT license
+  */
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(require("moment"),require("chart.js")):"function"==typeof define&&define.amd?define(["moment","chart.js"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).moment,e.Chart)}(this,(function(e,t){"use strict";function n(e){return e&&"object"==typeof e&&"default"in e?e:{default:e}}var f=n(e);const a={datetime:"MMM D, YYYY, h:mm:ss a",millisecond:"h:mm:ss.SSS a",second:"h:mm:ss a",minute:"h:mm a",hour:"hA",day:"MMM D",week:"ll",month:"MMM YYYY",quarter:"[Q]Q - YYYY",year:"YYYY"};t._adapters._date.override("function"==typeof f.default?{_id:"moment",formats:function(){return a},parse:function(e,t){return"string"==typeof e&&"string"==typeof t?e=f.default(e,t):e instanceof f.default||(e=f.default(e)),e.isValid()?e.valueOf():null},format:function(e,t){return f.default(e).format(t)},add:function(e,t,n){return f.default(e).add(t,n).valueOf()},diff:function(e,t,n){return f.default(e).diff(f.default(t),n)},startOf:function(e,t,n){return e=f.default(e),"isoWeek"===t?(n=Math.trunc(Math.min(Math.max(0,n),6)),e.isoWeekday(n).startOf("day").valueOf()):e.startOf(t).valueOf()},endOf:function(e,t){return f.default(e).endOf(t).valueOf()}}:{})}));
+//# sourceMappingURL=chartjs-adapter-moment.min.js.map
 |]
