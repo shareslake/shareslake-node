@@ -15,6 +15,7 @@ import qualified Data.Map.Strict as M
 import           Data.Time.Clock (getCurrentTime)
 import           Graphics.UI.Threepenny.Core
 import           Data.Text (unpack)
+import           Data.Word (Word64)
 import           Text.Read (readMaybe)
 
 import           Cardano.Tracer.Handlers.Metrics.Utils
@@ -37,17 +38,17 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
     forM_ metrics $ \(metricName, metricValue) -> do
       let valueS = unpack metricValue
       case metricName of
-        "stat.cputicks" -> updateCPUTicks nodeId valueS now
-        "mem.resident" -> return () -- updateMemoryBytes
+        "stat.cputicks"   -> updateCPUUsage nodeId valueS now
+        "mem.resident"    -> updateRSSMemory nodeId valueS now
         "rts.gcLiveBytes" -> return () -- updateRTSBytesUsed
-        "rts.gcMajorNum" -> return () -- updateGcMajorNum
-        "rts.gcMinorNum" -> return () -- updateGcMinorNum
-        "rts.gcticks" -> return () -- updateGCTicks
-        "rts.mutticks" -> return () -- updateMutTicks
+        "rts.gcMajorNum"  -> return () -- updateGcMajorNum
+        "rts.gcMinorNum"  -> return () -- updateGcMinorNum
+        "rts.gcticks"     -> return () -- updateGCTicks
+        "rts.mutticks"    -> return () -- updateMutTicks
         -- "rts.stat.threads" TODO
         _ -> return ()
  where
-  updateCPUTicks nodeId valueS now =
+  updateCPUUsage nodeId valueS now =
     whenJust (readMaybe valueS) $ \(cpuTicks :: Integer) -> do
       lastOnes <- readTVarIO lastResources
       case M.lookup nodeId lastOnes of
@@ -66,6 +67,11 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
                     , cpuLastNS = tns
                     }
 
+  updateRSSMemory nodeId valueS now =
+    whenJust (readMaybe valueS) $ \(bytes :: Word64) -> do
+      let memoryInMB = fromIntegral bytes / 1024 / 1024 :: Double
+      addHistoricalData rHistory nodeId now "Memory" $ ValueD memoryInMB
+
 updateResourcesCharts
   :: ConnectedNodes
   -> ResourcesHistory
@@ -74,8 +80,9 @@ updateResourcesCharts
   -> UI ()
 updateResourcesCharts connectedNodes (ResHistory rHistory) datasetIndices datasetTimestamps = do
   connected <- liftIO $ readTVarIO connectedNodes
-  forM_ connected $ \nodeId ->
-    addPointsToAChart nodeId "CPU" "cpu-chart"
+  forM_ connected $ \nodeId -> do
+    addPointsToAChart nodeId "CPU"    "cpu-chart"
+    addPointsToAChart nodeId "Memory" "memory-chart"
  where
   addPointsToAChart nodeId dataName chartId = do
     history <- liftIO $ getHistoricalData rHistory nodeId dataName

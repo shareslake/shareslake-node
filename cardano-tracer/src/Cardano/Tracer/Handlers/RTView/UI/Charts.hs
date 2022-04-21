@@ -106,6 +106,7 @@ addNodeDatasetsToCharts nodeId@(NodeId anId) colors datasetIndices displayedElem
   chartsIds :: [String]
   chartsIds =
     [ "cpu-chart"
+    , "memory-chart"
     ]
 
 -- | When we add points to chart, we have to remember the timestamp of the latest point,

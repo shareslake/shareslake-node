@@ -21,7 +21,8 @@ mkPageBody
   -> Network
   -> UI Element
 mkPageBody window networkConfig = do
-  cpuChart <- mkChart "cpu-chart"
+  cpuChart    <- mkChart "cpu-chart"
+  memoryChart <- mkChart "memory-chart"
 
   body <-
     UI.getBody window #+
@@ -110,7 +111,7 @@ mkPageBody window networkConfig = do
                   [ element cpuChart
                   ]
               , UI.div #. "column" #+
-                  [
+                  [ element memoryChart
                   ]
               ]
           ]
@@ -118,7 +119,8 @@ mkPageBody window networkConfig = do
 
   Chart.prepareChartsJS
 
-  Chart.newTimeChartJS "cpu-chart" "CPU Usage" "Percent"
+  Chart.newTimeChartJS "cpu-chart"    "CPU Usage"    "Percent"
+  Chart.newTimeChartJS "memory-chart" "Memory Usage" "MB"
 
   return body
 
