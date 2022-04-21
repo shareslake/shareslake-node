@@ -9,7 +9,7 @@ module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
   , newTimeChartJS
   ) where
 
-import           Control.Monad (forM_)
+import           Data.List (intercalate)
 import           Data.String.QQ
 import           Data.Text (Text)
 import           Data.Time.Format (defaultTimeLocale, formatTime)
@@ -24,7 +24,7 @@ prepareChartsJS =
   UI.runFunction $ UI.ffi "window.charts = new Map();"
 
 newTimeChartJS :: String -> UI ()
-newTimeChartJS chartId = 
+newTimeChartJS chartId =
   UI.runFunction $ UI.ffi newTimeChartJS' chartId
 
 newTimeChartJS' :: String
@@ -36,6 +36,13 @@ var chart = new Chart(ctx, {
     datasets: []
   },
   options: {
+    animation: false,
+    showLine: true,
+    elements: {
+      point: {
+        radius: 2
+      }
+    },
     responsive: true,
     scales: {
       xAxes: [{
@@ -97,7 +104,7 @@ window.charts.get(%1).resize();
 
 getDatasetsLengthChartJS :: String -> UI Int
 getDatasetsLengthChartJS chartId =
-  UI.callFunction $ UI.ffi "window.charts.get(%1).data.datasets.length;" chartId  
+  UI.callFunction $ UI.ffi "window.charts.get(%1).data.datasets.length;" chartId
 
 addPointsChartJS
   :: String
@@ -105,16 +112,19 @@ addPointsChartJS
   -> [(POSIXTime, ValueH)]
   -> UI ()
 addPointsChartJS chartId datasetIx points = do
-  forM_ points $ \(ts, valueH) -> do
-    let (tsFormatted :: String) = formatTime defaultTimeLocale "%F %T" $ s2utc ts
-    UI.runFunction $ UI.ffi addPointsChartJS' chartId datasetIx tsFormatted (show valueH)
-
-addPointsChartJS' :: String
-addPointsChartJS' = [s|
-window.charts.get(%1).data.datasets[%2].data.push({x: %3, y: %4});
-window.charts.get(%1).update({duration: 0});
-window.charts.get(%1).resize();
-|]
-
--- resizeChartJS :: String
--- resizeChartJS = "window.charts.get(%1).resize();"
+  UI.runFunction $ UI.ffi pushToDataset
+  UI.runFunction $ UI.ffi "window.charts.get(%1).update({duration: 0});" chartId
+  UI.runFunction $ UI.ffi "window.charts.get(%1).resize();" chartId
+ where
+  pushToDataset =
+    "window.charts.get('"
+    <> chartId
+    <> "').data.datasets["
+    <> show datasetIx
+    <> "].data.push("
+    <> pointsList
+    <> ");"
+  pointsList = intercalate ", " $ map mkPointObject points
+  mkPointObject (ts, valueH) =
+    let (tsFormatted) = formatTime defaultTimeLocale "%T" $ s2utc ts
+    in "{x: '" <> tsFormatted <> "', y: " <> show valueH <> "}"
