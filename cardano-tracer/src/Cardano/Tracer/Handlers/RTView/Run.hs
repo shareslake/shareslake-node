@@ -31,6 +31,7 @@ import           Cardano.Tracer.Handlers.RTView.UI.HTML.Body
 import           Cardano.Tracer.Handlers.RTView.UI.JS.ChartJS
 import           Cardano.Tracer.Handlers.RTView.UI.Img.Icons
 import           Cardano.Tracer.Handlers.RTView.UI.Charts
+import           Cardano.Tracer.Handlers.RTView.UI.Theme
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
 import           Cardano.Tracer.Handlers.RTView.Update.UI
 import           Cardano.Tracer.Handlers.RTView.Update.Historical
@@ -133,6 +134,8 @@ mkMainPage connectedNodes displayedElements savedTO
     findAndSet (set UI.class_ "pageloader") window "preloader"
     UI.stop preloaderTimer
   UI.start preloaderTimer
+
+  restoreTheme window
 
   whenM (liftIO $ readTVarIO reloadFlag) $ do
     updateUIAfterReload

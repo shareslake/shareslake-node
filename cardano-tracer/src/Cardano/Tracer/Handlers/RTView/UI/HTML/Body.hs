@@ -140,9 +140,9 @@ topNavigation window = do
   --registerClicksForModal notifications notifyIcon closeNotifications
 
   themeIcon <- image "has-tooltip-multiline has-tooltip-bottom rt-view-theme-icon" rtViewThemeToLightSVG
-                     # set dataState darkState
+                     ## "theme-icon"
                      # set dataTooltip "Switch to light theme"
-  on UI.click themeIcon . const $ switchTheme window themeIcon
+  on UI.click themeIcon . const $ switchTheme window
 
   UI.div ## "top-bar" #. "navbar rt-view-top-bar-dark" #+
     [ element info
