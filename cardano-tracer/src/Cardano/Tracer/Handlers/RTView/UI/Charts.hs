@@ -95,12 +95,12 @@ addNodeDatasetsToCharts
   -> DatasetsIndices
   -> DisplayedElements
   -> UI ()
-addNodeDatasetsToCharts nodeId@(NodeId anId) colors datasetIndices displayedElements =
+addNodeDatasetsToCharts nodeId@(NodeId anId) colors datasetIndices displayedElements = do
+  colorForNode <- getNewColor colors
   forM_ chartsIds $ \chartId -> do
     (newIx :: Int) <- Chart.getDatasetsLengthChartJS chartId
     nodeName <- liftIO $ getDisplayedValue displayedElements nodeId (anId <> "__node-name")
-    newColor <- getNewColor colors
-    Chart.addDatasetChartJS chartId (maybe anId id nodeName) newColor
+    Chart.addDatasetChartJS chartId (maybe anId id nodeName) colorForNode
     saveDatasetIx datasetIndices nodeId newIx
  where
   chartsIds :: [String]

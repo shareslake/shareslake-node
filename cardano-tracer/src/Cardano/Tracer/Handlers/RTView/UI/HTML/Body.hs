@@ -245,7 +245,7 @@ mkChart chartId = do
                   # set text "Hours"
       ]
   chart <-
-    UI.div #+
+    UI.div #. "rt-view-chart-container" #+
       [ UI.canvas ## chartId #. "rt-view-chart-area" #+ []
       , UI.div #. "field is-grouped mt-3" #+
           [ UI.div #. "select is-link is-small mr-4" #+

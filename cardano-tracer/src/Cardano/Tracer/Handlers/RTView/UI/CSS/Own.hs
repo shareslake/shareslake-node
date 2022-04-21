@@ -264,6 +264,16 @@ span[data-tooltip] {
   
 }
 
+.rt-view-chart-container {
+  background-color: #eeeeee;
+  padding-top: 10px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border: 1px solid #dddddd;
+  border-radius: 6px;
+}
+
 .rt-view-chart-area {
   width: 100% !important;
 }
