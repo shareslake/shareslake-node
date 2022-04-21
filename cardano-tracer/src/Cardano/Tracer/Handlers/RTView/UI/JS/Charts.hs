@@ -144,48 +144,41 @@ addPointsChartJS chartId datasetIx points = do
   mkPointObject (ts, valueH) =
     "{x: '" <> show (s2utc ts) <> "', y: " <> show valueH <> "}"
 
--- | ...
 setTimeFormatChartJS
   :: String
   -> ChartTimeFormat
   -> UI ()
-setTimeFormatChartJS chartId format = do
-  UI.runFunction $ UI.ffi setterSecond chartId
-  UI.runFunction $ UI.ffi setterMinute chartId
-  UI.runFunction $ UI.ffi setterHour   chartId
-  UI.runFunction $ UI.ffi "window.charts.get(%1).update({duration: 0});" chartId
+setTimeFormatChartJS chartId format =
+  UI.runFunction $ UI.ffi setTimeFormatChartJS' chartId formatSecond formatMinute formatHour
  where
-  setterSecond = "window.charts.get(%1).options.scales.x.time.displayFormats.second = '" <> formatSecond <> "';"
-  setterMinute = "window.charts.get(%1).options.scales.x.time.displayFormats.minute = '" <> formatMinute <> "';"
-  setterHour   = "window.charts.get(%1).options.scales.x.time.displayFormats.hour = '"   <> formatHour   <> "';"
-  formatSecond =
+  (formatSecond, formatMinute, formatHour) =
     case format of
-      TimeOnly    -> "HH:mm:ss"
-      TimeAndDate -> "MMM D YYYY HH:mm:ss"
-      DateOnly    -> "MMM D YYYY"
-  formatMinute =
-    case format of
-      TimeOnly    -> "HH:mm"
-      TimeAndDate -> "MMM D YYYY HH:mm"
-      DateOnly    -> "MMM D YYYY"
-  formatHour =
-    case format of
-      TimeOnly    -> "hh a"
-      TimeAndDate -> "MMM D YYYY hh a"
-      DateOnly    -> "MMM D YYYY"
+      TimeOnly    -> (timeS,                timeM,                timeH)
+      TimeAndDate -> (date <> " " <> timeS, date <> " " <> timeM, date <> " " <> timeH)
+      DateOnly    -> (date,                 date,                 date)
+  date  = "MMM D YYYY"
+  timeS = "HH:mm:ss"
+  timeM = "HH:mm"
+  timeH = "hh a"
 
--- | ...
+setTimeFormatChartJS' :: String
+setTimeFormatChartJS' = [s|
+window.charts.get(%1).options.scales.x.time.displayFormats.second = %2;
+window.charts.get(%1).options.scales.x.time.displayFormats.minute = %3;
+window.charts.get(%1).options.scales.x.time.displayFormats.hour = %4;
+window.charts.get(%1).update({duration: 0});
+|]
+
 setTimeUnitChartJS
   :: String
   -> ChartTimeUnit
   -> UI ()
-setTimeUnitChartJS chartId unit = do
-  UI.runFunction $ UI.ffi setter chartId
-  UI.runFunction $ UI.ffi "window.charts.get(%1).update({duration: 0});" chartId
- where
-  setter = "window.charts.get(%1).options.scales.x.time.unit = '" <> timeUnit <> "';"
-  timeUnit =
-    case unit of
-      Seconds -> "second"
-      Minutes -> "minute"
-      Hours   -> "hour"
+setTimeUnitChartJS chartId Seconds = UI.runFunction $ UI.ffi setTimeUnitChartJS' chartId "second"
+setTimeUnitChartJS chartId Minutes = UI.runFunction $ UI.ffi setTimeUnitChartJS' chartId "minute"
+setTimeUnitChartJS chartId Hours   = UI.runFunction $ UI.ffi setTimeUnitChartJS' chartId "hour"
+
+setTimeUnitChartJS' :: String
+setTimeUnitChartJS' = [s|
+window.charts.get(%1).options.scales.x.time.unit = %2;
+window.charts.get(%1).update({duration: 0});
+|]
