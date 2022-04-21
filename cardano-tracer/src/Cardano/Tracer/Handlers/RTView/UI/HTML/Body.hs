@@ -21,6 +21,8 @@ mkPageBody
   -> Network
   -> UI Element
 mkPageBody window networkConfig = do
+  cpuChart <- mkChart "cpu-chart"
+
   body <-
     UI.getBody window #+
       [ UI.div ## "preloader" #. "pageloader is-active" #+
@@ -105,7 +107,7 @@ mkPageBody window networkConfig = do
                # hideIt #+
           [ UI.div #. "columns" #+
               [ UI.div #. "column" #+
-                  [ UI.canvas ## "cpu-chart" #. "rt-view-cpu-chart-area" #+ []
+                  [ element cpuChart
                   ]
               , UI.div #. "column" #+
                   [
@@ -217,3 +219,54 @@ noNodesInfo networkConfig = do
           <> ": make sure <code>TraceOptionForwarder.mode</code>"
           <> " is <code>Responder</code>, also check <code>TraceOptionForwarder.address</code> path."
         )
+
+mkChart
+  :: String
+  -> UI Element
+mkChart chartId = do
+  selectTimeFormat <-
+    UI.select ## (chartId <> "-time-format") #+
+      [ UI.option # set value "t"
+                  # set text "Time only"
+      , UI.option # set value "td"
+                  # set text "Time and date"
+      , UI.option # set value "d"
+                  # set text "Date only"
+      ]
+  selectTimeUnit <-
+    UI.select ## (chartId <> "-time-unit") #+
+      [ UI.option # set value "ss"
+                  # set text "Seconds"
+      , UI.option # set value "mm"
+                  # set text "Minutes"
+      , UI.option # set value "hh"
+                  # set text "Hours"
+      ]
+  chart <-
+    UI.div #+
+      [ UI.canvas ## chartId #. "rt-view-chart-area" #+ []
+      , UI.div #. "field is-grouped mt-3" #+
+          [ UI.div #. "select is-link is-small mr-4" #+
+              [ element selectTimeFormat
+              ]
+          , UI.div #. "select is-link is-small" #+
+              [ element selectTimeUnit
+              ]
+          ]
+      ]
+
+  on UI.selectionChange selectTimeFormat $ \optionIx ->
+    case optionIx of
+      Just 0 -> Chart.setTimeFormatChartJS chartId Chart.TimeOnly
+      Just 1 -> Chart.setTimeFormatChartJS chartId Chart.TimeAndDate
+      Just 2 -> Chart.setTimeFormatChartJS chartId Chart.DateOnly
+      _ -> return ()
+
+  on UI.selectionChange selectTimeUnit $ \optionIx ->
+    case optionIx of
+      Just 0 -> Chart.setTimeUnitChartJS chartId Chart.Seconds
+      Just 1 -> Chart.setTimeUnitChartJS chartId Chart.Minutes
+      Just 2 -> Chart.setTimeUnitChartJS chartId Chart.Hours
+      _ -> return ()
+
+  return chart

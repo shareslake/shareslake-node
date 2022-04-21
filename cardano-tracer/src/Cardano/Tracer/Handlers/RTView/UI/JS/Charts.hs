@@ -1,11 +1,15 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
-  ( prepareChartsJS
+  ( ChartTimeFormat (..)
+  , ChartTimeUnit (..)
+  , prepareChartsJS
   , addDatasetChartJS
   , addPointsChartJS
   , getDatasetsLengthChartJS
   , newTimeChartJS
+  , setTimeFormatChartJS
+  , setTimeUnitChartJS
   ) where
 
 import           Data.List (intercalate)
@@ -16,6 +20,16 @@ import           Graphics.UI.Threepenny.Core
 
 import           Cardano.Tracer.Handlers.RTView.State.Historical
 import           Cardano.Tracer.Handlers.RTView.Update.Utils
+
+data ChartTimeFormat
+  = TimeOnly
+  | TimeAndDate
+  | DateOnly
+
+data ChartTimeUnit
+  = Seconds
+  | Minutes
+  | Hours
 
 prepareChartsJS :: UI ()
 prepareChartsJS =
@@ -65,10 +79,9 @@ var chart = new Chart(ctx, {
         },
         time: {
           displayFormats: {
-            millisecond: 'MMM D YYYY HH:mm:ss.SSS',
-            second:      'MMM D YYYY HH:mm:ss',
-            minute:      'MMM D YYYY HH:mm',
-            hour:        'MMM D YYYY hh a',
+            second: 'MMM D YYYY HH:mm:ss',
+            minute: 'MMM D YYYY HH:mm',
+            hour:   'MMM D YYYY hh a',
           },
           unit: 'minute'
         }
@@ -130,3 +143,49 @@ addPointsChartJS chartId datasetIx points = do
   pointsList = intercalate ", " $ map mkPointObject points
   mkPointObject (ts, valueH) =
     "{x: '" <> show (s2utc ts) <> "', y: " <> show valueH <> "}"
+
+-- | ...
+setTimeFormatChartJS
+  :: String
+  -> ChartTimeFormat
+  -> UI ()
+setTimeFormatChartJS chartId format = do
+  UI.runFunction $ UI.ffi setterSecond chartId
+  UI.runFunction $ UI.ffi setterMinute chartId
+  UI.runFunction $ UI.ffi setterHour   chartId
+  UI.runFunction $ UI.ffi "window.charts.get(%1).update({duration: 0});" chartId
+ where
+  setterSecond = "window.charts.get(%1).options.scales.x.time.displayFormats.second = '" <> formatSecond <> "';"
+  setterMinute = "window.charts.get(%1).options.scales.x.time.displayFormats.minute = '" <> formatMinute <> "';"
+  setterHour   = "window.charts.get(%1).options.scales.x.time.displayFormats.hour = '"   <> formatHour   <> "';"
+  formatSecond =
+    case format of
+      TimeOnly    -> "HH:mm:ss"
+      TimeAndDate -> "MMM D YYYY HH:mm:ss"
+      DateOnly    -> "MMM D YYYY"
+  formatMinute =
+    case format of
+      TimeOnly    -> "HH:mm"
+      TimeAndDate -> "MMM D YYYY HH:mm"
+      DateOnly    -> "MMM D YYYY"
+  formatHour =
+    case format of
+      TimeOnly    -> "hh a"
+      TimeAndDate -> "MMM D YYYY hh a"
+      DateOnly    -> "MMM D YYYY"
+
+-- | ...
+setTimeUnitChartJS
+  :: String
+  -> ChartTimeUnit
+  -> UI ()
+setTimeUnitChartJS chartId unit = do
+  UI.runFunction $ UI.ffi setter chartId
+  UI.runFunction $ UI.ffi "window.charts.get(%1).update({duration: 0});" chartId
+ where
+  setter = "window.charts.get(%1).options.scales.x.time.unit = '" <> timeUnit <> "';"
+  timeUnit =
+    case unit of
+      Seconds -> "second"
+      Minutes -> "minute"
+      Hours   -> "hour"

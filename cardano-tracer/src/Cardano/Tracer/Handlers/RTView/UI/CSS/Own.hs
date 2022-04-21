@@ -264,7 +264,7 @@ span[data-tooltip] {
   
 }
 
-.rt-view-cpu-chart-area {
+.rt-view-chart-area {
   width: 100% !important;
 }
 |]
