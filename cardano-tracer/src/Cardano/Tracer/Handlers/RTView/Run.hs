@@ -137,6 +137,7 @@ mkMainPage connectedNodes displayedElements savedTO
   UI.start preloaderTimer
 
   restoreTheme window
+  forceSetDefaultChartsSettings
 
   whenM (liftIO $ readTVarIO reloadFlag) $ do
     updateUIAfterReload

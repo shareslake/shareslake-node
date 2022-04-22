@@ -2,6 +2,7 @@ module Cardano.Tracer.Handlers.RTView.UI.JS.Utils
   ( copyTextToClipboard
   , downloadCSVFile
   , goToTab
+  , selectOption
   ) where
 
 copyTextToClipboard :: String
@@ -31,3 +32,6 @@ goToTab = concat
   [ "var element = document.getElementById(%1);"
   , "element.click();"
   ]
+
+selectOption :: String
+selectOption = "document.getElementById(%1).selectedIndex = %2;"

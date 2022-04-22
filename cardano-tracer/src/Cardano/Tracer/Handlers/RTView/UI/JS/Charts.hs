@@ -99,7 +99,7 @@ var chart = new Chart(ctx, {
             minute: 'MMM D YYYY HH:mm',
             hour:   'MMM D YYYY hh a',
           },
-          unit: 'minute'
+          unit: 'second'
         }
       },
       y: {

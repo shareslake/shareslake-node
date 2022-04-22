@@ -15,6 +15,7 @@ module Cardano.Tracer.Handlers.RTView.UI.Charts
   , addPointsToChart
   , getLatestDisplayedTS
   , saveLatestDisplayedTS
+  , forceSetDefaultChartsSettings
   ) where
 
 -- | The module 'Cardano.Tracer.Handlers.RTView.UI.JS.Charts' contains the tools
@@ -31,12 +32,14 @@ import           Control.Monad.Extra (whenJustM)
 import           Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
 import           Graphics.UI.Threepenny.Core
+import qualified Graphics.UI.Threepenny as UI
 
 import           Cardano.Tracer.Types (NodeId (..))
 
 import           Cardano.Tracer.Handlers.RTView.State.Displayed
 import           Cardano.Tracer.Handlers.RTView.State.Historical
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Charts as Chart
+import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Utils as JS
 
 type Color = String
 type Colors = TBQueue Color
@@ -102,12 +105,12 @@ addNodeDatasetsToCharts nodeId@(NodeId anId) colors datasetIndices displayedElem
     nodeName <- liftIO $ getDisplayedValue displayedElements nodeId (anId <> "__node-name")
     Chart.addDatasetChartJS chartId (maybe anId id nodeName) colorForNode
     saveDatasetIx datasetIndices nodeId newIx
- where
-  chartsIds :: [String]
-  chartsIds =
-    [ "cpu-chart"
-    , "memory-chart"
-    ]
+
+chartsIds :: [String]
+chartsIds =
+  [ "cpu-chart"
+  , "memory-chart"
+  ]
 
 -- | When we add points to chart, we have to remember the timestamp of the latest point,
 --   for each chart, to avoid duplicated rendering of the same points.
@@ -150,7 +153,6 @@ getLatestDisplayedTS tss nodeId dataName = liftIO $
     Nothing         -> return Nothing
     Just tssForNode -> return $ M.lookup dataName tssForNode
 
--- | ...
 addPointsToChart
   :: String
   -> NodeId
@@ -161,3 +163,15 @@ addPointsToChart _ _ _ [] = return ()
 addPointsToChart chartId nodeId datasetIndices points =
   whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx ->
     Chart.addPointsChartJS chartId datasetIx points
+
+forceSetDefaultChartsSettings :: UI ()
+forceSetDefaultChartsSettings =
+  forM_ chartsIds $ \chartId -> do
+    chooseFirstOption $ chartId <> "-time-format"
+    Chart.setTimeFormatChartJS chartId Chart.TimeOnly
+
+    chooseFirstOption $ chartId <> "-time-unit"
+    Chart.setTimeUnitChartJS chartId Chart.Seconds
+ where
+  chooseFirstOption selectId =
+    UI.runFunction $ UI.ffi JS.selectOption selectId (0 :: Int)
