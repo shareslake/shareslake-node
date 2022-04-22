@@ -49,74 +49,96 @@ setThemeAndSave window themeToSet = do
       _ -> return ()
 
   changeTopNavigation toBeLight = do
-    findAndSet (set UI.class_ (if toBeLight
-                                 then "navbar rt-view-top-bar-light"
-                                 else "navbar rt-view-top-bar-dark")) window "top-bar"
-    findAndSet (set UI.html (if toBeLight
-                               then cardanoLogoDarkSVG
-                               else cardanoLogoLightSVG)) window "cardano-logo"
-    findAndSet (set UI.html (if toBeLight
-                               then rtViewInfoDarkSVG
-                               else rtViewInfoLightSVG)) window "info-icon"
-    findAndSet (set UI.html (if toBeLight
-                               then rtViewNotifyDarkSVG
-                               else rtViewNotifyLightSVG)) window "notify-icon"
-    findAndSet (set UI.html (if toBeLight
-                               then noNodesDarkSVG
-                               else noNodesLightSVG)) window "no-nodes-icon"
-    findAndSet (set style [("color", if toBeLight
-                                       then nameDark
-                                       else nameLight)]) window "name"
-    findAndSet (set style [("color", if toBeLight
-                                       then nameDark
-                                       else nameLight)]) window "no-nodes-message"
-    findAndSet (set style [ ("background-color", if toBeLight
-                                                   then backgroundLight
-                                                   else backgroundDark)
-                          , ("color", if toBeLight
-                                        then textDark
-                                        else textLight)
-                          ]) window "main-table" 
-    findByClassAndSet (set style [("color", if toBeLight
-                                              then textDark
-                                              else textLight)]) window "rt-view-node-column-cell"
-    findByClassAndSet (set style [("color", if toBeLight
-                                              then hrefDark
-                                              else hrefLight)]) window "rt-view-href"
-    findByClassAndSet (set UI.class_ (if toBeLight
-                                        then "tag is-info is-rounded mr-3 has-tooltip-multiline has-tooltip-top rt-view-logs-path"
-                                        else "tag is-info is-light is-rounded mr-3 has-tooltip-multiline has-tooltip-top rt-view-logs-path"))
+    findAndSet
+      (set UI.class_ (if toBeLight
+                        then "navbar rt-view-top-bar-light"
+                        else "navbar rt-view-top-bar-dark")) window "top-bar"
+    findAndSet
+      (set UI.html (if toBeLight
+                      then cardanoLogoDarkSVG
+                      else cardanoLogoLightSVG)) window "cardano-logo"
+    findAndSet
+      (set UI.html (if toBeLight
+                      then rtViewInfoDarkSVG
+                      else rtViewInfoLightSVG)) window "info-icon"
+    findAndSet
+      (set UI.html (if toBeLight
+                      then rtViewNotifyDarkSVG
+                      else rtViewNotifyLightSVG)) window "notify-icon"
+    findAndSet
+      (set UI.html (if toBeLight
+                      then noNodesDarkSVG
+                      else noNodesLightSVG)) window "no-nodes-icon"
+    findAndSet
+      (set style [("color", if toBeLight
+                              then nameDark
+                              else nameLight)]) window "name"
+    findAndSet
+      (set style [("color", if toBeLight
+                              then nameDark
+                              else nameLight)]) window "no-nodes-message"
+    findAndSet
+      (set style [ ("background-color", if toBeLight
+                                          then backgroundLight
+                                          else backgroundDark)
+                 , ("color", if toBeLight
+                               then textDark
+                               else textLight)
+                 ]) window "main-table" 
+    findByClassAndSet
+      (set style [("color", if toBeLight
+                              then textDark
+                              else textLight)]) window "rt-view-node-column-cell"
+    findByClassAndSet
+      (set style [("color", if toBeLight
+                              then hrefDark
+                              else hrefLight)]) window "rt-view-href"
+    findByClassAndSet
+      (set UI.class_ (if toBeLight
+                        then "tag is-info is-rounded mr-3 has-tooltip-multiline has-tooltip-top rt-view-logs-path"
+                        else "tag is-info is-light is-rounded mr-3 has-tooltip-multiline has-tooltip-top rt-view-logs-path"))
                       window "rt-view-logs-path"
-    findByClassAndSet (set UI.class_ (if toBeLight
-                                        then "tag is-warning is-rounded ml-3 has-tooltip-multiline has-tooltip-top rt-view-logs-format"
-                                        else "tag is-warning is-light is-rounded ml-3 has-tooltip-multiline has-tooltip-top rt-view-logs-format"))
+    findByClassAndSet
+      (set UI.class_ (if toBeLight
+                        then "tag is-warning is-rounded ml-3 has-tooltip-multiline has-tooltip-top rt-view-logs-format"
+                        else "tag is-warning is-light is-rounded ml-3 has-tooltip-multiline has-tooltip-top rt-view-logs-format"))
                       window "rt-view-logs-format"
-    findByClassAndSet (set UI.html (if toBeLight
-                                      then copyDarkSVG
-                                      else copyLightSVG)) window "rt-view-copy-icon"
-    -- About modal
-    findByClassAndSet (set style [ ("background-color", if toBeLight
-                                                          then backgroundLight
-                                                          else backgroundDark)
-                                 , ("color", if toBeLight
-                                              then textDark
-                                              else textLight)
-                                 ]
-                      ) window "rt-view-about-body"
-    findByClassAndSet (set style [ ("background-color", if toBeLight
-                                                          then greyLight
-                                                          else greyDark)
-                                 , ("color", if toBeLight
-                                              then textDark
-                                              else textLight)
-                                 , ("border-bottom", if toBeLight
-                                                       then borderLight
-                                                       else borderDark)
-                                 ]
-                      ) window "rt-view-about-head"
-    findByClassAndSet (set style [("color", if toBeLight
-                                              then textDark
-                                              else textLight)]) window "rt-view-about-title"
+    findByClassAndSet
+      (set UI.html (if toBeLight
+                      then copyDarkSVG
+                      else copyLightSVG)) window "rt-view-copy-icon"
+    findByClassAndSet
+      (set style [("border-bottom", if toBeLight
+                                      then borderLight
+                                      else borderDark)]) window "rt-view-table-description-td"
+    findByClassAndSet
+      (set style [("border-bottom", if toBeLight
+                                      then borderLight
+                                      else borderDark)]) window "rt-view-node-column-cell"
+    -- 'About' modal.
+    findByClassAndSet
+      (set style [ ("background-color", if toBeLight
+                                          then backgroundLight
+                                          else backgroundDark)
+                 , ("color", if toBeLight
+                               then textDark
+                               else textLight)
+                 ]) window "rt-view-about-body"
+    findByClassAndSet
+      (set style [ ("background-color", if toBeLight
+                                          then greyLight
+                                          else greyDark)
+                 , ("color", if toBeLight
+                               then textDark
+                               else textLight)
+                 , ("border-bottom", if toBeLight
+                                       then borderLight
+                                       else borderDark)
+                 ]) window "rt-view-about-head"
+    findByClassAndSet
+      (set style [("color", if toBeLight
+                              then textDark
+                              else textLight)]) window "rt-view-about-title"
 
 lightState, darkState :: String
 lightState = "light"

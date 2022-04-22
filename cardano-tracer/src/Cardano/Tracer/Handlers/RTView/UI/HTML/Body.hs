@@ -50,52 +50,62 @@ mkPageBody window networkConfig = do
                       ]
                   , UI.mkElement "tbody" #+
                       [ UI.tr ## "node-version-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" versionSVG
+                          [ UI.td #. "rt-view-table-description-td"
+                                  #+ [ image "rt-view-overview-icon" versionSVG
                                      , string "Version"
                                      ]
                           ]
                       , UI.tr ## "node-protocol-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" protocolSVG
+                          [ UI.td #. "rt-view-table-description-td"
+                                  #+ [ image "rt-view-overview-icon" protocolSVG
                                      , string "Protocol"
                                      ]
                           ]
                       , UI.tr ## "node-commit-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" commitSVG
+                          [ UI.td #. "rt-view-table-description-td"
+                                  #+ [ image "rt-view-overview-icon" commitSVG
                                      , string "Commit"
                                      ]
                           ]
                       , UI.tr ## "node-start-time-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" startSVG
+                          [ UI.td #. "rt-view-table-description-td"
+                                  #+ [ image "rt-view-overview-icon" startSVG
                                      , string "Node start"
                                      ]
                           ]
                       , UI.tr ## "node-system-start-time-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" systemStartSVG
+                          [ UI.td #. "rt-view-table-description-td"
+                                  #+ [ image "rt-view-overview-icon" systemStartSVG
                                      , string "System start"
                                      ]
                           ]
                       , UI.tr ## "node-uptime-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" uptimeSVG
+                          [ UI.td #. "rt-view-table-description-td"
+                                  #+ [ image "rt-view-overview-icon" uptimeSVG
                                      , string "Uptime"
                                      ]
                           ]
                       , UI.tr ## "node-logs-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" logsSVG
+                          [ UI.td #. "rt-view-table-description-td"
+                                  #+ [ image "rt-view-overview-icon" logsSVG
                                      , string "Logs"
                                      ]
                           ]
                       --, UI.tr ## "node-peers-row" #+
-                      --    [ UI.td #+ [ image "rt-view-overview-icon" peersSVG
+                      --    [ UI.td #. "rt-view-table-description-td"
+                      --            #+ [ image "rt-view-overview-icon" peersSVG
                       --               , string "Peers"
                       --               ]
                       --    ]
                       , UI.tr ## "node-chain-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" chainSVG
+                          [ UI.td #. "rt-view-table-description-td"
+                                  #+ [ image "rt-view-overview-icon" chainSVG
                                      , string "Chain"
                                      ]
                           ]
                       --, UI.tr ## "node-errors-row" #+
-                      --    [ UI.td #+ [ image "rt-view-overview-icon" errorsSVG
+                      --    [ UI.td #. "rt-view-table-description-td"
+                      --            #+ [ image "rt-view-overview-icon" errorsSVG
                       --               , string "Errors"
                       --               ]
                       --    ]

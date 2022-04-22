@@ -208,7 +208,6 @@ span[data-tooltip] {
 .rt-view-main-table td {
   padding-top: 25px;
   padding-bottom: 25px;
-  border-bottom: 1px solid #444;
 }
 
 .rt-view-main-table th {
@@ -224,6 +223,10 @@ span[data-tooltip] {
 
 .rt-view-main-table-description {
   min-width: 350px;
+}
+
+.rt-view-table-description-td {
+  border-bottom: 1px solid #444;
 }
 
 .rt-view-peers-table-container {
@@ -301,5 +304,5 @@ backgroundLight = "whitesmoke"
 backgroundDark  = "#131325"
 greyDark        = "#282841"
 greyLight       = "#efefef"
-borderDark      = "1px solid #555"
-borderLight     = "1px solid #dbdbdb"
+borderDark      = "1px solid #555 !important"
+borderLight     = "1px solid #cfcfcf !important"
