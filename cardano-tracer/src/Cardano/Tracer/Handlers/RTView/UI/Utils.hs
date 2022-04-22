@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE FlexibleContexts #-}
 
 module Cardano.Tracer.Handlers.RTView.UI.Utils
@@ -12,6 +13,7 @@ module Cardano.Tracer.Handlers.RTView.UI.Utils
   , findAndAdd
   , findAndHide
   , findAndShow
+  , findAndGetValue
   , image
   , showIt
   , showInline
@@ -68,6 +70,15 @@ findAndAdd
   -> UI ()
 findAndAdd els window elId =
   findAndDo window elId $ \el -> void $ element el #+ els
+
+findAndGetValue
+  :: UI.Window
+  -> Text
+  -> UI String
+findAndGetValue window elId =
+  UI.getElementById window (unpack elId) >>= \case
+    Nothing -> return ""
+    Just el -> get value el
 
 findByClassAndSet
   :: (UI Element -> UI Element)

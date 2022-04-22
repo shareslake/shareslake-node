@@ -13,6 +13,7 @@ import           Cardano.Tracer.Configuration
 import           Cardano.Tracer.Handlers.RTView.UI.Img.Icons
 import           Cardano.Tracer.Handlers.RTView.UI.HTML.About
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Charts as Chart
+import           Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Cardano.Tracer.Handlers.RTView.UI.Theme
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
 
@@ -21,8 +22,8 @@ mkPageBody
   -> Network
   -> UI Element
 mkPageBody window networkConfig = do
-  cpuChart    <- mkChart "cpu-chart"
-  memoryChart <- mkChart "memory-chart"
+  cpuChart    <- mkChart window "cpu-chart"
+  memoryChart <- mkChart window "memory-chart"
 
   body <-
     UI.getBody window #+
@@ -233,25 +234,26 @@ noNodesInfo networkConfig = do
         )
 
 mkChart
-  :: String
+  :: UI.Window
+  -> String
   -> UI Element
-mkChart chartId = do
+mkChart window chartId = do
   selectTimeFormat <-
     UI.select ## (chartId <> "-time-format") #+
-      [ UI.option # set value "t"
+      [ UI.option # set value "0"
                   # set text "Time only"
-      , UI.option # set value "td"
+      , UI.option # set value "1"
                   # set text "Time and date"
-      , UI.option # set value "d"
+      , UI.option # set value "2"
                   # set text "Date only"
       ]
   selectTimeUnit <-
     UI.select ## (chartId <> "-time-unit") #+
-      [ UI.option # set value "ss"
+      [ UI.option # set value "0"
                   # set text "Seconds"
-      , UI.option # set value "mm"
+      , UI.option # set value "1"
                   # set text "Minutes"
-      , UI.option # set value "hh"
+      , UI.option # set value "2"
                   # set text "Hours"
       ]
   resetZoom <- UI.button #. "button is-small is-info is-outlined"
@@ -270,19 +272,21 @@ mkChart chartId = do
           ]
       ]
 
-  on UI.selectionChange selectTimeFormat $ \optionIx ->
+  on UI.selectionChange selectTimeFormat $ \optionIx -> do
     case optionIx of
       Just 0 -> Chart.setTimeFormatChartJS chartId Chart.TimeOnly
       Just 1 -> Chart.setTimeFormatChartJS chartId Chart.TimeAndDate
       Just 2 -> Chart.setTimeFormatChartJS chartId Chart.DateOnly
       _ -> return ()
+    saveChartsSettings window
 
-  on UI.selectionChange selectTimeUnit $ \optionIx ->
+  on UI.selectionChange selectTimeUnit $ \optionIx -> do
     case optionIx of
       Just 0 -> Chart.setTimeUnitChartJS chartId Chart.Seconds
       Just 1 -> Chart.setTimeUnitChartJS chartId Chart.Minutes
       Just 2 -> Chart.setTimeUnitChartJS chartId Chart.Hours
       _ -> return ()
+    saveChartsSettings window
 
   on UI.click resetZoom . const $ Chart.resetZoomChartJS chartId
 

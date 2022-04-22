@@ -154,7 +154,7 @@ saveTheme state = liftIO . ignore $ do
 readSavedTheme :: UI String
 readSavedTheme = liftIO $
   try_ (TIO.readFile =<< getPathToThemeConfig) >>= \case
-    Left _      -> return darkState -- Something is wrong, use default dark theme.
+    Left _      -> return darkState -- Use default dark theme.
     Right saved -> return $ T.unpack saved
 
 getPathToThemeConfig :: IO FilePath

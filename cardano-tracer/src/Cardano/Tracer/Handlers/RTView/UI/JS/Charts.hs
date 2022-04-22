@@ -11,6 +11,8 @@ module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
   , setTimeFormatChartJS
   , setTimeUnitChartJS
   , resetZoomChartJS
+  , ix2tf
+  , ix2tu
   ) where
 
 import           Data.List (intercalate)
@@ -31,6 +33,20 @@ data ChartTimeUnit
   = Seconds
   | Minutes
   | Hours
+
+ix2tf :: Int -> ChartTimeFormat
+ix2tf n = case n of
+            0 -> TimeOnly
+            1 -> TimeAndDate
+            2 -> DateOnly
+            _ -> TimeOnly
+
+ix2tu :: Int -> ChartTimeUnit
+ix2tu n = case n of
+            0 -> Seconds
+            1 -> Minutes
+            2 -> Hours
+            _ -> Seconds
 
 prepareChartsJS :: UI ()
 prepareChartsJS =

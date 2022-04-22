@@ -53,10 +53,10 @@ mkMainPage connectedNodes displayedElements savedTO
               # set UI.href ("data:image/svg+xml;base64," <> faviconSVGBase64)
     , UI.meta # set UI.name "viewport"
               # set UI.content "width=device-width, initial-scale=1"
-    , UI.mkElement "style" # set UI.html bulmaCSS
-    , UI.mkElement "style" # set UI.html bulmaTooltipCSS
-    , UI.mkElement "style" # set UI.html bulmaPageloaderCSS
-    , UI.mkElement "style" # set UI.html ownCSS
+    , UI.mkElement "style"  # set UI.html bulmaCSS
+    , UI.mkElement "style"  # set UI.html bulmaTooltipCSS
+    , UI.mkElement "style"  # set UI.html bulmaPageloaderCSS
+    , UI.mkElement "style"  # set UI.html ownCSS
     , UI.mkElement "script" # set UI.html chartJS
     , UI.mkElement "script" # set UI.html chartJSMoment
     , UI.mkElement "script" # set UI.html chartJSAdapter
@@ -78,7 +78,7 @@ mkMainPage connectedNodes displayedElements savedTO
   UI.start preloaderTimer
 
   restoreTheme window
-  forceSetDefaultChartsSettings
+  restoreChartsSettings
 
   whenM (liftIO $ readTVarIO reloadFlag) $ do
     updateUIAfterReload

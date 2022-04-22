@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -15,7 +17,8 @@ module Cardano.Tracer.Handlers.RTView.UI.Charts
   , addPointsToChart
   , getLatestDisplayedTS
   , saveLatestDisplayedTS
-  , forceSetDefaultChartsSettings
+  , restoreChartsSettings
+  , saveChartsSettings
   ) where
 
 -- | The module 'Cardano.Tracer.Handlers.RTView.UI.JS.Charts' contains the tools
@@ -27,19 +30,31 @@ module Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Control.Concurrent.STM (atomically)
 import           Control.Concurrent.STM.TBQueue
 import           Control.Concurrent.STM.TVar
-import           Control.Monad (forM_)
+import           Control.Exception.Extra (ignore, try_)
+import           Control.Monad (forM, forM_)
 import           Control.Monad.Extra (whenJustM)
+import           Data.Aeson
 import           Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
+import           Data.Text (pack)
+import           GHC.Generics (Generic)
 import           Graphics.UI.Threepenny.Core
 import qualified Graphics.UI.Threepenny as UI
+import           System.Directory
+import           Text.Read (readMaybe)
 
 import           Cardano.Tracer.Types (NodeId (..))
-
 import           Cardano.Tracer.Handlers.RTView.State.Displayed
 import           Cardano.Tracer.Handlers.RTView.State.Historical
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Charts as Chart
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Utils as JS
+import           Cardano.Tracer.Handlers.RTView.UI.Utils
+
+chartsIds :: [String]
+chartsIds =
+  [ "cpu-chart"
+  , "memory-chart"
+  ]
 
 type Color = String
 type Colors = TBQueue Color
@@ -106,12 +121,6 @@ addNodeDatasetsToCharts nodeId@(NodeId anId) colors datasetIndices displayedElem
     Chart.addDatasetChartJS chartId (maybe anId id nodeName) colorForNode
     saveDatasetIx datasetIndices nodeId newIx
 
-chartsIds :: [String]
-chartsIds =
-  [ "cpu-chart"
-  , "memory-chart"
-  ]
-
 -- | When we add points to chart, we have to remember the timestamp of the latest point,
 --   for each chart, to avoid duplicated rendering of the same points.
 type LatestTimestamps   = Map DataName POSIXTime
@@ -164,14 +173,47 @@ addPointsToChart chartId nodeId datasetIndices points =
   whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx ->
     Chart.addPointsChartJS chartId datasetIx points
 
-forceSetDefaultChartsSettings :: UI ()
-forceSetDefaultChartsSettings =
-  forM_ chartsIds $ \chartId -> do
-    chooseFirstOption $ chartId <> "-time-format"
-    Chart.setTimeFormatChartJS chartId Chart.TimeOnly
-
-    chooseFirstOption $ chartId <> "-time-unit"
-    Chart.setTimeUnitChartJS chartId Chart.Seconds
+restoreChartsSettings :: UI ()
+restoreChartsSettings = readSavedChartsSettings >>= setCharts
  where
-  chooseFirstOption selectId =
-    UI.runFunction $ UI.ffi JS.selectOption selectId (0 :: Int)
+  setCharts settings =
+    forM_ settings $ \(chartId, ChartSettings tf tu) -> do
+      UI.runFunction $ UI.ffi JS.selectOption (chartId <> "-time-format") tf
+      UI.runFunction $ UI.ffi JS.selectOption (chartId <> "-time-unit")   tu
+      Chart.setTimeFormatChartJS chartId $ Chart.ix2tf tf
+      Chart.setTimeUnitChartJS   chartId $ Chart.ix2tu tu
+
+data ChartSettings = ChartSettings
+  { csTimeFormatIx :: !Int
+  , csTimeUnitIx   :: !Int
+  } deriving (Generic, FromJSON, ToJSON)
+
+type ChartId = String
+type ChartsSettings = [(ChartId, ChartSettings)]
+
+saveChartsSettings :: Window -> UI ()
+saveChartsSettings window = do
+  settings <-
+    forM chartsIds $ \chartId -> do
+      selectedTF <- getOptionIndex $ chartId <> "-time-format"
+      selectedTU <- getOptionIndex $ chartId <> "-time-unit"
+      return (chartId, ChartSettings selectedTF selectedTU)
+  liftIO . ignore $ do
+    pathToChartsConfig <- getPathToChartsConfig
+    encodeFile pathToChartsConfig settings
+ where
+  getOptionIndex selectId =
+    (readMaybe <$> findAndGetValue window (pack selectId)) >>= \case
+      Just (ix :: Int) -> return ix
+      Nothing -> return 0
+
+readSavedChartsSettings :: UI ChartsSettings
+readSavedChartsSettings = liftIO $
+  try_ (decodeFileStrict' =<< getPathToChartsConfig) >>= \case
+    Right (Just (settings :: ChartsSettings)) -> return settings
+    _ -> return defaultSettings
+ where
+  defaultSettings = [(chartId, ChartSettings 0 0) | chartId <- chartsIds]
+
+getPathToChartsConfig :: IO FilePath
+getPathToChartsConfig = getXdgDirectory XdgConfig "rt-view-charts-config"
