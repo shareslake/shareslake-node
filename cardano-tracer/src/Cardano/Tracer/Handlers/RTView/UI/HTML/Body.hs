@@ -244,6 +244,8 @@ mkChart chartId = do
       , UI.option # set value "hh"
                   # set text "Hours"
       ]
+  resetZoom <- UI.button #. "button is-small is-info is-outlined"
+                         # set text "Reset zoom"
   chart <-
     UI.div #. "rt-view-chart-container" #+
       [ UI.canvas ## chartId #. "rt-view-chart-area" #+ []
@@ -251,9 +253,10 @@ mkChart chartId = do
           [ UI.div #. "select is-link is-small mr-4" #+
               [ element selectTimeFormat
               ]
-          , UI.div #. "select is-link is-small" #+
+          , UI.div #. "select is-link is-small mr-4" #+
               [ element selectTimeUnit
               ]
+          , element resetZoom
           ]
       ]
 
@@ -270,5 +273,7 @@ mkChart chartId = do
       Just 1 -> Chart.setTimeUnitChartJS chartId Chart.Minutes
       Just 2 -> Chart.setTimeUnitChartJS chartId Chart.Hours
       _ -> return ()
+
+  on UI.click resetZoom . const $ Chart.resetZoomChartJS chartId
 
   return chart

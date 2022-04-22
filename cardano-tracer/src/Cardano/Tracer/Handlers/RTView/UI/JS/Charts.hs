@@ -10,6 +10,7 @@ module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
   , newTimeChartJS
   , setTimeFormatChartJS
   , setTimeUnitChartJS
+  , resetZoomChartJS
   ) where
 
 import           Data.List (intercalate)
@@ -68,6 +69,21 @@ var chart = new Chart(ctx, {
           size: 18
         },
         text: %2
+      },
+      zoom: {
+        zoom: {
+          drag: {
+            enabled: true
+          },
+          mode: 'x'
+        }
+      }
+    },
+    transitions: {
+      zoom: {
+        animation: {
+          duration: 0
+        }
       }
     },
     scales: {
@@ -182,3 +198,7 @@ setTimeUnitChartJS' = [s|
 window.charts.get(%1).options.scales.x.time.unit = %2;
 window.charts.get(%1).update({duration: 0});
 |]
+
+resetZoomChartJS :: String -> UI ()
+resetZoomChartJS chartId =
+  UI.runFunction $ UI.ffi "window.charts.get(%1).resetZoom();" chartId
