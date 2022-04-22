@@ -31,7 +31,7 @@ addNodeColumn
 addNodeColumn window loggingConfig (NodeId anId) = do
   let id' = unpack anId
   ls <- logsSettings loggingConfig id'
-  addNodeCell "name"     [ UI.span ## (id' <> "__node-name")
+  addNodeCellH "name"    [ UI.span ## (id' <> "__node-name")
                                    #. "has-text-weight-bold is-size-4"
                                    # set text "Node"
                          ]
@@ -70,9 +70,14 @@ addNodeColumn window loggingConfig (NodeId anId) = do
                                    # set text "No errors"
                          ]
  where
-  addNodeCell rowId cellContent =
+  addNodeCellH rowId cellContent =
     whenJustM (UI.getElementById window ("node-" <> rowId <> "-row")) $ \el ->
       void $ element el #+ [ UI.th #. (unpack anId <> "__column_cell rt-view-node-column-cell")
+                                   #+ cellContent
+                           ]
+  addNodeCell rowId cellContent =
+    whenJustM (UI.getElementById window ("node-" <> rowId <> "-row")) $ \el ->
+      void $ element el #+ [ UI.td #. (unpack anId <> "__column_cell rt-view-node-column-cell")
                                    #+ cellContent
                            ]
 
