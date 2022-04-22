@@ -18,7 +18,7 @@ module Cardano.Benchmarking.GeneratorTx
   ) where
 
 import           Cardano.Prelude
-import           Prelude (String, id)
+import           Prelude (String, error, id)
 
 import qualified Control.Concurrent.STM as STM
 import           Control.Monad (fail)
@@ -45,7 +45,6 @@ import           Cardano.Benchmarking.GeneratorTx.NodeToNode
 import           Cardano.Benchmarking.GeneratorTx.Submission
 import           Cardano.Benchmarking.GeneratorTx.SubmissionClient
 import           Cardano.Benchmarking.GeneratorTx.Tx
-import           Cardano.Benchmarking.TpsThrottle
 import           Cardano.Benchmarking.Tracer
 import           Cardano.Benchmarking.Types
 import           Cardano.Benchmarking.Wallet (WalletScript)
@@ -173,7 +172,7 @@ walletBenchmark
   traceDebug $ "******* Tx generator, launching Tx peers:  " ++ show (NE.length remoteAddresses) ++ " of them"
 
   startTime <- Clock.getCurrentTime
-  tpsThrottle <- newTpsThrottle 32 (unNumberOfTxs count) tpsRate
+  txSendQueue <- STM.newTBQueueIO 32
 
   reportRefs <- STM.atomically $ replicateM (fromIntegral numTargets) STM.newEmptyTMVar
 
@@ -183,21 +182,18 @@ walletBenchmark
           client = txSubmissionClient
                      traceN2N
                      traceSubmit
-                     (walletTxSource (walletScript (FundSet.Target $ show remoteAddr)) tpsThrottle)
+                     (walletTxSource (walletScript (FundSet.Target $ show remoteAddr)) txSendQueue)
                      (submitSubmissionThreadStats reportRef)
       async $ handle errorHandler (connectClient remoteAddr client)
 
-  tpsThrottleThread <- async $ do
-    startSending tpsThrottle
-    traceWith traceSubmit $ TraceBenchTxSubDebug "tpsLimitedFeeder : transmitting done"
-    atomically $ sendStop tpsThrottle
-    traceWith traceSubmit $ TraceBenchTxSubDebug "tpsLimitedFeeder : shutdown done"
+  tpsFeeder <- async $ tpsLimitedTxFeeder traceSubmit numTargets txSendQueue tpsRate
+                        $ replicate (fromIntegral $ unNumberOfTxs count) (error "dummy transaction" :: Tx era)
 
   let tpsFeederShutdown = do
-        cancel tpsThrottleThread
-        liftIO $ atomically $ sendStop tpsThrottle
+        cancel tpsFeeder
+        liftIO $ tpsLimitedTxFeederShutdown numTargets txSendQueue
 
-  return (tpsThrottleThread, allAsyncs, mkSubmissionSummary threadName startTime reportRefs, tpsFeederShutdown)
+  return (tpsFeeder, allAsyncs, mkSubmissionSummary threadName startTime reportRefs, tpsFeederShutdown)
  where
   traceDebug :: String -> IO ()
   traceDebug =   traceWith traceSubmit . TraceBenchTxSubDebug

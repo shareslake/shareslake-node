@@ -14,15 +14,12 @@ where
 import           Prelude
 import           GHC.Generics
 
-import           Data.List.NonEmpty
-
 import           Cardano.Benchmarking.OuroborosImports (SigningKeyFile)
 import           Cardano.Api (AnyCardanoEra, ExecutionUnits, Lovelace, ScriptData, ScriptRedeemer, TextEnvelope, TxIn)
 
-
 import           Cardano.Benchmarking.Script.Env
 import           Cardano.Benchmarking.Script.Store
-import           Cardano.Benchmarking.Types (TPSRate, NumberOfTxs, NodeIPv4Address)
+import           Cardano.Benchmarking.Types (TPSRate, NumberOfTxs)
 
 data Action where
   Set                :: !SetKeyVal -> Action
@@ -32,10 +29,10 @@ data Action where
   Delay              :: !Double -> Action
   ReadSigningKey     :: !KeyName -> !SigningKeyFile -> Action
   DefineSigningKey   :: !KeyName -> !TextEnvelope -> Action
-  AddFund            :: !AnyCardanoEra -> !WalletName -> !TxIn -> !Lovelace -> !KeyName -> Action
-  ImportGenesisFund  :: !AnyCardanoEra -> !WalletName -> !SubmitMode -> !KeyName -> !KeyName -> Action
-  CreateChange       :: !AnyCardanoEra -> !WalletName -> !WalletName -> !SubmitMode -> !PayMode -> !Lovelace -> !Int -> Action
-  RunBenchmark       :: !AnyCardanoEra -> !WalletName -> !SubmitMode -> !SpendMode -> !ThreadName -> !NumberOfTxs -> !TPSRate -> Action
+  AddFund            :: !WalletName -> !TxIn -> !Lovelace -> !KeyName -> Action
+  ImportGenesisFund  :: !WalletName -> !SubmitMode -> !KeyName -> !KeyName -> Action
+  CreateChange       :: !WalletName -> !WalletName -> !SubmitMode -> !PayMode -> !Lovelace -> !Int -> Action
+  RunBenchmark       :: !WalletName -> !SubmitMode -> !SpendMode -> !ThreadName -> !NumberOfTxs -> !TPSRate -> Action
   WaitBenchmark      :: !ThreadName -> Action
   CancelBenchmark    :: !ThreadName -> Action
   Reserved           :: [String] -> Action
@@ -52,7 +49,7 @@ deriving instance Generic ProtocolParametersSource
 
 data SubmitMode where
   LocalSocket :: SubmitMode
-  NodeToNode  :: NonEmpty NodeIPv4Address -> SubmitMode
+  NodeToNode  :: SubmitMode
   DumpToFile  :: !FilePath -> SubmitMode
   DiscardTX   :: SubmitMode
   deriving (Show, Eq)
