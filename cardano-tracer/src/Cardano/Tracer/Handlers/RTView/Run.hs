@@ -72,4 +72,5 @@ runRTView TracerConfig{logging, network, hasRTView, ekgRequestFreq}
   config h p = UI.defaultConfig
     { UI.jsPort = Just . fromIntegral $ p
     , UI.jsAddr = Just . encodeUtf8 . T.pack $ h
+    , UI.jsLog  = const $ return () -- To hide 'threepenny-gui' internal messages.
     }
