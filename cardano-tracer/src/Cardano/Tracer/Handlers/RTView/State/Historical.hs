@@ -2,7 +2,7 @@
 
 module Cardano.Tracer.Handlers.RTView.State.Historical
   ( BlockchainHistory (..)
-  , DataName
+  , DataName (..)
   , POSIXTime
   , ResourcesHistory (..)
   , TransactionsHistory (..)
@@ -20,7 +20,6 @@ import           Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
 import           Data.Set (Set)
 import qualified Data.Set as S
-import           Data.Text (Text)
 import           Data.Time.Clock (UTCTime)
 import           Data.Word (Word64)
 
@@ -45,7 +44,11 @@ instance Show ValueH where
 type HistoricalPoints = Set (POSIXTime, ValueH)
 
 -- | Historical points for particular data (for example, "CPU").
-type DataName       = Text
+data DataName
+  = CPUData
+  | MemoryData
+  deriving (Eq, Ord)
+
 type HistoricalData = Map DataName HistoricalPoints
 type History        = TVar (Map NodeId HistoricalData)
 
@@ -78,9 +81,9 @@ addHistoricalData history nodeId now dataName valueH = atomically $
             newDataForNode = M.singleton dataName firstPoint
         in M.insert nodeId newDataForNode currentHistory
       Just dataForNode ->
-        let newDataForNode = 
+        let newDataForNode =
               case M.lookup dataName dataForNode of
-                Nothing -> 
+                Nothing ->
                   -- There is no historical points for this dataName yet.
                   let firstPoint = S.singleton (utc2s now, valueH)
                   in M.insert dataName firstPoint dataForNode

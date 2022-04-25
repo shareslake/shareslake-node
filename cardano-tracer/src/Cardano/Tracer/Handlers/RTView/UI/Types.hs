@@ -5,6 +5,7 @@
 
 module Cardano.Tracer.Handlers.RTView.UI.Types
   ( ChartId (..)
+  , ChartSelectId (..)
   , ChartSettings (..)
   , ChartsSettings
   , Color (..)
@@ -28,7 +29,12 @@ import           Cardano.Tracer.Handlers.RTView.State.Historical
 data ChartId
   = CPUChart
   | MemoryChart
-  deriving (Generic, FromJSON, ToJSON, Show)
+  deriving (Bounded, Enum, Generic, FromJSON, ToJSON, Show)
+
+data ChartSelectId
+  = TimeFormatSelect
+  | TimeUnitSelect
+  deriving Show
 
 newtype Index = Index Word8
   deriving (Generic, FromJSON, ToJSON)

@@ -240,7 +240,7 @@ mkChart
   -> UI Element
 mkChart window chartId = do
   selectTimeFormat <-
-    UI.select ## (show chartId <> "-time-format") #+
+    UI.select ## (show chartId <> show TimeFormatSelect) #+
       [ UI.option # set value "0"
                   # set text "Time only"
       , UI.option # set value "1"
@@ -249,7 +249,7 @@ mkChart window chartId = do
                   # set text "Date only"
       ]
   selectTimeUnit <-
-    UI.select ## (show chartId <> "-time-unit") #+
+    UI.select ## (show chartId <> show TimeUnitSelect) #+
       [ UI.option # set value "0"
                   # set text "Seconds"
       , UI.option # set value "1"

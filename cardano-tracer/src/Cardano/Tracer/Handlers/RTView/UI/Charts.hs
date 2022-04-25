@@ -47,10 +47,7 @@ import           Cardano.Tracer.Handlers.RTView.UI.Types
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
 
 chartsIds :: [ChartId]
-chartsIds =
-  [ CPUChart
-  , MemoryChart
-  ]
+chartsIds = [minBound .. maxBound]
 
 initColors :: UI Colors
 initColors = liftIO $ do
@@ -162,8 +159,8 @@ restoreChartsSettings = readSavedChartsSettings >>= setCharts
  where
   setCharts settings =
     forM_ settings $ \(chartId, ChartSettings tf tu) -> do
-      JS.selectOption ((show chartId) <> "-time-format") tf
-      JS.selectOption ((show chartId) <> "-time-unit")   tu
+      JS.selectOption (show chartId <> show TimeFormatSelect) tf
+      JS.selectOption (show chartId <> show TimeUnitSelect)   tu
       Chart.setTimeFormatChartJS chartId $ Chart.ix2tf tf
       Chart.setTimeUnitChartJS   chartId $ Chart.ix2tu tu
 
@@ -171,8 +168,8 @@ saveChartsSettings :: Window -> UI ()
 saveChartsSettings window = do
   settings <-
     forM chartsIds $ \chartId -> do
-      selectedTF <- getOptionIndex $ (show chartId) <> "-time-format"
-      selectedTU <- getOptionIndex $ (show chartId) <> "-time-unit"
+      selectedTF <- getOptionIndex $ show chartId <> show TimeFormatSelect
+      selectedTU <- getOptionIndex $ show chartId <> show TimeUnitSelect
       return (chartId, ChartSettings (Index selectedTF) (Index selectedTU))
   liftIO . ignore $ do
     pathToChartsConfig <- getPathToChartsConfig

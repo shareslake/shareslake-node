@@ -62,7 +62,7 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
               ticksDiff  = cpuTicks - cpuLastTicks resourcesForNode
               cpuV       = fromIntegral ticksDiff / fromIntegral (100 :: Integer) / tDiffInSec
               newCPUPct  = if cpuV < 0 then 0.0 else cpuV * 100.0
-          addHistoricalData rHistory nodeId now "CPU" $ ValueD newCPUPct
+          addHistoricalData rHistory nodeId now CPUData $ ValueD newCPUPct
           updateLastResources lastResources nodeId $ \current ->
             current { cpuLastTicks = cpuTicks
                     , cpuLastNS = tns
@@ -71,7 +71,7 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
   updateRSSMemory nodeId valueS now =
     whenJust (readMaybe valueS) $ \(bytes :: Word64) -> do
       let memoryInMB = fromIntegral bytes / 1024 / 1024 :: Double
-      addHistoricalData rHistory nodeId now "Memory" $ ValueD memoryInMB
+      addHistoricalData rHistory nodeId now MemoryData $ ValueD memoryInMB
 
 updateResourcesCharts
   :: ConnectedNodes
@@ -82,8 +82,8 @@ updateResourcesCharts
 updateResourcesCharts connectedNodes (ResHistory rHistory) datasetIndices datasetTimestamps = do
   connected <- liftIO $ readTVarIO connectedNodes
   forM_ connected $ \nodeId -> do
-    addPointsToAChart nodeId "CPU"    CPUChart
-    addPointsToAChart nodeId "Memory" MemoryChart
+    addPointsToAChart nodeId CPUData    CPUChart
+    addPointsToAChart nodeId MemoryData MemoryChart
  where
   addPointsToAChart nodeId dataName chartId = do
     history <- liftIO $ getHistoricalData rHistory nodeId dataName
