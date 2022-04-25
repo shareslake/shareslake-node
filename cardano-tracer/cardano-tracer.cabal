@@ -64,6 +64,7 @@ library
                        Cardano.Tracer.Handlers.RTView.UI.JS.Utils
                        Cardano.Tracer.Handlers.RTView.UI.Img.Icons
                        Cardano.Tracer.Handlers.RTView.UI.Charts
+                       Cardano.Tracer.Handlers.RTView.UI.System
                        Cardano.Tracer.Handlers.RTView.UI.Theme
                        Cardano.Tracer.Handlers.RTView.UI.Types
                        Cardano.Tracer.Handlers.RTView.UI.Utils
@@ -119,6 +120,11 @@ library
 
   if os(linux)
     build-depends:     libsystemd-journal
+
+  if os(windows)
+    build-depends:     Win32
+  else
+    build-depends:     unix
 
 executable cardano-tracer
   import:              base, project-config

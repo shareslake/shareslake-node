@@ -17,6 +17,7 @@ import           Cardano.Git.Rev (gitRev)
 
 import           Cardano.Tracer.Handlers.RTView.UI.JS.Utils
 import           Cardano.Tracer.Handlers.RTView.UI.Img.Icons
+import           Cardano.Tracer.Handlers.RTView.UI.System
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
 import           Paths_cardano_tracer (version)
 
@@ -31,6 +32,7 @@ mkAboutInfo = do
   on UI.click copyPath . const $
     UI.runFunction $ UI.ffi copyTextToClipboard pathToConfig
   closeIt <- UI.button #. "delete"
+  pid <- getProcessId
   info <-
     UI.div #. "modal" #+
       [ UI.div #. "modal-background" #+ []
@@ -54,9 +56,13 @@ mkAboutInfo = do
                           [ image "rt-view-overview-icon" platformDarkSVG
                           , string "Platform"
                           ]
-                      , UI.p #. "mb-1" #+
+                      , UI.p #. "mb-3" #+
                           [ image "rt-view-overview-icon" configDarkSVG
                           , string "Configuration"
+                          ]
+                      , UI.p #. "mb-1" #+
+                          [ image "rt-view-overview-icon" serverSVG
+                          , string "Process ID"
                           ]
                       ]
                   , UI.div #. "column has-text-weight-semibold" #+
@@ -75,12 +81,15 @@ mkAboutInfo = do
                                         | isMac     -> "macOS"
                                         | otherwise -> "Linux"
                           ]
-                      , UI.p #. "mb-1" #+
+                      , UI.p #. "mb-3" #+
                           [ UI.span #. ("tag is-info is-light is-rounded is-medium mr-3"
                                         <> " has-tooltip-multiline has-tooltip-top rt-view-logs-path")
                                     # set dataTooltip "The path to configuration file"
                                     # set text (shortenPath pathToConfig)
                           , element copyPath
+                          ]
+                      , UI.p #. "mb-1" #+
+                          [ string $ show pid
                           ]
                       ]
                   ]
