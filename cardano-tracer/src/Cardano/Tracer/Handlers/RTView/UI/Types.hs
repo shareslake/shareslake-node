@@ -13,7 +13,6 @@ module Cardano.Tracer.Handlers.RTView.UI.Types
   , DatasetsIndices
   , DatasetsTimestamps
   , Index (..)
-  , POSIXTime
   ) where
 
 import           Control.Concurrent.STM.TBQueue (TBQueue)

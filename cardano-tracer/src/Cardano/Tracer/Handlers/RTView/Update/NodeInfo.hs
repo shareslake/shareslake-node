@@ -33,10 +33,15 @@ askNSetNodeInfo window dpRequestors newlyConnected displayedElements =
         let nodeNameElId = anId <> "__node-name"
         findAndSetText (niName ni) window nodeNameElId
         liftIO $ saveDisplayedValue displayedElements nodeId nodeNameElId (niName ni)
+
         findAndSetText (niVersion ni) window (anId <> "__node-version")
+
         setProtocol (niProtocol ni) (anId <> "__node-protocol")
+
         findAndSetText (T.take 7 $ niCommit ni) window (anId <> "__node-commit")
-        findAndSet  (set UI.href $ nodeLink (niCommit ni)) window (anId <> "__node-commit")
+
+        findAndSet (set UI.href $ nodeLink (niCommit ni)) window (anId <> "__node-commit")
+
         let nodeStartElId = anId <> "__node-start-time"
         setTime (niStartTime ni) nodeStartElId
         setTime (niSystemStartTime ni) (anId <> "__node-system-start-time")

@@ -28,7 +28,7 @@ html {
 
 body {
   font-family: sans-serif;
-  font-size: 20px;
+  font-size: 22px;
   color: #1b2238;
   background-color: #131325;
   min-height: 100%;
@@ -151,10 +151,6 @@ span[data-tooltip] {
 
 .rt-view-ada-node-icon {
   color: #1fc1c3;
-}
-
-.rt-view-node-name {
-  font-weight: normal !important;
 }
 
 .rt-view-node-name-column {
