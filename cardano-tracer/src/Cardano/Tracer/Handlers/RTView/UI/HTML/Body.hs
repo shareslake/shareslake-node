@@ -15,6 +15,7 @@ import           Cardano.Tracer.Handlers.RTView.UI.HTML.About
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Charts as Chart
 import           Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Cardano.Tracer.Handlers.RTView.UI.Theme
+import           Cardano.Tracer.Handlers.RTView.UI.Types
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
 
 mkPageBody
@@ -22,8 +23,8 @@ mkPageBody
   -> Network
   -> UI Element
 mkPageBody window networkConfig = do
-  cpuChart    <- mkChart window "cpu-chart"
-  memoryChart <- mkChart window "memory-chart"
+  cpuChart    <- mkChart window CPUChart
+  memoryChart <- mkChart window MemoryChart
 
   body <-
     UI.getBody window #+
@@ -130,8 +131,8 @@ mkPageBody window networkConfig = do
 
   Chart.prepareChartsJS
 
-  Chart.newTimeChartJS "cpu-chart"    "CPU Usage"    "Percent"
-  Chart.newTimeChartJS "memory-chart" "Memory Usage" "MB"
+  Chart.newTimeChartJS CPUChart    "CPU Usage"    "Percent"
+  Chart.newTimeChartJS MemoryChart "Memory Usage" "MB"
 
   return body
 
@@ -235,11 +236,11 @@ noNodesInfo networkConfig = do
 
 mkChart
   :: UI.Window
-  -> String
+  -> ChartId
   -> UI Element
 mkChart window chartId = do
   selectTimeFormat <-
-    UI.select ## (chartId <> "-time-format") #+
+    UI.select ## (show chartId <> "-time-format") #+
       [ UI.option # set value "0"
                   # set text "Time only"
       , UI.option # set value "1"
@@ -248,7 +249,7 @@ mkChart window chartId = do
                   # set text "Date only"
       ]
   selectTimeUnit <-
-    UI.select ## (chartId <> "-time-unit") #+
+    UI.select ## (show chartId <> "-time-unit") #+
       [ UI.option # set value "0"
                   # set text "Seconds"
       , UI.option # set value "1"
@@ -260,7 +261,7 @@ mkChart window chartId = do
                          # set text "Reset zoom"
   chart <-
     UI.div #. "rt-view-chart-container" #+
-      [ UI.canvas ## chartId #. "rt-view-chart-area" #+ []
+      [ UI.canvas ## (show chartId) #. "rt-view-chart-area" #+ []
       , UI.div #. "field is-grouped mt-3" #+
           [ UI.div #. "select is-link is-small mr-4" #+
               [ element selectTimeFormat

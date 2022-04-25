@@ -1,4 +1,5 @@
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
   ( ChartTimeFormat (..)
@@ -18,11 +19,13 @@ module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
 import           Data.List (intercalate)
 import           Data.String.QQ
 import           Data.Text (Text)
+import           Data.Word (Word8)
 import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
 
 import           Cardano.Tracer.Handlers.RTView.State.Historical
 import           Cardano.Tracer.Handlers.RTView.Update.Utils
+import           Cardano.Tracer.Handlers.RTView.UI.Types
 
 data ChartTimeFormat
   = TimeOnly
@@ -34,31 +37,33 @@ data ChartTimeUnit
   | Minutes
   | Hours
 
-ix2tf :: Int -> ChartTimeFormat
-ix2tf n = case n of
-            0 -> TimeOnly
-            1 -> TimeAndDate
-            2 -> DateOnly
-            _ -> TimeOnly
+ix2tf :: Index -> ChartTimeFormat
+ix2tf (Index ix) =
+  case ix of
+    0 -> TimeOnly
+    1 -> TimeAndDate
+    2 -> DateOnly
+    _ -> TimeOnly
 
-ix2tu :: Int -> ChartTimeUnit
-ix2tu n = case n of
-            0 -> Seconds
-            1 -> Minutes
-            2 -> Hours
-            _ -> Seconds
+ix2tu :: Index -> ChartTimeUnit
+ix2tu (Index ix) =
+  case ix of
+    0 -> Seconds
+    1 -> Minutes
+    2 -> Hours
+    _ -> Seconds
 
 prepareChartsJS :: UI ()
 prepareChartsJS =
   UI.runFunction $ UI.ffi "window.charts = new Map();"
 
 newTimeChartJS
-  :: String
+  :: ChartId
   -> String
   -> String
   -> UI ()
 newTimeChartJS chartId chartName yValuesLabel =
-  UI.runFunction $ UI.ffi newTimeChartJS' chartId chartName yValuesLabel
+  UI.runFunction $ UI.ffi newTimeChartJS' (show chartId) chartName yValuesLabel
 
 newTimeChartJS' :: String
 newTimeChartJS' = [s|
@@ -131,12 +136,12 @@ window.charts.set(%1, chart);
 |]
 
 addDatasetChartJS
-  :: String
+  :: ChartId
   -> Text
-  -> String
+  -> Color
   -> UI ()
-addDatasetChartJS chartId nodeName color =
-  UI.runFunction $ UI.ffi addDatasetChartJS' chartId nodeName color
+addDatasetChartJS chartId nodeName (Color color) =
+  UI.runFunction $ UI.ffi addDatasetChartJS' (show chartId) nodeName color
 
 addDatasetChartJS' :: String
 addDatasetChartJS' = [s|
@@ -151,22 +156,23 @@ window.charts.get(%1).data.datasets.push(newDataset);
 window.charts.get(%1).update({duration: 0});
 |]
 
-getDatasetsLengthChartJS :: String -> UI Int
-getDatasetsLengthChartJS chartId =
-  UI.callFunction $ UI.ffi "window.charts.get(%1).data.datasets.length;" chartId
+getDatasetsLengthChartJS :: ChartId -> UI Word8
+getDatasetsLengthChartJS chartId = do
+  (l :: Int) <- UI.callFunction $ UI.ffi "window.charts.get(%1).data.datasets.length;" (show chartId)
+  return $ fromIntegral l
 
 addPointsChartJS
-  :: String
-  -> Int
+  :: ChartId
+  -> Index
   -> [(POSIXTime, ValueH)]
   -> UI ()
-addPointsChartJS chartId datasetIx points = do
+addPointsChartJS chartId (Index datasetIx) points = do
   UI.runFunction $ UI.ffi pushToDataset
-  UI.runFunction $ UI.ffi "window.charts.get(%1).update({duration: 0});" chartId
+  UI.runFunction $ UI.ffi "window.charts.get(%1).update({duration: 0});" (show chartId)
  where
   pushToDataset =
     "window.charts.get('"
-    <> chartId
+    <> (show chartId)
     <> "').data.datasets["
     <> show datasetIx
     <> "].data.push("
@@ -177,11 +183,11 @@ addPointsChartJS chartId datasetIx points = do
     "{x: '" <> show (s2utc ts) <> "', y: " <> show valueH <> "}"
 
 setTimeFormatChartJS
-  :: String
+  :: ChartId
   -> ChartTimeFormat
   -> UI ()
 setTimeFormatChartJS chartId format =
-  UI.runFunction $ UI.ffi setTimeFormatChartJS' chartId formatSecond formatMinute formatHour
+  UI.runFunction $ UI.ffi setTimeFormatChartJS' (show chartId) formatSecond formatMinute formatHour
  where
   (formatSecond, formatMinute, formatHour) =
     case format of
@@ -202,12 +208,12 @@ window.charts.get(%1).update({duration: 0});
 |]
 
 setTimeUnitChartJS
-  :: String
+  :: ChartId
   -> ChartTimeUnit
   -> UI ()
-setTimeUnitChartJS chartId Seconds = UI.runFunction $ UI.ffi setTimeUnitChartJS' chartId "second"
-setTimeUnitChartJS chartId Minutes = UI.runFunction $ UI.ffi setTimeUnitChartJS' chartId "minute"
-setTimeUnitChartJS chartId Hours   = UI.runFunction $ UI.ffi setTimeUnitChartJS' chartId "hour"
+setTimeUnitChartJS chartId Seconds = UI.runFunction $ UI.ffi setTimeUnitChartJS' (show chartId) "second"
+setTimeUnitChartJS chartId Minutes = UI.runFunction $ UI.ffi setTimeUnitChartJS' (show chartId) "minute"
+setTimeUnitChartJS chartId Hours   = UI.runFunction $ UI.ffi setTimeUnitChartJS' (show chartId) "hour"
 
 setTimeUnitChartJS' :: String
 setTimeUnitChartJS' = [s|
@@ -215,6 +221,6 @@ window.charts.get(%1).options.scales.x.time.unit = %2;
 window.charts.get(%1).update({duration: 0});
 |]
 
-resetZoomChartJS :: String -> UI ()
+resetZoomChartJS :: ChartId -> UI ()
 resetZoomChartJS chartId =
-  UI.runFunction $ UI.ffi "window.charts.get(%1).resetZoom();" chartId
+  UI.runFunction $ UI.ffi "window.charts.get(%1).resetZoom();" (show chartId)

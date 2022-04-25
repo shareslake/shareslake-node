@@ -23,6 +23,7 @@ import           Cardano.Tracer.Handlers.RTView.State.Historical
 import           Cardano.Tracer.Handlers.RTView.State.Last
 import           Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Cardano.Tracer.Handlers.RTView.Update.Utils
+import           Cardano.Tracer.Handlers.RTView.UI.Types
 import           Cardano.Tracer.Types
 
 updateResourcesHistory
@@ -81,8 +82,8 @@ updateResourcesCharts
 updateResourcesCharts connectedNodes (ResHistory rHistory) datasetIndices datasetTimestamps = do
   connected <- liftIO $ readTVarIO connectedNodes
   forM_ connected $ \nodeId -> do
-    addPointsToAChart nodeId "CPU"    "cpu-chart"
-    addPointsToAChart nodeId "Memory" "memory-chart"
+    addPointsToAChart nodeId "CPU"    CPUChart
+    addPointsToAChart nodeId "Memory" MemoryChart
  where
   addPointsToAChart nodeId dataName chartId = do
     history <- liftIO $ getHistoricalData rHistory nodeId dataName

@@ -1,9 +1,13 @@
 module Cardano.Tracer.Handlers.RTView.UI.JS.Utils
   ( copyTextToClipboard
   , downloadCSVFile
-  , goToTab
   , selectOption
   ) where
+
+import           Graphics.UI.Threepenny.Core
+import qualified Graphics.UI.Threepenny as UI
+
+import           Cardano.Tracer.Handlers.RTView.UI.Types
 
 copyTextToClipboard :: String
 copyTextToClipboard = concat
@@ -27,11 +31,12 @@ downloadCSVFile = concat
   , "document.body.removeChild(element);"
   ]
 
-goToTab :: String
-goToTab = concat
-  [ "var element = document.getElementById(%1);"
-  , "element.click();"
-  ]
-
-selectOption :: String
-selectOption = "document.getElementById(%1).selectedIndex = %2;"
+selectOption
+  :: String
+  -> Index
+  -> UI ()
+selectOption selectId (Index ix) =
+  UI.runFunction $ UI.ffi "document.getElementById(%1).selectedIndex = %2;" selectId ix'
+ where
+  ix' :: Int
+  ix' = fromIntegral ix

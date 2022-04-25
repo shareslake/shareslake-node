@@ -17,7 +17,7 @@ import           Graphics.UI.Threepenny.Core
 import           Cardano.Tracer.Configuration
 import           Cardano.Tracer.Handlers.RTView.State.Displayed
 import           Cardano.Tracer.Handlers.RTView.State.TraceObjects
-import           Cardano.Tracer.Handlers.RTView.UI.Charts
+import           Cardano.Tracer.Handlers.RTView.UI.Types
 import           Cardano.Tracer.Handlers.RTView.Update.NodeInfo
 import           Cardano.Tracer.Handlers.RTView.Update.Nodes
 import           Cardano.Tracer.Handlers.RTView.Update.Peers

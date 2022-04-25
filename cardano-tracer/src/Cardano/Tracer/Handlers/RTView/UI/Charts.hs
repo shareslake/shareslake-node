@@ -5,10 +5,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Cardano.Tracer.Handlers.RTView.UI.Charts
-  ( Color
-  , Colors
-  , DatasetsIndices
-  , DatasetsTimestamps
+  ( DatasetsTimestamps
   , initColors
   , initDatasetsIndices
   , initDatasetsTimestamps
@@ -34,12 +31,10 @@ import           Control.Exception.Extra (ignore, try_)
 import           Control.Monad (forM, forM_)
 import           Control.Monad.Extra (whenJustM)
 import           Data.Aeson
-import           Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
 import           Data.Text (pack)
-import           GHC.Generics (Generic)
+import           Data.Word (Word8)
 import           Graphics.UI.Threepenny.Core
-import qualified Graphics.UI.Threepenny as UI
 import           System.Directory
 import           Text.Read (readMaybe)
 
@@ -48,21 +43,19 @@ import           Cardano.Tracer.Handlers.RTView.State.Displayed
 import           Cardano.Tracer.Handlers.RTView.State.Historical
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Charts as Chart
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Utils as JS
+import           Cardano.Tracer.Handlers.RTView.UI.Types
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
 
-chartsIds :: [String]
+chartsIds :: [ChartId]
 chartsIds =
-  [ "cpu-chart"
-  , "memory-chart"
+  [ CPUChart
+  , MemoryChart
   ]
-
-type Color = String
-type Colors = TBQueue Color
 
 initColors :: UI Colors
 initColors = liftIO $ do
   q <- newTBQueueIO . fromIntegral $ length colors
-  mapM_ (atomically . writeTBQueue q) colors
+  mapM_ (atomically . writeTBQueue q . Color) colors
   return q
  where
   -- | There are unique colors for each chart line corresponding to each connected node.
@@ -77,13 +70,9 @@ getNewColor :: Colors -> UI Color
 getNewColor q =
   (liftIO . atomically $ tryReadTBQueue q) >>= \case
     Just color -> return color
-    Nothing    -> return "#cccc00"
-
--- | After the node is connected, we have to add a new dataset to all historical charts.
---   The metrics received from this node will be added in these datasets.
---   Since each dataset has its index, we need a map 'NodeId -> ix',
---   where 'ix' is an index of a dataset in _each_ chart.
-type DatasetsIndices = TVar (Map NodeId Int)
+    Nothing    -> return defaultColor
+ where
+  defaultColor = Color "#cccc00"
 
 initDatasetsIndices :: UI DatasetsIndices
 initDatasetsIndices = liftIO . newTVarIO $ M.empty
@@ -91,7 +80,7 @@ initDatasetsIndices = liftIO . newTVarIO $ M.empty
 saveDatasetIx
   :: DatasetsIndices
   -> NodeId
-  -> Int
+  -> Index
   -> UI ()
 saveDatasetIx indices nodeId ix = liftIO . atomically $
   modifyTVar' indices $ \currentIndices ->
@@ -102,7 +91,7 @@ saveDatasetIx indices nodeId ix = liftIO . atomically $
 getDatasetIx
   :: DatasetsIndices
   -> NodeId
-  -> UI (Maybe Int)
+  -> UI (Maybe Index)
 getDatasetIx indices nodeId = liftIO $
   M.lookup nodeId <$> readTVarIO indices
 
@@ -116,15 +105,10 @@ addNodeDatasetsToCharts
 addNodeDatasetsToCharts nodeId@(NodeId anId) colors datasetIndices displayedElements = do
   colorForNode <- getNewColor colors
   forM_ chartsIds $ \chartId -> do
-    (newIx :: Int) <- Chart.getDatasetsLengthChartJS chartId
+    newIx <- Chart.getDatasetsLengthChartJS chartId
     nodeName <- liftIO $ getDisplayedValue displayedElements nodeId (anId <> "__node-name")
     Chart.addDatasetChartJS chartId (maybe anId id nodeName) colorForNode
-    saveDatasetIx datasetIndices nodeId newIx
-
--- | When we add points to chart, we have to remember the timestamp of the latest point,
---   for each chart, to avoid duplicated rendering of the same points.
-type LatestTimestamps   = Map DataName POSIXTime
-type DatasetsTimestamps = TVar (Map NodeId LatestTimestamps)
+    saveDatasetIx datasetIndices nodeId (Index newIx)
 
 initDatasetsTimestamps :: UI DatasetsTimestamps
 initDatasetsTimestamps = liftIO . newTVarIO $ M.empty
@@ -163,7 +147,7 @@ getLatestDisplayedTS tss nodeId dataName = liftIO $
     Just tssForNode -> return $ M.lookup dataName tssForNode
 
 addPointsToChart
-  :: String
+  :: ChartId
   -> NodeId
   -> DatasetsIndices
   -> [(POSIXTime, ValueH)]
@@ -178,33 +162,25 @@ restoreChartsSettings = readSavedChartsSettings >>= setCharts
  where
   setCharts settings =
     forM_ settings $ \(chartId, ChartSettings tf tu) -> do
-      UI.runFunction $ UI.ffi JS.selectOption (chartId <> "-time-format") tf
-      UI.runFunction $ UI.ffi JS.selectOption (chartId <> "-time-unit")   tu
+      JS.selectOption ((show chartId) <> "-time-format") tf
+      JS.selectOption ((show chartId) <> "-time-unit")   tu
       Chart.setTimeFormatChartJS chartId $ Chart.ix2tf tf
       Chart.setTimeUnitChartJS   chartId $ Chart.ix2tu tu
-
-data ChartSettings = ChartSettings
-  { csTimeFormatIx :: !Int
-  , csTimeUnitIx   :: !Int
-  } deriving (Generic, FromJSON, ToJSON)
-
-type ChartId = String
-type ChartsSettings = [(ChartId, ChartSettings)]
 
 saveChartsSettings :: Window -> UI ()
 saveChartsSettings window = do
   settings <-
     forM chartsIds $ \chartId -> do
-      selectedTF <- getOptionIndex $ chartId <> "-time-format"
-      selectedTU <- getOptionIndex $ chartId <> "-time-unit"
-      return (chartId, ChartSettings selectedTF selectedTU)
+      selectedTF <- getOptionIndex $ (show chartId) <> "-time-format"
+      selectedTU <- getOptionIndex $ (show chartId) <> "-time-unit"
+      return (chartId, ChartSettings (Index selectedTF) (Index selectedTU))
   liftIO . ignore $ do
     pathToChartsConfig <- getPathToChartsConfig
     encodeFile pathToChartsConfig settings
  where
   getOptionIndex selectId =
     (readMaybe <$> findAndGetValue window (pack selectId)) >>= \case
-      Just (ix :: Int) -> return ix
+      Just (ix :: Word8) -> return ix
       Nothing -> return 0
 
 readSavedChartsSettings :: UI ChartsSettings
@@ -213,7 +189,10 @@ readSavedChartsSettings = liftIO $
     Right (Just (settings :: ChartsSettings)) -> return settings
     _ -> return defaultSettings
  where
-  defaultSettings = [(chartId, ChartSettings 0 0) | chartId <- chartsIds]
+  defaultSettings =
+    [ (chartId, ChartSettings (Index 0) (Index 0))
+    | chartId <- chartsIds
+    ]
 
 getPathToChartsConfig :: IO FilePath
 getPathToChartsConfig = getXdgDirectory XdgConfig "rt-view-charts-config"
