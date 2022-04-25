@@ -49,6 +49,7 @@ addNodeColumn window loggingConfig (NodeId anId) = do
                                      #. ("rt-view-href is-family-monospace has-text-weight-normal"
                                          <> " has-tooltip-multiline has-tooltip-right")
                                      # set UI.href "#"
+                                     # set UI.target "_blank"
                                      # set dataTooltip "Browse cardano-node repository on this commit"
                                      # set text "—"
                                      # set style [("color", if itIsDarkTheme then hrefLight else hrefDark)]

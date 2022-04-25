@@ -78,7 +78,7 @@ mkPageBody window networkConfig = do
                       , UI.tr ## "node-system-start-time-row" #+
                           [ UI.td #. "rt-view-table-description-td"
                                   #+ [ image "rt-view-overview-icon" systemStartSVG
-                                     , string "System start"
+                                     , string "Blockchain start"
                                      ]
                           ]
                       , UI.tr ## "node-uptime-row" #+
@@ -194,6 +194,7 @@ noNodesInfo networkConfig = do
           [ string "For more details, please read "
           , UI.anchor # set UI.href "https://github.com/input-output-hk/cardano-node/blob/master/cardano-tracer/docs/cardano-tracer.md#configuration"
                       # set text "our documentation"
+                      # set UI.target "_blank"
           , string "."
           ]
       , UI.p #. "mt-4" #+
