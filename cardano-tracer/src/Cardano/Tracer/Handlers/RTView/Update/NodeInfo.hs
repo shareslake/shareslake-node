@@ -31,7 +31,7 @@ askNSetNodeInfo window dpRequestors newlyConnected displayedElements =
     forM_ newlyConnected $ \nodeId@(NodeId anId) ->
       whenJustM (liftIO $ askDataPoint dpRequestors nodeId "NodeInfo") $ \ni -> do
         let nodeNameElId = anId <> "__node-name"
-        findAndSetText (niName ni) window nodeNameElId
+        findAndSetText (shortenName $ niName ni) window nodeNameElId
         liftIO $ saveDisplayedValue displayedElements nodeId nodeNameElId (niName ni)
 
         findAndSetText (niVersion ni) window (anId <> "__node-version")

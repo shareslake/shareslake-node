@@ -1,5 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Cardano.Tracer.Handlers.RTView.UI.Utils
   ( (##)
@@ -20,10 +21,12 @@ module Cardano.Tracer.Handlers.RTView.UI.Utils
   , hideIt
   , pageTitle
   , pageTitleNotify
+  , shortenName
   , shortenPath
   ) where
 
 import           Data.Text (Text, unpack)
+import qualified Data.Text as T
 import           Control.Monad (void)
 import           Control.Monad.Extra (whenJustM)
 import qualified Graphics.UI.Threepenny as UI
@@ -123,3 +126,9 @@ shortenPath p =
   if length p > 20
     then take 20 p <> "..."
     else p
+
+shortenName :: Text -> Text
+shortenName n =
+  if T.length n > 20
+    then T.take 20 n <> "..."
+    else n
