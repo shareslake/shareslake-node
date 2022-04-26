@@ -39,12 +39,12 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
     forM_ metrics $ \(metricName, metricValue) -> do
       let valueS = unpack metricValue
       case metricName of
-        "stat.cputicks"   -> updateCPUUsage nodeId valueS now
-        "mem.resident"    -> updateRSSMemory nodeId valueS now
+        "stat.cputicks"   -> updateCPUUsage     nodeId valueS now
+        "mem.resident"    -> updateRSSMemory    nodeId valueS now
         "rts.gcLiveBytes" -> updateGCLiveMemory nodeId valueS now
-        "rts.gcMajorNum"  -> updateGCMajorNum nodeId valueS now
-        "rts.gcMinorNum"  -> updateGCMinorNum nodeId valueS now
-        "rts.gcticks"     -> return () -- updateGCTicks
+        "rts.gcMajorNum"  -> updateGCMajorNum   nodeId valueS now
+        "rts.gcMinorNum"  -> updateGCMinorNum   nodeId valueS now
+        "rts.gcticks"     -> updateCPUTimeGC    nodeId valueS now
         "rts.mutticks"    -> return () -- updateMutTicks
         -- "rts.stat.threads" TODO
         _ -> return ()
@@ -86,6 +86,12 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
     whenJust (readMaybe valueS) $ \(gcMinorNum :: Integer) ->
       addHistoricalData rHistory nodeId now GCMinorNumData $ ValueI gcMinorNum
 
+  updateCPUTimeGC nodeId valueS now =
+    whenJust (readMaybe valueS) $ \(cpuTimeGCInCentiS :: Word64) -> do
+      -- This is a total CPU time used by the GC, as 1/100 second.
+      let cpuTimeGCInMs = cpuTimeGCInCentiS * 10
+      addHistoricalData rHistory nodeId now CPUTimeGCData $ ValueI (fromIntegral cpuTimeGCInMs)
+
 updateResourcesCharts
   :: ConnectedNodes
   -> ResourcesHistory
@@ -100,6 +106,7 @@ updateResourcesCharts connectedNodes (ResHistory rHistory) datasetIndices datase
     addPointsToAChart nodeId GCMajorNumData   GCMajorNumChart
     addPointsToAChart nodeId GCMinorNumData   GCMinorNumChart
     addPointsToAChart nodeId GCLiveMemoryData GCLiveMemoryChart
+    addPointsToAChart nodeId CPUTimeGCData    CPUTimeGCChart
  where
   addPointsToAChart nodeId dataName chartId = do
     history <- liftIO $ getHistoricalData rHistory nodeId dataName

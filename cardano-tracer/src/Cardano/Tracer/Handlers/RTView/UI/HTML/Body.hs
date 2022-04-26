@@ -28,6 +28,7 @@ mkPageBody window networkConfig = do
   gcMajorNumChart <- mkChart window GCMajorNumChart
   gcMinorNumChart <- mkChart window GCMinorNumChart
   gcLiveMemoryChart <- mkChart window GCLiveMemoryChart
+  cpuTimeGCChart <- mkChart window CPUTimeGCChart
 
   body <-
     UI.getBody window #+
@@ -120,6 +121,7 @@ mkPageBody window networkConfig = do
               , UI.div #. "column" #+
                   [ element memoryChart
                   , element gcMinorNumChart
+                  , element cpuTimeGCChart
                   ]
               ]
           ]
@@ -132,6 +134,7 @@ mkPageBody window networkConfig = do
   Chart.newTimeChartJS GCMajorNumChart   "Number of major GCs"   ""
   Chart.newTimeChartJS GCMinorNumChart   "Number of minor GCs"   ""
   Chart.newTimeChartJS GCLiveMemoryChart "GC, live data in heap" "MB"
+  Chart.newTimeChartJS CPUTimeGCChart    "CPU time used by GC"   "milliseconds"
 
   return body
 
