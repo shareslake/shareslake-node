@@ -746,6 +746,7 @@ pTransaction =
   pTransactionSubmit = TxSubmit <$> pConsensusModeParams
                                 <*> pNetworkId
                                 <*> pTxSubmitFile
+                                <*> optional pErrorDetailJsonFile
 
   pTransactionPolicyId :: Parser TransactionCmd
   pTransactionPolicyId = TxMintedPolicyId <$> pScript
@@ -1900,6 +1901,15 @@ pTestnetMagic =
       <> Opt.metavar "NATURAL"
       <> Opt.help "Specify a testnet magic id."
       )
+
+pErrorDetailJsonFile :: Parser FilePath
+pErrorDetailJsonFile =
+  Opt.strOption
+    (  Opt.long "error-detail-out"
+    <> Opt.metavar "FILE"
+    <> Opt.help "Filepath of output file to which error detail should be written."
+    <> Opt.completer (Opt.bashCompleter "file")
+    )
 
 pTxSubmitFile :: Parser FilePath
 pTxSubmitFile =
