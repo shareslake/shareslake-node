@@ -17,7 +17,6 @@ import           Graphics.UI.Threepenny.Core
 import           System.FilePath ((</>))
 
 import           Cardano.Tracer.Configuration
-import           Cardano.Tracer.Handlers.RTView.UI.CSS.Own
 import           Cardano.Tracer.Handlers.RTView.UI.JS.Utils
 import           Cardano.Tracer.Handlers.RTView.UI.Img.Icons
 import           Cardano.Tracer.Handlers.RTView.UI.Theme
@@ -37,7 +36,6 @@ addNodeColumn window loggingConfig (NodeId anId) = do
   addNodeCellH "name"    [ UI.span ## (id' <> "__node-name")
                                    #. "has-text-weight-bold is-size-4 rt-view-node-name"
                                    # set text "Node"
-                                   # set style [("color", if itIsDarkTheme then textLight else textDark)]
                          ]
   addNodeCell "version"  [ UI.span ## (id' <> "__node-version")
                                    # set text "—"
@@ -52,12 +50,12 @@ addNodeColumn window loggingConfig (NodeId anId) = do
                                      # set UI.target "_blank"
                                      # set dataTooltip "Browse cardano-node repository on this commit"
                                      # set text "—"
-                                     # set style [("color", if itIsDarkTheme then hrefLight else hrefDark)]
+                         , image "rt-view-href-icon" externalLinkSVG
                          ]
-  addNodeCell "start-time"        [ UI.span ## (id' <> "__node-start-time")
+  addNodeCell "system-start-time" [ UI.span ## (id' <> "__node-system-start-time")
                                             # set text "—"
                                   ]
-  addNodeCell "system-start-time" [ UI.span ## (id' <> "__node-system-start-time")
+  addNodeCell "start-time"        [ UI.span ## (id' <> "__node-start-time")
                                             # set text "—"
                                   ]
   addNodeCell "uptime"   [ UI.span ## (id' <> "__node-uptime")
@@ -83,7 +81,7 @@ addNodeColumn window loggingConfig (NodeId anId) = do
                            ]
   addNodeCell rowId cellContent =
     whenJustM (UI.getElementById window ("node-" <> rowId <> "-row")) $ \el ->
-      void $ element el #+ [ UI.td #. (unpack anId <> "__column_cell rt-view-node-column-cell")
+      void $ element el #+ [ UI.td #. (unpack anId <> "__column_cell")
                                    #+ cellContent
                            ]
 
@@ -106,9 +104,8 @@ logsSettings loggingConfig anId itIsDarkTheme =
                 then "tag is-warning is-light is-rounded ml-3 has-tooltip-multiline has-tooltip-top rt-view-logs-format"
                 else "tag is-warning is-rounded ml-3 has-tooltip-multiline has-tooltip-top rt-view-logs-format"
         let pathToSubdir = root </> anId
-        copyPath <- image "has-tooltip-multiline has-tooltip-top rt-view-copy-icon" copyLightSVG
+        copyPath <- image "has-tooltip-multiline has-tooltip-top rt-view-copy-icon" copySVG
                           # set dataTooltip "Click to copy the path to a directory with logs from this node"
-                          # set html (if itIsDarkTheme then copyLightSVG else copyDarkSVG)
         on UI.click copyPath . const $
           UI.runFunction $ UI.ffi copyTextToClipboard pathToSubdir
         return $
@@ -123,9 +120,8 @@ logsSettings loggingConfig anId itIsDarkTheme =
                       # set text (if format == ForHuman then "LOG" else "JSON")
             ]
       JournalMode -> do
-        copyId <- image "has-tooltip-multiline has-tooltip-top rt-view-copy-icon" copyLightSVG
+        copyId <- image "has-tooltip-multiline has-tooltip-top rt-view-copy-icon" copySVG
                         # set dataTooltip "Click to copy the syslog identifier of this node"
-                        # set html (if itIsDarkTheme then copyLightSVG else copyDarkSVG)
         on UI.click copyId . const $
           UI.runFunction $ UI.ffi copyTextToClipboard anId
         return $

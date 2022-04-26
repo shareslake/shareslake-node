@@ -12,6 +12,7 @@ module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
   , setTimeFormatChartJS
   , setTimeUnitChartJS
   , resetZoomChartJS
+  , changeColorsChartJS
   , ix2tf
   , ix2tu
   ) where
@@ -224,3 +225,24 @@ window.charts.get(%1).update({duration: 0});
 resetZoomChartJS :: ChartId -> UI ()
 resetZoomChartJS chartId =
   UI.runFunction $ UI.ffi "window.charts.get(%1).resetZoom();" (show chartId)
+
+changeColorsChartJS
+  :: ChartId
+  -> Color
+  -> Color
+  -> UI ()
+changeColorsChartJS chartId (Color textColor) (Color gridColor) =
+  UI.runFunction $ UI.ffi changeColorsChartJS' (show chartId) textColor gridColor
+
+changeColorsChartJS' :: String
+changeColorsChartJS' = [s|
+window.charts.get(%1).options.scales.x.ticks.color = %2;
+window.charts.get(%1).options.scales.x.title.color = %2;
+window.charts.get(%1).options.scales.x.grid.color = %3;
+window.charts.get(%1).options.scales.y.ticks.color = %2;
+window.charts.get(%1).options.scales.y.title.color = %2;
+window.charts.get(%1).options.scales.y.grid.color = %3;
+window.charts.get(%1).options.plugins.title.color = %2;
+window.charts.get(%1).options.plugins.legend.title.color = %2;
+window.charts.get(%1).update({duration: 0});
+|]

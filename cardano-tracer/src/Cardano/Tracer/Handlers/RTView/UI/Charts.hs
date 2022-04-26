@@ -16,6 +16,8 @@ module Cardano.Tracer.Handlers.RTView.UI.Charts
   , saveLatestDisplayedTS
   , restoreChartsSettings
   , saveChartsSettings
+  , changeChartsToLightTheme
+  , changeChartsToDarkTheme
   ) where
 
 -- | The module 'Cardano.Tracer.Handlers.RTView.UI.JS.Charts' contains the tools
@@ -41,6 +43,7 @@ import           Text.Read (readMaybe)
 import           Cardano.Tracer.Types (NodeId (..))
 import           Cardano.Tracer.Handlers.RTView.State.Displayed
 import           Cardano.Tracer.Handlers.RTView.State.Historical
+import           Cardano.Tracer.Handlers.RTView.UI.CSS.Own
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Charts as Chart
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Utils as JS
 import           Cardano.Tracer.Handlers.RTView.UI.Types
@@ -193,3 +196,13 @@ readSavedChartsSettings = liftIO $
 
 getPathToChartsConfig :: IO FilePath
 getPathToChartsConfig = getXdgDirectory XdgConfig "rt-view-charts-config"
+
+changeChartsToLightTheme :: UI ()
+changeChartsToLightTheme =
+  forM_ chartsIds $ \chartId ->
+    Chart.changeColorsChartJS chartId (Color chartTextDark) (Color chartGridDark)
+
+changeChartsToDarkTheme :: UI ()
+changeChartsToDarkTheme =
+  forM_ chartsIds $ \chartId ->
+    Chart.changeColorsChartJS chartId (Color chartTextLight) (Color chartGridLight)

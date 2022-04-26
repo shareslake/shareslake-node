@@ -27,7 +27,7 @@ mkAboutInfo = do
     ["-c",       path] -> makeAbsolute path
     ["--config", path] -> makeAbsolute path
     _                  -> return ""
-  copyPath <- image "has-tooltip-multiline has-tooltip-top rt-view-copy-icon" copyLightSVG
+  copyPath <- image "has-tooltip-multiline has-tooltip-top rt-view-copy-icon" copySVG
                     # set dataTooltip "Click to copy the path"
   on UI.click copyPath . const $
     UI.runFunction $ UI.ffi copyTextToClipboard pathToConfig
@@ -53,11 +53,11 @@ mkAboutInfo = do
                           , string "Commit"
                           ]
                       , UI.p #. "mb-3" #+
-                          [ image "rt-view-overview-icon" platformDarkSVG
+                          [ image "rt-view-overview-icon" platformSVG
                           , string "Platform"
                           ]
                       , UI.p #. "mb-3" #+
-                          [ image "rt-view-overview-icon" configDarkSVG
+                          [ image "rt-view-overview-icon" configSVG
                           , string "Configuration"
                           ]
                       , UI.p #. "mb-1" #+
@@ -75,6 +75,7 @@ mkAboutInfo = do
                                # set UI.target "_blank"
                                # set dataTooltip "Browse repository on this commit"
                                # set text commit
+                          , image "rt-view-href-icon" externalLinkSVG
                           ]
                       , UI.p #. "mb-3" #+
                           [ string $ if | isWindows -> "Windows"

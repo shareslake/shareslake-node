@@ -33,7 +33,7 @@ mkPageBody window networkConfig = do
           ]
       , topNavigation window
       , UI.div ## "no-nodes" #. "container is-max-widescreen has-text-centered" #+
-          [ image "rt-view-no-nodes-icon" noNodesLightSVG ## "no-nodes-icon"
+          [ image "rt-view-no-nodes-icon" noNodesSVG ## "no-nodes-icon"
           , UI.p ## "no-nodes-message" #. "rt-view-no-nodes-message" #+
               [ string "There are no connected nodes. Yet."
               ]
@@ -52,62 +52,52 @@ mkPageBody window networkConfig = do
                       ]
                   , UI.mkElement "tbody" #+
                       [ UI.tr ## "node-version-row" #+
-                          [ UI.td #. "rt-view-table-description-td"
-                                  #+ [ image "rt-view-overview-icon" versionSVG
+                          [ UI.td #+ [ image "rt-view-overview-icon" versionSVG
                                      , string "Version"
                                      ]
                           ]
                       , UI.tr ## "node-protocol-row" #+
-                          [ UI.td #. "rt-view-table-description-td"
-                                  #+ [ image "rt-view-overview-icon" protocolSVG
+                          [ UI.td #+ [ image "rt-view-overview-icon" protocolSVG
                                      , string "Protocol"
                                      ]
                           ]
                       , UI.tr ## "node-commit-row" #+
-                          [ UI.td #. "rt-view-table-description-td"
-                                  #+ [ image "rt-view-overview-icon" commitSVG
+                          [ UI.td #+ [ image "rt-view-overview-icon" commitSVG
                                      , string "Commit"
                                      ]
                           ]
-                      , UI.tr ## "node-start-time-row" #+
-                          [ UI.td #. "rt-view-table-description-td"
-                                  #+ [ image "rt-view-overview-icon" startSVG
-                                     , string "Node start"
-                                     ]
-                          ]
                       , UI.tr ## "node-system-start-time-row" #+
-                          [ UI.td #. "rt-view-table-description-td"
-                                  #+ [ image "rt-view-overview-icon" systemStartSVG
+                          [ UI.td #+ [ image "rt-view-overview-icon" systemStartSVG
                                      , string "Blockchain start"
                                      ]
                           ]
+                      , UI.tr ## "node-start-time-row" #+
+                          [ UI.td #+ [ image "rt-view-overview-icon" startSVG
+                                     , string "Node start"
+                                     ]
+                          ]
                       , UI.tr ## "node-uptime-row" #+
-                          [ UI.td #. "rt-view-table-description-td"
-                                  #+ [ image "rt-view-overview-icon" uptimeSVG
+                          [ UI.td #+ [ image "rt-view-overview-icon" uptimeSVG
                                      , string "Uptime"
                                      ]
                           ]
                       , UI.tr ## "node-logs-row" #+
-                          [ UI.td #. "rt-view-table-description-td"
-                                  #+ [ image "rt-view-overview-icon" logsSVG
+                          [ UI.td #+ [ image "rt-view-overview-icon" logsSVG
                                      , string "Logs"
                                      ]
                           ]
                       --, UI.tr ## "node-peers-row" #+
-                      --    [ UI.td #. "rt-view-table-description-td"
-                      --            #+ [ image "rt-view-overview-icon" peersSVG
+                      --    [ UI.td #+ [ image "rt-view-overview-icon" peersSVG
                       --               , string "Peers"
                       --               ]
                       --    ]
                       , UI.tr ## "node-chain-row" #+
-                          [ UI.td #. "rt-view-table-description-td"
-                                  #+ [ image "rt-view-overview-icon" chainSVG
+                          [ UI.td #+ [ image "rt-view-overview-icon" chainSVG
                                      , string "Chain"
                                      ]
                           ]
                       --, UI.tr ## "node-errors-row" #+
-                      --    [ UI.td #. "rt-view-table-description-td"
-                      --            #+ [ image "rt-view-overview-icon" errorsSVG
+                      --    [ UI.td #+ [ image "rt-view-overview-icon" errorsSVG
                       --               , string "Errors"
                       --               ]
                       --    ]
@@ -116,7 +106,7 @@ mkPageBody window networkConfig = do
               ]
           ]
       , UI.div ## "main-charts-container"
-               #. "container rt-view-charts-container"
+               #. "container is-fluid rt-view-charts-container"
                # hideIt #+
           [ UI.div #. "columns" #+
               [ UI.div #. "column" #+
@@ -139,7 +129,7 @@ mkPageBody window networkConfig = do
 topNavigation :: UI.Window -> UI Element
 topNavigation window = do
   info <- mkAboutInfo
-  infoIcon <- image "has-tooltip-multiline has-tooltip-bottom rt-view-info-icon" rtViewInfoLightSVG
+  infoIcon <- image "has-tooltip-multiline has-tooltip-bottom rt-view-info-icon" rtViewInfoSVG
                     ## "info-icon"
                     # set dataTooltip "RTView info"
   on UI.click infoIcon . const $ element info #. "modal is-active"
@@ -156,12 +146,12 @@ topNavigation window = do
                      # set dataTooltip "Switch to light theme"
   on UI.click themeIcon . const $ switchTheme window
 
-  UI.div ## "top-bar" #. "navbar rt-view-top-bar-dark" #+
+  UI.div ## "top-bar" #. "navbar rt-view-top-bar" #+
     [ element info
     -- , element notifications
     , UI.div #. "navbar-brand" #+
         [ UI.div #. "navbar-item" #+
-            [ image "rt-view-cardano-logo" cardanoLogoLightSVG ## "cardano-logo"
+            [ image "rt-view-cardano-logo" cardanoLogoSVG ## "cardano-logo"
             , UI.span ## "name" #. "rt-view-name" # set text "Node Real-time View"
             ]
         ]
@@ -195,6 +185,7 @@ noNodesInfo networkConfig = do
           , UI.anchor # set UI.href "https://github.com/input-output-hk/cardano-node/blob/master/cardano-tracer/docs/cardano-tracer.md#configuration"
                       # set text "our documentation"
                       # set UI.target "_blank"
+          , image "rt-view-href-icon" externalLinkWhiteSVG
           , string "."
           ]
       , UI.p #. "mt-4" #+
