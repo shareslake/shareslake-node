@@ -51,6 +51,8 @@ data DataName
   | GCMinorNumData
   | GCLiveMemoryData
   | CPUTimeGCData
+  | CPUTimeAppData
+  | ThreadsNumData
   deriving (Eq, Ord)
 
 type HistoricalData = Map DataName HistoricalPoints

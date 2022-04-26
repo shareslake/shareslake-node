@@ -23,12 +23,14 @@ mkPageBody
   -> Network
   -> UI Element
 mkPageBody window networkConfig = do
-  cpuChart <- mkChart window CPUChart
-  memoryChart <- mkChart window MemoryChart
-  gcMajorNumChart <- mkChart window GCMajorNumChart
-  gcMinorNumChart <- mkChart window GCMinorNumChart
+  cpuChart          <- mkChart window CPUChart
+  memoryChart       <- mkChart window MemoryChart
+  gcMajorNumChart   <- mkChart window GCMajorNumChart
+  gcMinorNumChart   <- mkChart window GCMinorNumChart
   gcLiveMemoryChart <- mkChart window GCLiveMemoryChart
-  cpuTimeGCChart <- mkChart window CPUTimeGCChart
+  cpuTimeGCChart    <- mkChart window CPUTimeGCChart
+  cpuTimeAppChart   <- mkChart window CPUTimeAppChart
+  threadsNumChart   <- mkChart window ThreadsNumChart
 
   body <-
     UI.getBody window #+
@@ -117,11 +119,13 @@ mkPageBody window networkConfig = do
                   [ element cpuChart
                   , element gcMajorNumChart
                   , element gcLiveMemoryChart
+                  , element cpuTimeGCChart
                   ]
               , UI.div #. "column" #+
                   [ element memoryChart
                   , element gcMinorNumChart
-                  , element cpuTimeGCChart
+                  , element threadsNumChart
+                  , element cpuTimeAppChart
                   ]
               ]
           ]
@@ -135,6 +139,8 @@ mkPageBody window networkConfig = do
   Chart.newTimeChartJS GCMinorNumChart   "Number of minor GCs"   ""
   Chart.newTimeChartJS GCLiveMemoryChart "GC, live data in heap" "MB"
   Chart.newTimeChartJS CPUTimeGCChart    "CPU time used by GC"   "milliseconds"
+  Chart.newTimeChartJS CPUTimeAppChart   "CPU time used by app"  "milliseconds"
+  Chart.newTimeChartJS ThreadsNumChart   "Number of threads"     ""
 
   return body
 

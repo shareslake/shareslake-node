@@ -39,14 +39,14 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
     forM_ metrics $ \(metricName, metricValue) -> do
       let valueS = unpack metricValue
       case metricName of
-        "stat.cputicks"   -> updateCPUUsage     nodeId valueS now
-        "mem.resident"    -> updateRSSMemory    nodeId valueS now
-        "rts.gcLiveBytes" -> updateGCLiveMemory nodeId valueS now
-        "rts.gcMajorNum"  -> updateGCMajorNum   nodeId valueS now
-        "rts.gcMinorNum"  -> updateGCMinorNum   nodeId valueS now
-        "rts.gcticks"     -> updateCPUTimeGC    nodeId valueS now
-        "rts.mutticks"    -> return () -- updateMutTicks
-        -- "rts.stat.threads" TODO
+        "stat.cputicks"    -> updateCPUUsage     nodeId valueS now
+        "mem.resident"     -> updateRSSMemory    nodeId valueS now
+        "rts.gcLiveBytes"  -> updateGCLiveMemory nodeId valueS now
+        "rts.gcMajorNum"   -> updateGCMajorNum   nodeId valueS now
+        "rts.gcMinorNum"   -> updateGCMinorNum   nodeId valueS now
+        "rts.gcticks"      -> updateCPUTimeGC    nodeId valueS now
+        "rts.mutticks"     -> updateCPUTimeApp   nodeId valueS now
+        "rts.stat.threads" -> updateThreadsNum   nodeId valueS now
         _ -> return ()
  where
   updateCPUUsage nodeId valueS now =
@@ -92,6 +92,16 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
       let cpuTimeGCInMs = cpuTimeGCInCentiS * 10
       addHistoricalData rHistory nodeId now CPUTimeGCData $ ValueI (fromIntegral cpuTimeGCInMs)
 
+  updateCPUTimeApp nodeId valueS now =
+    whenJust (readMaybe valueS) $ \(cpuTimeAppInCentiS :: Word64) -> do
+      -- This is a total CPU time used by the the node itself, as 1/100 second.
+      let cpuTimeAppInMs = cpuTimeAppInCentiS * 10
+      addHistoricalData rHistory nodeId now CPUTimeAppData $ ValueI (fromIntegral cpuTimeAppInMs)
+
+  updateThreadsNum nodeId valueS now =
+    whenJust (readMaybe valueS) $ \(threadsNum :: Integer) ->
+      addHistoricalData rHistory nodeId now ThreadsNumData $ ValueI threadsNum
+
 updateResourcesCharts
   :: ConnectedNodes
   -> ResourcesHistory
@@ -107,6 +117,8 @@ updateResourcesCharts connectedNodes (ResHistory rHistory) datasetIndices datase
     addPointsToAChart nodeId GCMinorNumData   GCMinorNumChart
     addPointsToAChart nodeId GCLiveMemoryData GCLiveMemoryChart
     addPointsToAChart nodeId CPUTimeGCData    CPUTimeGCChart
+    addPointsToAChart nodeId CPUTimeAppData   CPUTimeAppChart
+    addPointsToAChart nodeId ThreadsNumData   ThreadsNumChart
  where
   addPointsToAChart nodeId dataName chartId = do
     history <- liftIO $ getHistoricalData rHistory nodeId dataName

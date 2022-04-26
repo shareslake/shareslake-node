@@ -32,6 +32,8 @@ data ChartId
   | GCMinorNumChart
   | GCLiveMemoryChart
   | CPUTimeGCChart
+  | CPUTimeAppChart
+  | ThreadsNumChart
   deriving (Bounded, Enum, Generic, FromJSON, ToJSON, Show)
 
 data ChartSelectId
