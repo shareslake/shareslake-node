@@ -40,6 +40,12 @@ span[data-tooltip] {
   min-width: 350px;
 }
 
+.rt-view-node-chart-label svg {
+  width: 42px;
+  height: 15px;
+  margin-right: 3px;
+}
+
 /* Dark Theme */
 
 .dark {

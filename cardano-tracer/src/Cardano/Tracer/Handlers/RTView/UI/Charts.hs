@@ -95,20 +95,22 @@ getDatasetIx
 getDatasetIx indices nodeId = liftIO $
   M.lookup nodeId <$> readTVarIO indices
 
--- | ...
 addNodeDatasetsToCharts
-  :: NodeId
+  :: Window
+  -> NodeId
   -> Colors
   -> DatasetsIndices
   -> DisplayedElements
   -> UI ()
-addNodeDatasetsToCharts nodeId@(NodeId anId) colors datasetIndices displayedElements = do
-  colorForNode <- getNewColor colors
+addNodeDatasetsToCharts window nodeId@(NodeId anId) colors datasetIndices displayedElements = do
+  colorForNode@(Color code) <- getNewColor colors
   forM_ chartsIds $ \chartId -> do
     newIx <- Chart.getDatasetsLengthChartJS chartId
     nodeName <- liftIO $ getDisplayedValue displayedElements nodeId (anId <> "__node-name")
     Chart.addDatasetChartJS chartId (maybe anId id nodeName) colorForNode
     saveDatasetIx datasetIndices nodeId (Index newIx)
+  -- Change color label for node name as well.
+  findAndSet (set style [("color", code)]) window (anId <> "__node-chart-label")
 
 initDatasetsTimestamps :: UI DatasetsTimestamps
 initDatasetsTimestamps = liftIO . newTVarIO $ M.empty

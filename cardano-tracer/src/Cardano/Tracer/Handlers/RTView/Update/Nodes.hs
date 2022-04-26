@@ -82,7 +82,7 @@ addDatasetsForConnected window newlyConnected colors datasetIndices displayedEle
   unless (S.null newlyConnected) $
     findAndShow window "main-charts-container"
   forM_ newlyConnected $ \nodeId ->
-    addNodeDatasetsToCharts nodeId colors datasetIndices displayedElements
+    addNodeDatasetsToCharts window nodeId colors datasetIndices displayedElements
 
 deleteColumnsForDisconnected
   :: UI.Window

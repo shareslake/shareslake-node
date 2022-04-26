@@ -33,7 +33,10 @@ addNodeColumn window loggingConfig (NodeId anId) = do
   let id' = unpack anId
   itIsDarkTheme <- isCurrentThemeDark
   ls <- logsSettings loggingConfig id' itIsDarkTheme
-  addNodeCellH "name"    [ UI.span ## (id' <> "__node-name")
+  addNodeCellH "name"    [ image "rt-view-node-chart-label has-tooltip-multiline has-tooltip-left" rectangleSVG
+                                 ## (id' <> "__node-chart-label")
+                                 # set dataTooltip "Label using for this node on charts"
+                         , UI.span ## (id' <> "__node-name")
                                    #. "has-text-weight-bold is-size-4 rt-view-node-name"
                                    # set text "Node"
                          ]
