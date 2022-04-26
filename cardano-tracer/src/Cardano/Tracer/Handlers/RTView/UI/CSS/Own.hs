@@ -153,6 +153,8 @@ span[data-tooltip] {
   padding-right: 20px;
   margin-left: 16px;
   margin-right: 16px;
+  margin-top: 30px;
+  margin-bottom: 50px;
   border: 1px solid #444;
   border-radius: 6px;
 }
@@ -311,6 +313,8 @@ span[data-tooltip] {
   padding-right: 20px;
   margin-left: 16px;
   margin-right: 16px;
+  margin-top: 30px;
+  margin-bottom: 50px;
   border: 1px solid #dddddd;
   border-radius: 6px;
 }

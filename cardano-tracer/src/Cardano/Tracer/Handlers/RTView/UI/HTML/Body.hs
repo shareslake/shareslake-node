@@ -23,8 +23,10 @@ mkPageBody
   -> Network
   -> UI Element
 mkPageBody window networkConfig = do
-  cpuChart    <- mkChart window CPUChart
+  cpuChart <- mkChart window CPUChart
   memoryChart <- mkChart window MemoryChart
+  gcMajorNumChart <- mkChart window GCMajorNumChart
+  gcMinorNumChart <- mkChart window GCMinorNumChart
 
   body <-
     UI.getBody window #+
@@ -111,9 +113,11 @@ mkPageBody window networkConfig = do
           [ UI.div #. "columns" #+
               [ UI.div #. "column" #+
                   [ element cpuChart
+                  , element gcMajorNumChart
                   ]
               , UI.div #. "column" #+
                   [ element memoryChart
+                  , element gcMinorNumChart
                   ]
               ]
           ]
@@ -121,8 +125,10 @@ mkPageBody window networkConfig = do
 
   Chart.prepareChartsJS
 
-  Chart.newTimeChartJS CPUChart    "CPU Usage"    "Percent"
-  Chart.newTimeChartJS MemoryChart "Memory Usage" "MB"
+  Chart.newTimeChartJS CPUChart        "CPU Usage"           "Percent"
+  Chart.newTimeChartJS MemoryChart     "Memory Usage"        "MB"
+  Chart.newTimeChartJS GCMajorNumChart "Number of Major GCs" ""
+  Chart.newTimeChartJS GCMinorNumChart "Number of Minor GCs" ""
 
   return body
 

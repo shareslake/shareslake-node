@@ -42,8 +42,8 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
         "stat.cputicks"   -> updateCPUUsage nodeId valueS now
         "mem.resident"    -> updateRSSMemory nodeId valueS now
         "rts.gcLiveBytes" -> return () -- updateRTSBytesUsed
-        "rts.gcMajorNum"  -> return () -- updateGcMajorNum
-        "rts.gcMinorNum"  -> return () -- updateGcMinorNum
+        "rts.gcMajorNum"  -> updateGCMajorNum nodeId valueS now
+        "rts.gcMinorNum"  -> updateGCMinorNum nodeId valueS now
         "rts.gcticks"     -> return () -- updateGCTicks
         "rts.mutticks"    -> return () -- updateMutTicks
         -- "rts.stat.threads" TODO
@@ -73,6 +73,14 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
       let memoryInMB = fromIntegral bytes / 1024 / 1024 :: Double
       addHistoricalData rHistory nodeId now MemoryData $ ValueD memoryInMB
 
+  updateGCMajorNum nodeId valueS now =
+    whenJust (readMaybe valueS) $ \(gcMajorNum :: Integer) ->
+      addHistoricalData rHistory nodeId now GCMajorNumData $ ValueI gcMajorNum
+
+  updateGCMinorNum nodeId valueS now =
+    whenJust (readMaybe valueS) $ \(gcMinorNum :: Integer) ->
+      addHistoricalData rHistory nodeId now GCMinorNumData $ ValueI gcMinorNum
+
 updateResourcesCharts
   :: ConnectedNodes
   -> ResourcesHistory
@@ -82,8 +90,10 @@ updateResourcesCharts
 updateResourcesCharts connectedNodes (ResHistory rHistory) datasetIndices datasetTimestamps = do
   connected <- liftIO $ readTVarIO connectedNodes
   forM_ connected $ \nodeId -> do
-    addPointsToAChart nodeId CPUData    CPUChart
-    addPointsToAChart nodeId MemoryData MemoryChart
+    addPointsToAChart nodeId CPUData        CPUChart
+    addPointsToAChart nodeId MemoryData     MemoryChart
+    addPointsToAChart nodeId GCMajorNumData GCMajorNumChart
+    addPointsToAChart nodeId GCMinorNumData GCMinorNumChart
  where
   addPointsToAChart nodeId dataName chartId = do
     history <- liftIO $ getHistoricalData rHistory nodeId dataName

@@ -47,6 +47,8 @@ type HistoricalPoints = Set (POSIXTime, ValueH)
 data DataName
   = CPUData
   | MemoryData
+  | GCMajorNumData
+  | GCMinorNumData
   deriving (Eq, Ord)
 
 type HistoricalData = Map DataName HistoricalPoints

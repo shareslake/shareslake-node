@@ -28,6 +28,8 @@ import           Cardano.Tracer.Handlers.RTView.State.Historical
 data ChartId
   = CPUChart
   | MemoryChart
+  | GCMajorNumChart
+  | GCMinorNumChart
   deriving (Bounded, Enum, Generic, FromJSON, ToJSON, Show)
 
 data ChartSelectId
