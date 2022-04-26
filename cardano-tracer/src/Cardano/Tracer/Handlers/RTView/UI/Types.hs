@@ -30,6 +30,7 @@ data ChartId
   | MemoryChart
   | GCMajorNumChart
   | GCMinorNumChart
+  | GCLiveMemoryChart
   deriving (Bounded, Enum, Generic, FromJSON, ToJSON, Show)
 
 data ChartSelectId

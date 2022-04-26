@@ -49,6 +49,7 @@ data DataName
   | MemoryData
   | GCMajorNumData
   | GCMinorNumData
+  | GCLiveMemoryData
   deriving (Eq, Ord)
 
 type HistoricalData = Map DataName HistoricalPoints

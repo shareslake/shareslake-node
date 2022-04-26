@@ -27,6 +27,7 @@ mkPageBody window networkConfig = do
   memoryChart <- mkChart window MemoryChart
   gcMajorNumChart <- mkChart window GCMajorNumChart
   gcMinorNumChart <- mkChart window GCMinorNumChart
+  gcLiveMemoryChart <- mkChart window GCLiveMemoryChart
 
   body <-
     UI.getBody window #+
@@ -114,6 +115,7 @@ mkPageBody window networkConfig = do
               [ UI.div #. "column" #+
                   [ element cpuChart
                   , element gcMajorNumChart
+                  , element gcLiveMemoryChart
                   ]
               , UI.div #. "column" #+
                   [ element memoryChart
@@ -125,10 +127,11 @@ mkPageBody window networkConfig = do
 
   Chart.prepareChartsJS
 
-  Chart.newTimeChartJS CPUChart        "CPU Usage"           "Percent"
-  Chart.newTimeChartJS MemoryChart     "Memory Usage"        "MB"
-  Chart.newTimeChartJS GCMajorNumChart "Number of Major GCs" ""
-  Chart.newTimeChartJS GCMinorNumChart "Number of Minor GCs" ""
+  Chart.newTimeChartJS CPUChart          "CPU usage"             "Percent"
+  Chart.newTimeChartJS MemoryChart       "Memory usage"          "MB"
+  Chart.newTimeChartJS GCMajorNumChart   "Number of major GCs"   ""
+  Chart.newTimeChartJS GCMinorNumChart   "Number of minor GCs"   ""
+  Chart.newTimeChartJS GCLiveMemoryChart "GC, live data in heap" "MB"
 
   return body
 
