@@ -25,7 +25,6 @@ import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
 
 import           Cardano.Tracer.Handlers.RTView.State.Historical
-import           Cardano.Tracer.Handlers.RTView.Update.Utils
 import           Cardano.Tracer.Handlers.RTView.UI.Types
 
 data ChartTimeFormat
@@ -75,11 +74,14 @@ var chart = new Chart(ctx, {
     datasets: []
   },
   options: {
+    parsing: false,
     animation: false,
+    normalized: true,
     showLine: true,
+    spanGaps: false,
     elements: {
       point: {
-        radius: 2
+        radius: 3
       }
     },
     responsive: true,
@@ -91,6 +93,9 @@ var chart = new Chart(ctx, {
           size: 18
         },
         text: %2
+      },
+      decimation: {
+        enabled: true
       },
       zoom: {
         zoom: {
@@ -121,7 +126,10 @@ var chart = new Chart(ctx, {
             minute: 'MMM D YYYY HH:mm',
             hour:   'MMM D YYYY hh a',
           },
-          unit: 'second'
+          unit: 'minute'
+        },
+        ticks: {
+          maxRotation: 0
         }
       },
       y: {
@@ -153,8 +161,9 @@ const newDataset = {
   data: [],
   fill: false
 };
-window.charts.get(%1).data.datasets.push(newDataset);
-window.charts.get(%1).update({duration: 0});
+var chart = window.charts.get(%1);
+chart.data.datasets.push(newDataset);
+chart.update();
 |]
 
 getDatasetsLengthChartJS :: ChartId -> UI Word8
@@ -167,21 +176,21 @@ addPointsChartJS
   -> Index
   -> [(POSIXTime, ValueH)]
   -> UI ()
-addPointsChartJS chartId (Index datasetIx) points = do
+addPointsChartJS chartId (Index datasetIx) points =
   UI.runFunction $ UI.ffi pushToDataset
-  UI.runFunction $ UI.ffi "window.charts.get(%1).update({duration: 0});" (show chartId)
  where
   pushToDataset =
-    "window.charts.get('"
+    "var chart = window.charts.get('"
     <> (show chartId)
-    <> "').data.datasets["
+    <> "'); chart.data.datasets["
     <> show datasetIx
     <> "].data.push("
     <> pointsList
-    <> ");"
+    <> "); chart.update();"
   pointsList = intercalate ", " $ map mkPointObject points
   mkPointObject (ts, valueH) =
-    "{x: '" <> show (s2utc ts) <> "', y: " <> show valueH <> "}"
+    let tsInMs = ts * 1000 -- ChartJS uses milliseconds since epoch as internal format.
+    in "{x: " <> show tsInMs <> ", y: " <> show valueH <> "}"
 
 setTimeFormatChartJS
   :: ChartId
@@ -202,10 +211,11 @@ setTimeFormatChartJS chartId format =
 
 setTimeFormatChartJS' :: String
 setTimeFormatChartJS' = [s|
-window.charts.get(%1).options.scales.x.time.displayFormats.second = %2;
-window.charts.get(%1).options.scales.x.time.displayFormats.minute = %3;
-window.charts.get(%1).options.scales.x.time.displayFormats.hour = %4;
-window.charts.get(%1).update({duration: 0});
+var chart = window.charts.get(%1);
+chart.options.scales.x.time.displayFormats.second = %2;
+chart.options.scales.x.time.displayFormats.minute = %3;
+chart.options.scales.x.time.displayFormats.hour = %4;
+chart.update();
 |]
 
 setTimeUnitChartJS
@@ -218,8 +228,9 @@ setTimeUnitChartJS chartId Hours   = UI.runFunction $ UI.ffi setTimeUnitChartJS'
 
 setTimeUnitChartJS' :: String
 setTimeUnitChartJS' = [s|
-window.charts.get(%1).options.scales.x.time.unit = %2;
-window.charts.get(%1).update({duration: 0});
+var chart = window.charts.get(%1);
+chart.options.scales.x.time.unit = %2;
+chart.update();
 |]
 
 resetZoomChartJS :: ChartId -> UI ()
@@ -236,13 +247,14 @@ changeColorsChartJS chartId (Color textColor) (Color gridColor) =
 
 changeColorsChartJS' :: String
 changeColorsChartJS' = [s|
-window.charts.get(%1).options.scales.x.ticks.color = %2;
-window.charts.get(%1).options.scales.x.title.color = %2;
-window.charts.get(%1).options.scales.x.grid.color = %3;
-window.charts.get(%1).options.scales.y.ticks.color = %2;
-window.charts.get(%1).options.scales.y.title.color = %2;
-window.charts.get(%1).options.scales.y.grid.color = %3;
-window.charts.get(%1).options.plugins.title.color = %2;
-window.charts.get(%1).options.plugins.legend.title.color = %2;
-window.charts.get(%1).update({duration: 0});
+var chart = window.charts.get(%1);
+chart.options.scales.x.ticks.color = %2;
+chart.options.scales.x.title.color = %2;
+chart.options.scales.x.grid.color = %3;
+chart.options.scales.y.ticks.color = %2;
+chart.options.scales.y.title.color = %2;
+chart.options.scales.y.grid.color = %3;
+chart.options.plugins.title.color = %2;
+chart.options.plugins.legend.title.color = %2;
+chart.update();
 |]

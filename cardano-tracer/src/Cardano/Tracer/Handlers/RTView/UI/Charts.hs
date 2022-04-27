@@ -222,7 +222,7 @@ readSavedChartsSettings = liftIO $
     _ -> return defaultSettings
  where
   defaultSettings =
-    [ (chartId, ChartSettings (Index 0) (Index 0))
+    [ (chartId, ChartSettings (Index 0) (Index 1))
     | chartId <- chartsIds
     ]
 
