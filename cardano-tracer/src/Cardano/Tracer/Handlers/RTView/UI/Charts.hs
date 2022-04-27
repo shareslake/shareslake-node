@@ -30,7 +30,7 @@ import           Control.Concurrent.STM (atomically)
 import           Control.Concurrent.STM.TBQueue
 import           Control.Concurrent.STM.TVar
 import           Control.Exception.Extra (ignore, try_)
-import           Control.Monad (forM, forM_)
+import           Control.Monad (forM, forM_, unless)
 import           Control.Monad.Extra (whenJustM)
 import           Data.Aeson
 import qualified Data.Map.Strict as M
@@ -149,15 +149,45 @@ getLatestDisplayedTS tss nodeId dataName = liftIO $
     Just tssForNode -> return $ M.lookup dataName tssForNode
 
 addPointsToChart
-  :: ChartId
-  -> NodeId
+  :: NodeId
+  -> History
   -> DatasetsIndices
-  -> [(POSIXTime, ValueH)]
+  -> DatasetsTimestamps
+  -> DataName
+  -> ChartId
   -> UI ()
-addPointsToChart _ _ _ [] = return ()
-addPointsToChart chartId nodeId datasetIndices points =
-  whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx ->
-    Chart.addPointsChartJS chartId datasetIx points
+addPointsToChart nodeId hist datasetIndices datasetTimestamps dataName chartId = do
+  history <- liftIO $ getHistoricalData hist nodeId dataName
+  unless (null history) $ do
+    getLatestDisplayedTS datasetTimestamps nodeId dataName >>= \case
+      Nothing ->
+        -- There is no saved latestTS for this node and chart yet,
+        -- so display all the history and remember the latestTS.
+        addPointsToChart' history
+      Just storedTS -> do
+        -- Some of the history for this node and chart is already displayed,
+        -- so cut displayed points first. The only points we should add now
+        -- are the points with 'ts' that is bigger than 'storedTS'.
+        let onlyNewPoints = cutOldPoints storedTS history
+        addPointsToChart' onlyNewPoints
+    let (latestTS, _) = last history
+    saveLatestDisplayedTS datasetTimestamps nodeId dataName latestTS
+ where
+  cutOldPoints _ [] = []
+  cutOldPoints oldTS (point@(ts, _):newerPoints) =
+    if ts > oldTS
+      then
+        -- This point is newer than 'oldTS', take it and all the following
+        -- as well, because they are definitely newer (points are sorted by ts).
+        point : newerPoints
+      else
+        -- This point are older than 'oldTS', it means that it already was displayed.
+        cutOldPoints oldTS newerPoints
+
+  addPointsToChart' [] = return ()
+  addPointsToChart' points =
+    whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx ->
+      Chart.addPointsChartJS chartId datasetIx points
 
 restoreChartsSettings :: UI ()
 restoreChartsSettings = readSavedChartsSettings >>= setCharts

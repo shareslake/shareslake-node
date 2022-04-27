@@ -3,6 +3,7 @@
 module Cardano.Tracer.Handlers.RTView.State.Historical
   ( BlockchainHistory (..)
   , DataName (..)
+  , History
   , POSIXTime
   , ResourcesHistory (..)
   , TransactionsHistory (..)
@@ -43,7 +44,7 @@ instance Show ValueH where
 
 type HistoricalPoints = Set (POSIXTime, ValueH)
 
--- | Historical points for particular data (for example, "CPU").
+-- | Historical points for particular data.
 data DataName
   = CPUData
   | MemoryData
@@ -53,6 +54,12 @@ data DataName
   | CPUTimeGCData
   | CPUTimeAppData
   | ThreadsNumData
+  -- Chain
+  | ChainDensityData
+  | SlotNumData
+  | BlockNumData
+  | SlotInEpochData
+  | EpochData
   deriving (Eq, Ord)
 
 type HistoricalData = Map DataName HistoricalPoints

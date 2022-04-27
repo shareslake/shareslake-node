@@ -9,7 +9,7 @@ module Cardano.Tracer.Handlers.RTView.Update.Resources
   ) where
 
 import           Control.Concurrent.STM.TVar (readTVarIO)
-import           Control.Monad (forM_, unless)
+import           Control.Monad (forM_)
 import           Control.Monad.Extra (whenJust)
 import qualified Data.Map.Strict as M
 import           Data.Time.Clock (getCurrentTime)
@@ -108,42 +108,14 @@ updateResourcesCharts
   -> DatasetsIndices
   -> DatasetsTimestamps
   -> UI ()
-updateResourcesCharts connectedNodes (ResHistory rHistory) datasetIndices datasetTimestamps = do
+updateResourcesCharts connectedNodes (ResHistory history) dsIxs dsTss = do
   connected <- liftIO $ readTVarIO connectedNodes
   forM_ connected $ \nodeId -> do
-    addPointsToAChart nodeId CPUData          CPUChart
-    addPointsToAChart nodeId MemoryData       MemoryChart
-    addPointsToAChart nodeId GCMajorNumData   GCMajorNumChart
-    addPointsToAChart nodeId GCMinorNumData   GCMinorNumChart
-    addPointsToAChart nodeId GCLiveMemoryData GCLiveMemoryChart
-    addPointsToAChart nodeId CPUTimeGCData    CPUTimeGCChart
-    addPointsToAChart nodeId CPUTimeAppData   CPUTimeAppChart
-    addPointsToAChart nodeId ThreadsNumData   ThreadsNumChart
- where
-  addPointsToAChart nodeId dataName chartId = do
-    history <- liftIO $ getHistoricalData rHistory nodeId dataName
-    unless (null history) $ do
-      getLatestDisplayedTS datasetTimestamps nodeId dataName >>= \case
-        Nothing ->
-          -- There is no saved latestTS for this node and chart yet,
-          -- so display all the history and remember the latestTS.
-          addPointsToChart chartId nodeId datasetIndices history
-        Just storedTS -> do
-          -- Some of the history for this node and chart is already displayed,
-          -- so cut displayed points first. The only points we should add now
-          -- are the points with 'ts' that is bigger than 'storedTS'.
-          let onlyNewPoints = cutOldPoints storedTS history
-          addPointsToChart chartId nodeId datasetIndices onlyNewPoints
-      let (latestTS, _) = last history
-      saveLatestDisplayedTS datasetTimestamps nodeId dataName latestTS
-
-  cutOldPoints _ [] = []
-  cutOldPoints oldTS (point@(ts, _):newerPoints) =
-    if ts > oldTS
-      then
-        -- This point is newer than 'oldTS', take it and all the following
-        -- as well, because they are definitely newer (points are sorted by ts).
-        point : newerPoints
-      else
-        -- This point are older than 'oldTS', it means that it already was displayed.
-        cutOldPoints oldTS newerPoints
+    addPointsToChart nodeId history dsIxs dsTss CPUData          CPUChart
+    addPointsToChart nodeId history dsIxs dsTss MemoryData       MemoryChart
+    addPointsToChart nodeId history dsIxs dsTss GCMajorNumData   GCMajorNumChart
+    addPointsToChart nodeId history dsIxs dsTss GCMinorNumData   GCMinorNumChart
+    addPointsToChart nodeId history dsIxs dsTss GCLiveMemoryData GCLiveMemoryChart
+    addPointsToChart nodeId history dsIxs dsTss CPUTimeGCData    CPUTimeGCChart
+    addPointsToChart nodeId history dsIxs dsTss CPUTimeAppData   CPUTimeAppChart
+    addPointsToChart nodeId history dsIxs dsTss ThreadsNumData   ThreadsNumChart

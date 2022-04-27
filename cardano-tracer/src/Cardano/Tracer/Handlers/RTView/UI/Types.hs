@@ -34,6 +34,12 @@ data ChartId
   | CPUTimeGCChart
   | CPUTimeAppChart
   | ThreadsNumChart
+  -- Chain
+  | ChainDensityChart
+  | SlotNumChart
+  | BlockNumChart
+  | SlotInEpochChart
+  | EpochChart
   deriving (Bounded, Enum, Generic, FromJSON, ToJSON, Show)
 
 data ChartSelectId

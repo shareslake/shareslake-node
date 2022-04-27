@@ -17,6 +17,7 @@ import           Cardano.Tracer.Handlers.RTView.State.Last
 import           Cardano.Tracer.Handlers.RTView.State.TraceObjects
 --import           Cardano.Tracer.Handlers.RTView.Update.Nodes
 --import           Cardano.Tracer.Handlers.RTView.Update.Peers
+import           Cardano.Tracer.Handlers.RTView.Update.Chain
 import           Cardano.Tracer.Handlers.RTView.Update.Resources
 import           Cardano.Tracer.Types
 
@@ -36,9 +37,12 @@ runHistoricalUpdater
   -> AcceptedMetrics
   -> ResourcesHistory
   -> LastResources
+  -> BlockchainHistory
   -> IO ()
-runHistoricalUpdater _savedTO acceptedMetrics resourcesHistory lastResources = forever $ do
+runHistoricalUpdater _savedTO acceptedMetrics resourcesHistory
+                     lastResources chainHistory = forever $ do
   updateResourcesHistory acceptedMetrics resourcesHistory lastResources
+  updateBlockchainHistory acceptedMetrics chainHistory
   sleep 1.0 -- TODO: should it be configured?
 
   {-

@@ -28,8 +28,9 @@ import           Cardano.Tracer.Handlers.RTView.UI.JS.ChartJS
 import           Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Cardano.Tracer.Handlers.RTView.UI.Theme
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
-import           Cardano.Tracer.Handlers.RTView.Update.UI
+import           Cardano.Tracer.Handlers.RTView.Update.Chain
 import           Cardano.Tracer.Handlers.RTView.Update.Resources
+import           Cardano.Tracer.Handlers.RTView.Update.UI
 import           Cardano.Tracer.Types
 
 mkMainPage
@@ -42,11 +43,12 @@ mkMainPage
   -> NonEmpty LoggingParams
   -> Network
   -> ResourcesHistory
+  -> BlockchainHistory
   -> UI.Window
   -> UI ()
 mkMainPage connectedNodes displayedElements savedTO
            dpRequestors reloadFlag ekgFreq loggingConfig
-           networkConfig resourcesHistory window = do
+           networkConfig resourcesHistory chainHistory window = do
   void $ return window # set UI.title pageTitle
   void $ UI.getHead window #+
     [ UI.link # set UI.rel "icon"
@@ -110,10 +112,15 @@ mkMainPage connectedNodes displayedElements savedTO
   let toMs dt = fromEnum dt `div` 1000000000
       ekgIntervalInMs = toMs . secondsToNominalDiffTime $ fromMaybe 1.0 ekgFreq
   uiUpdateResourcesTimer <- UI.timer # set UI.interval ekgIntervalInMs
-  on UI.tick uiUpdateResourcesTimer . const $
+  on UI.tick uiUpdateResourcesTimer . const $ do
     updateResourcesCharts
       connectedNodes
       resourcesHistory
+      datasetIndices
+      datasetTimestamps
+    updateBlockchainCharts
+      connectedNodes
+      chainHistory
       datasetIndices
       datasetTimestamps
   UI.start uiUpdateResourcesTimer

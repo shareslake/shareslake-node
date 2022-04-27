@@ -68,6 +68,7 @@ library
                        Cardano.Tracer.Handlers.RTView.UI.Theme
                        Cardano.Tracer.Handlers.RTView.UI.Types
                        Cardano.Tracer.Handlers.RTView.UI.Utils
+                       Cardano.Tracer.Handlers.RTView.Update.Chain
                        Cardano.Tracer.Handlers.RTView.Update.Errors
                        Cardano.Tracer.Handlers.RTView.Update.Historical
                        Cardano.Tracer.Handlers.RTView.Update.NodeInfo

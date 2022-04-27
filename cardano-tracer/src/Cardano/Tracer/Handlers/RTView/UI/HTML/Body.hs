@@ -23,6 +23,7 @@ mkPageBody
   -> Network
   -> UI Element
 mkPageBody window networkConfig = do
+  -- Resources charts.
   cpuChart          <- mkChart window CPUChart
   memoryChart       <- mkChart window MemoryChart
   gcMajorNumChart   <- mkChart window GCMajorNumChart
@@ -31,6 +32,12 @@ mkPageBody window networkConfig = do
   cpuTimeGCChart    <- mkChart window CPUTimeGCChart
   cpuTimeAppChart   <- mkChart window CPUTimeAppChart
   threadsNumChart   <- mkChart window ThreadsNumChart
+  -- Blockchain charts.
+  chainDensityChart <- mkChart window ChainDensityChart
+  slotNumChart      <- mkChart window SlotNumChart
+  blockNumChart     <- mkChart window BlockNumChart
+  slotInEpochChart  <- mkChart window SlotInEpochChart
+  epochChart        <- mkChart window EpochChart
 
   body <-
     UI.getBody window #+
@@ -114,7 +121,18 @@ mkPageBody window networkConfig = do
       , UI.div ## "main-charts-container"
                #. "container is-fluid rt-view-charts-container"
                # hideIt #+
-          [ UI.div #. "columns" #+
+          [ UI.div ## "chain-charts" #. "columns" #+
+              [ UI.div #. "column" #+
+                  [ element chainDensityChart
+                  , element epochChart
+                  , element blockNumChart
+                  ]
+              , UI.div #. "column" #+
+                  [ element slotInEpochChart
+                  , element slotNumChart
+                  ]
+              ]
+          , UI.div ## "resources-charts" #. "columns" #+
               [ UI.div #. "column" #+
                   [ element cpuChart
                   , element gcMajorNumChart
@@ -141,6 +159,12 @@ mkPageBody window networkConfig = do
   Chart.newTimeChartJS CPUTimeGCChart    "CPU time used by GC"   "milliseconds"
   Chart.newTimeChartJS CPUTimeAppChart   "CPU time used by app"  "milliseconds"
   Chart.newTimeChartJS ThreadsNumChart   "Number of threads"     ""
+
+  Chart.newTimeChartJS ChainDensityChart "Chain density"         "Percent"
+  Chart.newTimeChartJS SlotNumChart      "Slot height"           ""
+  Chart.newTimeChartJS BlockNumChart     "Block height"          ""
+  Chart.newTimeChartJS SlotInEpochChart  "Slot in epoch"         ""
+  Chart.newTimeChartJS EpochChart        "Epoch"                 ""
 
   return body
 

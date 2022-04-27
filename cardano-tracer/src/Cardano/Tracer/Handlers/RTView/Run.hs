@@ -51,6 +51,7 @@ runRTView TracerConfig{logging, network, hasRTView, ekgRequestFreq}
     -- period when RTView web-page wasn't opened.
     resourcesHistory <- initResourcesHistory
     lastResources <- initLastResources
+    chainHistory <- initBlockchainHistory
     concurrently_
       (UI.startGUI (config host port) $
          mkMainPage
@@ -62,12 +63,14 @@ runRTView TracerConfig{logging, network, hasRTView, ekgRequestFreq}
            ekgRequestFreq
            logging
            network
-           resourcesHistory)
+           resourcesHistory
+           chainHistory)
       (runHistoricalUpdater
          savedTO
          acceptedMetrics
          resourcesHistory
-         lastResources)
+         lastResources
+         chainHistory)
  where
   config h p = UI.defaultConfig
     { UI.jsPort = Just . fromIntegral $ p
