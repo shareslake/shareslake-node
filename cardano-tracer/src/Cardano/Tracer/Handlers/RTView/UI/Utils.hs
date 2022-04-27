@@ -18,6 +18,7 @@ module Cardano.Tracer.Handlers.RTView.UI.Utils
   , image
   , showIt
   , showInline
+  , showFlex
   , hideIt
   , pageTitle
   , pageTitleNotify
@@ -97,9 +98,13 @@ findAndShow, findAndHide
 findAndShow = findAndSet showIt
 findAndHide = findAndSet hideIt
 
-showIt, showInline, hideIt :: UI Element -> UI Element
+showIt
+  , showInline
+  , showFlex
+  , hideIt :: UI Element -> UI Element
 showIt     = set style [("display", "block")]
 showInline = set style [("display", "inline")]
+showFlex   = set style [("display", "flex")]
 hideIt     = set style [("display", "none")]
 
 pageTitle, pageTitleNotify :: String

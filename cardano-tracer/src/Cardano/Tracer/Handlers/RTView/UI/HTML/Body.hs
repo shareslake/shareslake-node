@@ -4,8 +4,10 @@ module Cardano.Tracer.Handlers.RTView.UI.HTML.Body
   ( mkPageBody
   ) where
 
+import           Control.Monad (void)
 import           Data.List (intersperse)
 import qualified Data.List.NonEmpty as NE
+import           Data.Text (Text)
 import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
 
@@ -38,6 +40,13 @@ mkPageBody window networkConfig = do
   blockNumChart     <- mkChart window BlockNumChart
   slotInEpochChart  <- mkChart window SlotInEpochChart
   epochChart        <- mkChart window EpochChart
+
+  showHideChain     <- image "has-tooltip-multiline has-tooltip-right rt-view-show-hide-chart-group" showSVG
+                             # set dataTooltip "Click to hide Chain Metrics"
+                             # set dataState shownState
+  showHideResources <- image "has-tooltip-multiline has-tooltip-right rt-view-show-hide-chart-group" showSVG
+                             # set dataTooltip "Click to hide Resources Metrics"
+                             # set dataState shownState
 
   body <-
     UI.getBody window #+
@@ -104,11 +113,6 @@ mkPageBody window networkConfig = do
                       --               , string "Peers"
                       --               ]
                       --    ]
-                      , UI.tr ## "node-chain-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" chainSVG
-                                     , string "Chain"
-                                     ]
-                          ]
                       --, UI.tr ## "node-errors-row" #+
                       --    [ UI.td #+ [ image "rt-view-overview-icon" errorsSVG
                       --               , string "Errors"
@@ -121,7 +125,10 @@ mkPageBody window networkConfig = do
       , UI.div ## "main-charts-container"
                #. "container is-fluid rt-view-charts-container"
                # hideIt #+
-          [ UI.p #. "rt-view-chart-group-title" # set text "Chain Metrics"
+          [ UI.p #+
+              [ UI.span #. "rt-view-chart-group-title" # set text "Chain Metrics"
+              , element showHideChain
+              ]
           , UI.div ## "chain-charts" #. "columns" #+
               [ UI.div #. "column" #+
                   [ element chainDensityChart
@@ -133,7 +140,10 @@ mkPageBody window networkConfig = do
                   , element slotNumChart
                   ]
               ]
-          , UI.p #. "rt-view-chart-group-title" # set text "Resources Metrics"
+          , UI.p #+
+              [ UI.span #. "rt-view-chart-group-title" # set text "Resources Metrics"
+              , element showHideResources
+              ]
           , UI.div ## "resources-charts" #. "columns" #+
               [ UI.div #. "column" #+
                   [ element cpuChart
@@ -150,6 +160,11 @@ mkPageBody window networkConfig = do
               ]
           ]
       ]
+
+  on UI.click showHideChain . const $
+    changeVisibilityForCharts window showHideChain "chain-charts" "Chain Metrics"
+  on UI.click showHideResources . const $
+    changeVisibilityForCharts window showHideResources "resources-charts" "Resources Metrics"
 
   Chart.prepareChartsJS
 
@@ -328,3 +343,28 @@ mkChart window chartId = do
   on UI.click resetZoom . const $ Chart.resetZoomChartJS chartId
 
   return chart
+
+shownState, hiddenState :: String
+shownState  = "shown"
+hiddenState = "hidden"
+
+changeVisibilityForCharts
+  :: UI.Window
+  -> Element
+  -> Text
+  -> String
+  -> UI ()
+changeVisibilityForCharts window showHideIcon areaId areaName = do
+  state <- get dataState showHideIcon
+  let haveToHide = state == shownState
+  if haveToHide
+    then do
+      findAndHide window areaId
+      void $ element showHideIcon # set html        hideSVG
+                                  # set dataState   hiddenState
+                                  # set dataTooltip ("Click to show " <> areaName)
+    else do
+      findAndSet showFlex window areaId
+      void $ element showHideIcon # set html        showSVG
+                                  # set dataState   shownState
+                                  # set dataTooltip ("Click to hide " <> areaName)

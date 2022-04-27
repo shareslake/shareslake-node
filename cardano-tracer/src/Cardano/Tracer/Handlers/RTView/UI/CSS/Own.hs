@@ -127,7 +127,7 @@ span[data-tooltip] {
 .dark .rt-view-overview-icon svg {
   width: 18px;
   margin-right: 12px;
-  color: #038b8c;
+  color: #0cc9cb;
 }
 
 .dark .rt-view-no-nodes-icon svg {
@@ -214,6 +214,12 @@ span[data-tooltip] {
   font-size: 110%;
 }
 
+.dark .rt-view-show-hide-chart-group svg {
+  width: 21px;
+  margin-left: 13px;
+  color: #0cc9cb;
+}
+
 /* Light Theme */
 
 .light {
@@ -295,7 +301,7 @@ span[data-tooltip] {
 .light .rt-view-overview-icon svg {
   width: 18px;
   margin-right: 12px;
-  color: #0cc9cb;
+  color: #038b8c;
 }
 
 .light .rt-view-no-nodes-icon svg {
@@ -379,6 +385,12 @@ span[data-tooltip] {
   margin-left: 15px;
   margin-bottom: 8px;
   font-size: 110%;
+}
+
+.light .rt-view-show-hide-chart-group svg {
+  width: 21px;
+  margin-left: 13px;
+  color: #038b8c;
 }
 |]
 
