@@ -206,6 +206,14 @@ span[data-tooltip] {
   font-size: 19px;
 }
 
+.dark .rt-view-chart-group-title {
+  color: whitesmoke;
+  font-weight: bold;
+  margin-left: 15px;
+  margin-bottom: 8px;
+  font-size: 110%;
+}
+
 /* Light Theme */
 
 .light {
@@ -363,6 +371,14 @@ span[data-tooltip] {
   background-color: #2c2b3b;
   color: whitesmoke;
   font-size: 19px;
+}
+
+.light .rt-view-chart-group-title {
+  color: #444;
+  font-weight: bold;
+  margin-left: 15px;
+  margin-bottom: 8px;
+  font-size: 110%;
 }
 |]
 

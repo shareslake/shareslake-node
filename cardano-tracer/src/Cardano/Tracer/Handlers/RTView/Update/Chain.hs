@@ -18,6 +18,8 @@ import           Data.Text (unpack)
 --import           Data.Word (Word64)
 import           Text.Read (readMaybe)
 
+import Debug.Trace
+
 import           Cardano.Tracer.Handlers.Metrics.Utils
 import           Cardano.Tracer.Handlers.RTView.State.Historical
 import           Cardano.Tracer.Handlers.RTView.UI.Charts
@@ -41,7 +43,9 @@ updateBlockchainHistory acceptedMetrics (ChainHistory cHistory) = do
         "cardano.node.blockNum"    -> updateBlockNum     nodeId valueS now
         "cardano.node.slotInEpoch" -> updateSlotInEpoch  nodeId valueS now
         "cardano.node.epoch"       -> updateEpoch        nodeId valueS now
-        _ -> return ()
+        _ -> do
+          liftIO $ traceIO $ "__CHECK_BC_metr NO: " <> unpack metricName
+          return ()
  where
   updateChainDensity nodeId valueS now =
     whenJust (readMaybe valueS) $ \(density :: Double) -> do

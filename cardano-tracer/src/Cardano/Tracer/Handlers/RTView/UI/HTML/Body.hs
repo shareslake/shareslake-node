@@ -121,7 +121,8 @@ mkPageBody window networkConfig = do
       , UI.div ## "main-charts-container"
                #. "container is-fluid rt-view-charts-container"
                # hideIt #+
-          [ UI.div ## "chain-charts" #. "columns" #+
+          [ UI.p #. "rt-view-chart-group-title" # set text "Chain Metrics"
+          , UI.div ## "chain-charts" #. "columns" #+
               [ UI.div #. "column" #+
                   [ element chainDensityChart
                   , element epochChart
@@ -132,6 +133,7 @@ mkPageBody window networkConfig = do
                   , element slotNumChart
                   ]
               ]
+          , UI.p #. "rt-view-chart-group-title" # set text "Resources Metrics"
           , UI.div ## "resources-charts" #. "columns" #+
               [ UI.div #. "column" #+
                   [ element cpuChart
