@@ -50,114 +50,117 @@ mkPageBody window networkConfig = do
 
   body <-
     UI.getBody window #+
-      [ UI.div ## "preloader" #. "pageloader is-active" #+
-          [ UI.span #. "title" # set text "Just a second..."
-          ]
-      , topNavigation window
-      , UI.div ## "no-nodes" #. "container is-max-widescreen has-text-centered" #+
-          [ image "rt-view-no-nodes-icon" noNodesSVG ## "no-nodes-icon"
-          , UI.p ## "no-nodes-message" #. "rt-view-no-nodes-message" #+
-              [ string "There are no connected nodes. Yet."
+      [ UI.div ## "wrapper" #+
+          [ UI.div ## "preloader" #. "pageloader is-active" #+
+              [ UI.span #. "title" # set text "Just a second..."
               ]
-          ]
-      , noNodesInfo networkConfig
-      , UI.mkElement "section" #. "section" #+
-          [ UI.div ## "main-table-container"
-                   #. "table-container"
+          , topNavigation window
+          , UI.div ## "no-nodes" #. "container is-max-widescreen has-text-centered" #+
+              [ image "rt-view-no-nodes-icon" noNodesSVG ## "no-nodes-icon"
+              , UI.p ## "no-nodes-message" #. "rt-view-no-nodes-message" #+
+                  [ string "There are no connected nodes. Yet."
+                  ]
+              ]
+          , noNodesInfo networkConfig
+          , UI.mkElement "section" #. "section" #+
+              [ UI.div ## "main-table-container"
+                       #. "table-container"
+                       # hideIt #+
+                  [ UI.table ## "main-table" #. "table rt-view-main-table" #+
+                      [ UI.mkElement "thead" #+
+                          [ UI.tr ## "node-name-row" #+
+                              [ UI.th #. "rt-view-main-table-description"
+                                      #+ [UI.span # set html "&nbsp;"]
+                              ]
+                          ]
+                      , UI.mkElement "tbody" #+
+                          [ UI.tr ## "node-version-row" #+
+                              [ UI.td #+ [ image "rt-view-overview-icon" versionSVG
+                                         , string "Version"
+                                         ]
+                              ]
+                          , UI.tr ## "node-protocol-row" #+
+                              [ UI.td #+ [ image "rt-view-overview-icon" protocolSVG
+                                         , string "Protocol"
+                                         ]
+                              ]
+                          , UI.tr ## "node-commit-row" #+
+                              [ UI.td #+ [ image "rt-view-overview-icon" commitSVG
+                                         , string "Commit"
+                                         ]
+                              ]
+                          , UI.tr ## "node-system-start-time-row" #+
+                              [ UI.td #+ [ image "rt-view-overview-icon" systemStartSVG
+                                         , string "Blockchain start"
+                                         ]
+                              ]
+                          , UI.tr ## "node-start-time-row" #+
+                              [ UI.td #+ [ image "rt-view-overview-icon" startSVG
+                                         , string "Node start"
+                                         ]
+                              ]
+                          , UI.tr ## "node-uptime-row" #+
+                              [ UI.td #+ [ image "rt-view-overview-icon" uptimeSVG
+                                         , string "Uptime"
+                                         ]
+                              ]
+                          , UI.tr ## "node-logs-row" #+
+                              [ UI.td #+ [ image "rt-view-overview-icon" logsSVG
+                                         , string "Logs"
+                                         ]
+                              ]
+                          --, UI.tr ## "node-peers-row" #+
+                          --    [ UI.td #+ [ image "rt-view-overview-icon" peersSVG
+                          --               , string "Peers"
+                          --               ]
+                          --    ]
+                          --, UI.tr ## "node-errors-row" #+
+                          --    [ UI.td #+ [ image "rt-view-overview-icon" errorsSVG
+                          --               , string "Errors"
+                          --               ]
+                          --    ]
+                          ]
+                      ]
+                  ]
+              ]
+          , UI.div ## "main-charts-container"
+                   #. "container is-fluid rt-view-charts-container"
                    # hideIt #+
-              [ UI.table ## "main-table" #. "table rt-view-main-table" #+
-                  [ UI.mkElement "thead" #+
-                      [ UI.tr ## "node-name-row" #+
-                          [ UI.th #. "rt-view-main-table-description"
-                                  #+ [UI.span # set html "&nbsp;"]
-                          ]
+              [ UI.p #+
+                  [ UI.span #. "rt-view-chart-group-title" # set text "Chain Metrics"
+                  , element showHideChain
+                  ]
+              , UI.div ## "chain-charts" #. "columns" #+
+                  [ UI.div #. "column" #+
+                      [ element chainDensityChart
+                      , element epochChart
+                      , element blockNumChart
                       ]
-                  , UI.mkElement "tbody" #+
-                      [ UI.tr ## "node-version-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" versionSVG
-                                     , string "Version"
-                                     ]
-                          ]
-                      , UI.tr ## "node-protocol-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" protocolSVG
-                                     , string "Protocol"
-                                     ]
-                          ]
-                      , UI.tr ## "node-commit-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" commitSVG
-                                     , string "Commit"
-                                     ]
-                          ]
-                      , UI.tr ## "node-system-start-time-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" systemStartSVG
-                                     , string "Blockchain start"
-                                     ]
-                          ]
-                      , UI.tr ## "node-start-time-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" startSVG
-                                     , string "Node start"
-                                     ]
-                          ]
-                      , UI.tr ## "node-uptime-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" uptimeSVG
-                                     , string "Uptime"
-                                     ]
-                          ]
-                      , UI.tr ## "node-logs-row" #+
-                          [ UI.td #+ [ image "rt-view-overview-icon" logsSVG
-                                     , string "Logs"
-                                     ]
-                          ]
-                      --, UI.tr ## "node-peers-row" #+
-                      --    [ UI.td #+ [ image "rt-view-overview-icon" peersSVG
-                      --               , string "Peers"
-                      --               ]
-                      --    ]
-                      --, UI.tr ## "node-errors-row" #+
-                      --    [ UI.td #+ [ image "rt-view-overview-icon" errorsSVG
-                      --               , string "Errors"
-                      --               ]
-                      --    ]
+                  , UI.div #. "column" #+
+                      [ element slotInEpochChart
+                      , element slotNumChart
+                      ]
+                  ]
+              , UI.p #+
+                  [ UI.span #. "rt-view-chart-group-title" # set text "Resources Metrics"
+                  , element showHideResources
+                  ]
+              , UI.div ## "resources-charts" #. "columns" #+
+                  [ UI.div #. "column" #+
+                      [ element cpuChart
+                      , element gcMajorNumChart
+                      , element gcLiveMemoryChart
+                      , element cpuTimeGCChart
+                      ]
+                  , UI.div #. "column" #+
+                      [ element memoryChart
+                      , element gcMinorNumChart
+                      , element threadsNumChart
+                      , element cpuTimeAppChart
                       ]
                   ]
               ]
-          ]
-      , UI.div ## "main-charts-container"
-               #. "container is-fluid rt-view-charts-container"
-               # hideIt #+
-          [ UI.p #+
-              [ UI.span #. "rt-view-chart-group-title" # set text "Chain Metrics"
-              , element showHideChain
-              ]
-          , UI.div ## "chain-charts" #. "columns" #+
-              [ UI.div #. "column" #+
-                  [ element chainDensityChart
-                  , element epochChart
-                  , element blockNumChart
-                  ]
-              , UI.div #. "column" #+
-                  [ element slotInEpochChart
-                  , element slotNumChart
-                  ]
-              ]
-          , UI.p #+
-              [ UI.span #. "rt-view-chart-group-title" # set text "Resources Metrics"
-              , element showHideResources
-              ]
-          , UI.div ## "resources-charts" #. "columns" #+
-              [ UI.div #. "column" #+
-                  [ element cpuChart
-                  , element gcMajorNumChart
-                  , element gcLiveMemoryChart
-                  , element cpuTimeGCChart
-                  ]
-              , UI.div #. "column" #+
-                  [ element memoryChart
-                  , element gcMinorNumChart
-                  , element threadsNumChart
-                  , element cpuTimeAppChart
-                  ]
-              ]
+          , footer
           ]
       ]
 
@@ -220,6 +223,23 @@ topNavigation window = do
             [ -- UI.div #. "navbar-item" #+ [element notifyIcon]
               UI.div #. "navbar-item" #+ [element infoIcon]
             , UI.div #. "navbar-item" #+ [element themeIcon]
+            ]
+        ]
+    ]
+
+footer :: UI Element
+footer =
+  UI.mkElement "footer" #. "footer rt-view-footer" #+
+    [ UI.div #. "columns" #+
+        [ UI.div #. "column" #+
+            [ string "© IOHK 2015—2022"
+            ]
+        , UI.div #. "column has-text-right" #+
+            [ UI.anchor # set UI.href "https://github.com/input-output-hk/cardano-node/blob/master/cardano-tracer/README.md"
+                        # set UI.target "_blank" #+
+                [ image "has-tooltip-multiline has-tooltip-left rt-view-footer-github" githubSVG
+                        # set dataTooltip "Browse our GitHub repository"
+                ]
             ]
         ]
     ]

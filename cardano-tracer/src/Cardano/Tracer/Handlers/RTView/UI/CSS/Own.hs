@@ -17,6 +17,25 @@ html {
   height: 100%;
 }
 
+body {
+  height: 100%;
+}
+
+#wrapper {
+  min-height: 100%;
+  width: 100%;
+  position: relative;
+  padding-bottom: 62px;
+  box-sizing: border-box;
+}
+
+.footer {
+  height: 62px;
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+}
+
 code {
   color: #1d359f;
   padding: 0.11em 0.2em 0.11em;
@@ -29,7 +48,7 @@ span[data-tooltip] {
 
 .rt-view-no-nodes-info {
   max-width: 600px !important;
-  margin-top: 80px;
+  margin-top: 50px;
 }
 
 .rt-view-chart-area {
@@ -53,6 +72,10 @@ span[data-tooltip] {
   font-size: 22px;
   background-color: #131325;
   min-height: 100%;
+}
+
+.dark #wrapper {
+  background-color: #131325;
 }
 
 .dark .pageloader {
@@ -220,13 +243,32 @@ span[data-tooltip] {
   color: #0cc9cb;
 }
 
-/* Light Theme */
+.dark .rt-view-footer {
+  background-color: #282841;
+  color: #999;
+  padding-top: 16px;
+  padding-bottom: 12px;
+  border-top: 1px solid #555;
+  font-size: 80%;
+}
+
+.dark .rt-view-footer-github svg {
+  width: 23px;
+  margin-top: 1px;
+  color: #0cc9cb;
+}
+
+/**** Light Theme ****/
 
 .light {
   font-family: sans-serif;
   font-size: 22px;
   background-color: #f5f5f5;
   min-height: 100%;
+}
+
+.light #wrapper {
+  background-color: #f5f5f5;
 }
 
 .light .pageloader {
@@ -390,6 +432,21 @@ span[data-tooltip] {
 .light .rt-view-show-hide-chart-group svg {
   width: 21px;
   margin-left: 13px;
+  color: #038b8c;
+}
+
+.light .rt-view-footer {
+  background-color: #efefef;
+  color: #777;
+  padding-top: 16px;
+  padding-bottom: 12px;
+  border-top: 1px solid #dbdbdb;
+  font-size: 80%;
+}
+
+.light .rt-view-footer-github svg {
+  width: 23px;
+  margin-top: 1px;
   color: #038b8c;
 }
 |]
