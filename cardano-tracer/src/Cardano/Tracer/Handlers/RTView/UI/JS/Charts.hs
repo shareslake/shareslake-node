@@ -133,6 +133,11 @@ var chart = new Chart(ctx, {
           },
           unit: 'minute'
         },
+        adapters: {
+          date: {
+            zone: 'UTC'
+          }
+        },
         ticks: {
           maxRotation: 0
         }
@@ -186,7 +191,7 @@ addPointsChartJS chartId (Index datasetIx) points =
  where
   pushToDataset =
     "var chart = window.charts.get('"
-    <> (show chartId)
+    <> show chartId
     <> "'); chart.data.datasets["
     <> show datasetIx
     <> "].data.push("
@@ -210,9 +215,9 @@ setTimeFormatChartJS chartId format =
       TimeAndDate -> (date <> " " <> timeS, date <> " " <> timeM, date <> " " <> timeH)
       DateOnly    -> (date,                 date,                 date)
   date  = "MMM D YYYY"
-  timeS = "HH:mm:ss"
-  timeM = "HH:mm"
-  timeH = "hh a"
+  timeS = "HH:mm:ss ZZ"
+  timeM = "HH:mm ZZ"
+  timeH = "hh a ZZ"
 
 setTimeFormatChartJS' :: String
 setTimeFormatChartJS' = [s|

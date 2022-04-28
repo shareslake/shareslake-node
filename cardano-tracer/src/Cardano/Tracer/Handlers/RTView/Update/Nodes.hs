@@ -19,7 +19,8 @@ import           Data.Set (Set, (\\))
 import qualified Data.Set as S
 import qualified Data.Text as T
 import           Data.Time.Calendar
-import           Data.Time.Clock (UTCTime (..), addUTCTime, diffUTCTime, getCurrentTime)
+import           Data.Time.Clock (UTCTime (..), addUTCTime, diffUTCTime)
+import           Data.Time.Clock.System
 import           Data.Time.Format (defaultTimeLocale, formatTime)
 import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
@@ -114,7 +115,7 @@ setUptimeForNodes
   -> DisplayedElements
   -> UI ()
 setUptimeForNodes window connected displayedElements = do
-  now <- liftIO $ getCurrentTime
+  now <- systemToUTCTime <$> liftIO getSystemTime
   forM_ connected $ \nodeId@(NodeId anId) -> do
     let nodeStartElId  = anId <> "__node-start-time"
         nodeUptimeElId = anId <> "__node-uptime"

@@ -12,7 +12,7 @@ import           Control.Concurrent.STM.TVar (readTVarIO)
 import           Control.Monad (forM_)
 import           Control.Monad.Extra (whenJust)
 import qualified Data.Map.Strict as M
-import           Data.Time.Clock (getCurrentTime)
+import           Data.Time.Clock.System
 import           Graphics.UI.Threepenny.Core
 import           Data.Text (unpack)
 import           Data.Word (Word64)
@@ -32,7 +32,7 @@ updateResourcesHistory
   -> LastResources
   -> IO ()
 updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
-  now <- getCurrentTime
+  now <- systemToUTCTime <$> getSystemTime
   allMetrics <- readTVarIO acceptedMetrics
   forM_ (M.toList allMetrics) $ \(nodeId, (ekgStore, _)) -> do
     metrics <- liftIO $ getListOfMetrics ekgStore
