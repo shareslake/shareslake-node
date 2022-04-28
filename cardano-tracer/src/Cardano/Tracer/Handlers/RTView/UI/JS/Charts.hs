@@ -215,9 +215,9 @@ setTimeFormatChartJS chartId format =
       TimeAndDate -> (date <> " " <> timeS, date <> " " <> timeM, date <> " " <> timeH)
       DateOnly    -> (date,                 date,                 date)
   date  = "MMM D YYYY"
-  timeS = "HH:mm:ss ZZ"
-  timeM = "HH:mm ZZ"
-  timeH = "hh a ZZ"
+  timeS = "HH:mm:ss"
+  timeM = "HH:mm"
+  timeH = "hh a"
 
 setTimeFormatChartJS' :: String
 setTimeFormatChartJS' = [s|
