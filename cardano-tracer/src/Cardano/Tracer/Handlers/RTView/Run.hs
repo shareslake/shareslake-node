@@ -38,7 +38,7 @@ runRTView
   -> SavedTraceObjects
   -> DataPointRequestors
   -> IO ()
-runRTView TracerConfig{logging, network, hasRTView, ekgRequestFreq}
+runRTView TracerConfig{logging, network, hasRTView}
           connectedNodes acceptedMetrics savedTO dpRequestors =
   whenJust hasRTView $ \(Endpoint host port) -> do
     -- Initialize displayed stuff outside of main page renderer,
@@ -60,7 +60,6 @@ runRTView TracerConfig{logging, network, hasRTView, ekgRequestFreq}
            savedTO
            dpRequestors
            reloadFlag
-           ekgRequestFreq
            logging
            network
            resourcesHistory

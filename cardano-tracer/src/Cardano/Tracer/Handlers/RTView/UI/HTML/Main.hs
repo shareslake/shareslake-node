@@ -10,10 +10,7 @@ import           Graphics.UI.Threepenny.Core
 import           Control.Concurrent.STM.TVar (readTVarIO)
 import           Control.Monad (void)
 import           Control.Monad.Extra (whenM)
-import           Data.Fixed (Pico)
 import           Data.List.NonEmpty (NonEmpty)
-import           Data.Maybe (fromMaybe)
-import           Data.Time.Clock (secondsToNominalDiffTime)
 import           System.Time.Extra (sleep)
 
 import           Cardano.Tracer.Configuration
@@ -39,7 +36,6 @@ mkMainPage
   -> SavedTraceObjects
   -> DataPointRequestors
   -> PageReloadedFlag
-  -> Maybe Pico
   -> NonEmpty LoggingParams
   -> Network
   -> ResourcesHistory
@@ -47,7 +43,7 @@ mkMainPage
   -> UI.Window
   -> UI ()
 mkMainPage connectedNodes displayedElements savedTO
-           dpRequestors reloadFlag ekgFreq loggingConfig
+           dpRequestors reloadFlag loggingConfig
            networkConfig resourcesHistory chainHistory window = do
   void $ return window # set UI.title pageTitle
   void $ UI.getHead window #+
@@ -107,12 +103,9 @@ mkMainPage connectedNodes displayedElements savedTO
       datasetIndices
   UI.start uiUpdateTimer
 
-  -- The user can setup EKG request frequency (in seconds) in tracer's configuration,
-  -- so we start resources metrics updating in a separate timer with corresponding interval.
-  let toMs dt = fromEnum dt `div` 1000000000
-      ekgIntervalInMs = toMs . secondsToNominalDiffTime $ fromMaybe 1.0 ekgFreq
-  uiUpdateResourcesTimer <- UI.timer # set UI.interval ekgIntervalInMs
-  on UI.tick uiUpdateResourcesTimer . const $ do
+  -- For better performance, we update charts only 4 times per minute.
+  uiUpdateChartsTimer <- UI.timer # set UI.interval (15 * 1000)
+  on UI.tick uiUpdateChartsTimer . const $ do
     updateResourcesCharts
       connectedNodes
       resourcesHistory
@@ -123,13 +116,13 @@ mkMainPage connectedNodes displayedElements savedTO
       chainHistory
       datasetIndices
       datasetTimestamps
-  UI.start uiUpdateResourcesTimer
+  UI.start uiUpdateChartsTimer
 
   on UI.disconnect window . const $ do
     -- The connection with the browser was dropped (probably user closed the tab),
     -- so timers should be stopped.
     UI.stop uiUpdateTimer
-    UI.stop uiUpdateResourcesTimer
+    UI.stop uiUpdateChartsTimer
     -- To restore current displayed state after DOM-rerendering.
     liftIO $ pageWasReload reloadFlag
 
