@@ -33,6 +33,7 @@ import           Control.Exception.Extra (ignore, try_)
 import           Control.Monad (forM, forM_, unless)
 import           Control.Monad.Extra (whenJustM)
 import           Data.Aeson
+import           Data.List.Extra (chunksOf)
 import qualified Data.Map.Strict as M
 import           Data.Text (pack)
 import           Data.Word (Word8)
@@ -187,12 +188,20 @@ addPointsToChart nodeId hist datasetIndices datasetTimestamps dataName chartId =
   addPointsToChart' [] = return ()
   addPointsToChart' points =
     whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx ->
-      Chart.addPointsChartJS chartId datasetIx $ replacePointsByAvgPoint points
+      Chart.addPointsChartJS chartId datasetIx $ replacePointsByAvgPoints points
 
-  replacePointsByAvgPoint points = points
-    --let avgValue = (sum [value | (_, value) <- points]) `div` length points
-    --    (latestTS, _) = last points
-    --in (latestTS, avgValue)
+  replacePointsByAvgPoints :: [HistoricalPoint] -> [HistoricalPoint]
+  replacePointsByAvgPoints points = map calculateAvgPoint $ chunksOf 15 points
+
+  calculateAvgPoint :: [HistoricalPoint] -> HistoricalPoint
+  calculateAvgPoint pointsForAvg =
+    let valuesSum = sum [v | (_, v) <- pointsForAvg]
+        avgValue =
+          case valuesSum of
+            ValueI i -> ValueD (fromIntegral i / (fromIntegral $ length pointsForAvg))
+            ValueD d -> ValueD (             d / (fromIntegral $ length pointsForAvg))
+        (latestTS, _) = last pointsForAvg
+    in (latestTS, avgValue)
 
 restoreChartsSettings :: UI ()
 restoreChartsSettings = readSavedChartsSettings >>= setCharts

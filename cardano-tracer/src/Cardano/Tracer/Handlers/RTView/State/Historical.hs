@@ -4,6 +4,7 @@ module Cardano.Tracer.Handlers.RTView.State.Historical
   ( BlockchainHistory (..)
   , DataName (..)
   , History
+  , HistoricalPoint
   , POSIXTime
   , ResourcesHistory (..)
   , TransactionsHistory (..)
@@ -42,7 +43,33 @@ instance Show ValueH where
   show (ValueD d) = show d
   show (ValueI i) = show i
 
-type HistoricalPoints = Set (POSIXTime, ValueH)
+instance Num ValueH where
+  (+) (ValueI i1) (ValueI i2) = ValueI (i1 + i2)
+  (+) (ValueD d1) (ValueD d2) = ValueD (d1 + d2)
+  (+) (ValueI i1) (ValueD d1) = ValueD (fromIntegral i1 + d1)
+  (+) (ValueD d1) (ValueI i1) = ValueD (fromIntegral i1 + d1)
+
+  (-) (ValueI i1) (ValueI i2) = ValueI (i1 - i2)
+  (-) (ValueD d1) (ValueD d2) = ValueD (d1 - d2)
+  (-) (ValueI i1) (ValueD d1) = ValueD (fromIntegral i1 - d1)
+  (-) (ValueD d1) (ValueI i1) = ValueD (fromIntegral i1 - d1)
+
+  (*) (ValueI i1) (ValueI i2) = ValueI (i1 * i2)
+  (*) (ValueD d1) (ValueD d2) = ValueD (d1 * d2)
+  (*) (ValueI i1) (ValueD d1) = ValueD (fromIntegral i1 * d1)
+  (*) (ValueD d1) (ValueI i1) = ValueD (fromIntegral i1 * d1)
+
+  abs (ValueI i) = ValueI (abs i)
+  abs (ValueD d) = ValueD (abs d)
+
+  signum (ValueI i) = ValueI (signum i)
+  signum (ValueD d) = ValueD (signum d)
+
+  fromInteger i = ValueI (fromInteger i)
+
+type HistoricalPoint = (POSIXTime, ValueH)
+
+type HistoricalPoints = Set HistoricalPoint
 
 -- | Historical points for particular data.
 data DataName
