@@ -187,7 +187,12 @@ addPointsToChart nodeId hist datasetIndices datasetTimestamps dataName chartId =
   addPointsToChart' [] = return ()
   addPointsToChart' points =
     whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx ->
-      Chart.addPointsChartJS chartId datasetIx points
+      Chart.addPointsChartJS chartId datasetIx $ replacePointsByAvgPoint points
+
+  replacePointsByAvgPoint points = points
+    --let avgValue = (sum [value | (_, value) <- points]) `div` length points
+    --    (latestTS, _) = last points
+    --in (latestTS, avgValue)
 
 restoreChartsSettings :: UI ()
 restoreChartsSettings = readSavedChartsSettings >>= setCharts

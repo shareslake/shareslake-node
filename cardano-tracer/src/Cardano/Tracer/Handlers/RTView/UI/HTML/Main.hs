@@ -103,7 +103,7 @@ mkMainPage connectedNodes displayedElements savedTO
       datasetIndices
   UI.start uiUpdateTimer
 
-  -- For better performance, we update charts only 4 times per minute.
+  -- For better performance, we update charts only few times per minute.
   uiUpdateChartsTimer <- UI.timer # set UI.interval (15 * 1000)
   on UI.tick uiUpdateChartsTimer . const $ do
     updateResourcesCharts

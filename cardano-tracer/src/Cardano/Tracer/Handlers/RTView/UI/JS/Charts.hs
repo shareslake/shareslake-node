@@ -79,9 +79,14 @@ var chart = new Chart(ctx, {
     normalized: true,
     showLine: true,
     spanGaps: false,
+    interaction: {
+      intersect: false,
+      mode: 'index',
+      axis: 'xy'
+    },
     elements: {
       point: {
-        radius: 3
+        radius: 0
       }
     },
     responsive: true,
@@ -93,9 +98,6 @@ var chart = new Chart(ctx, {
           size: 18
         },
         text: %2
-      },
-      decimation: {
-        enabled: true
       },
       zoom: {
         zoom: {

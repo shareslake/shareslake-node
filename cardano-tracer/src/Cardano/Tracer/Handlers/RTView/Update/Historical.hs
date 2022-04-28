@@ -44,32 +44,3 @@ runHistoricalUpdater _savedTO acceptedMetrics resourcesHistory
   updateResourcesHistory acceptedMetrics resourcesHistory lastResources
   updateBlockchainHistory acceptedMetrics chainHistory
   sleep 1.0 -- TODO: should it be configured?
-
-  {-
-  checkSavedTraceObjects
- where
-  checkSavedTraceObjects = do
-    savedTraceObjects <- liftIO $ readTVarIO savedTO
-    forM_ (M.toList savedTraceObjects) $ \(nodeId, savedTOForNode) ->
-      forM_ (M.toList savedTOForNode) $ \(namespace, trObValue) ->
-        case namespace of
-          "Cardano.Node.Peers" -> updatePeers window nodeId displayedElements trObValue
-          "density" -> return () -- updateElement
-          "slotNum" -> return ()
-          "blockNum" -> return ()
-          "slotInEpoch" -> return ()
-          "epoch" -> return ()
-          "forks" -> return ()
-          "txsInMempool"  -> return ()
-          "mempoolBytes"  -> return ()
-          "txsProcessedNum"  -> return ()
-          "blocksForgedNum"  -> return ()
-          "nodeCannotForge"  -> return ()
-          "nodeIsLeaderNum"  -> return ()
-          "slotsMissedNum" -> return ()
-          "operationalCertificateStartKESPeriod"  -> return ()
-          "operationalCertificateExpiryKESPeriod"  -> return ()
-          "currentKESPeriod"  -> return ()
-          "remainingKESPeriods" -> return ()
-          _ -> return ()
--}
