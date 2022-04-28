@@ -87,6 +87,9 @@ var chart = new Chart(ctx, {
     elements: {
       point: {
         radius: 0
+      },
+      line: {
+        borderWidth: 2
       }
     },
     responsive: true,
