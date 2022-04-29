@@ -4,8 +4,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Cardano.Tracer.Handlers.RTView.Update.Resources
-  ( updateResourcesCharts
-  , updateResourcesHistory
+  ( updateResourcesHistory
   ) where
 
 import           Control.Concurrent.STM.TVar (readTVarIO)
@@ -21,9 +20,7 @@ import           Text.Read (readMaybe)
 import           Cardano.Tracer.Handlers.Metrics.Utils
 import           Cardano.Tracer.Handlers.RTView.State.Historical
 import           Cardano.Tracer.Handlers.RTView.State.Last
-import           Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Cardano.Tracer.Handlers.RTView.Update.Utils
-import           Cardano.Tracer.Handlers.RTView.UI.Types
 import           Cardano.Tracer.Types
 
 updateResourcesHistory
@@ -101,21 +98,3 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
   updateThreadsNum nodeId valueS now =
     whenJust (readMaybe valueS) $ \(threadsNum :: Integer) ->
       addHistoricalData rHistory nodeId now ThreadsNumData $ ValueI threadsNum
-
-updateResourcesCharts
-  :: ConnectedNodes
-  -> ResourcesHistory
-  -> DatasetsIndices
-  -> DatasetsTimestamps
-  -> UI ()
-updateResourcesCharts connectedNodes (ResHistory history) dsIxs dsTss = do
-  connected <- liftIO $ readTVarIO connectedNodes
-  forM_ connected $ \nodeId -> do
-    addPointsToChart nodeId history dsIxs dsTss CPUData          CPUChart
-    addPointsToChart nodeId history dsIxs dsTss MemoryData       MemoryChart
-    addPointsToChart nodeId history dsIxs dsTss GCMajorNumData   GCMajorNumChart
-    addPointsToChart nodeId history dsIxs dsTss GCMinorNumData   GCMinorNumChart
-    addPointsToChart nodeId history dsIxs dsTss GCLiveMemoryData GCLiveMemoryChart
-    addPointsToChart nodeId history dsIxs dsTss CPUTimeGCData    CPUTimeGCChart
-    addPointsToChart nodeId history dsIxs dsTss CPUTimeAppData   CPUTimeAppChart
-    addPointsToChart nodeId history dsIxs dsTss ThreadsNumData   ThreadsNumChart

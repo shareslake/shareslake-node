@@ -48,7 +48,7 @@ data ChartSelectId
   deriving Show
 
 newtype Index = Index Word8
-  deriving (Generic, FromJSON, ToJSON)
+  deriving (Generic, FromJSON, ToJSON, Show)
 
 data ChartSettings = ChartSettings
   { csTimeFormatIx :: !Index

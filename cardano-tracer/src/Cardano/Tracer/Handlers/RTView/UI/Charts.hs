@@ -12,6 +12,7 @@ module Cardano.Tracer.Handlers.RTView.UI.Charts
   , getDatasetIx
   , addNodeDatasetsToCharts
   , addPointsToChart
+  , addAllPointsToChart
   , getLatestDisplayedTS
   , saveLatestDisplayedTS
   , restoreChartsSettings
@@ -35,13 +36,15 @@ import           Control.Monad.Extra (whenJustM)
 import           Data.Aeson
 import           Data.List.Extra (chunksOf)
 import qualified Data.Map.Strict as M
+import           Data.Maybe (catMaybes)
+import qualified Data.Set as S
 import           Data.Text (pack)
 import           Data.Word (Word8)
 import           Graphics.UI.Threepenny.Core
 import           System.Directory
 import           Text.Read (readMaybe)
 
-import           Cardano.Tracer.Types (NodeId (..))
+import           Cardano.Tracer.Types
 import           Cardano.Tracer.Handlers.RTView.State.Displayed
 import           Cardano.Tracer.Handlers.RTView.State.Historical
 import           Cardano.Tracer.Handlers.RTView.UI.CSS.Own
@@ -149,6 +152,53 @@ getLatestDisplayedTS tss nodeId dataName = liftIO $
     Nothing         -> return Nothing
     Just tssForNode -> return $ M.lookup dataName tssForNode
 
+-- Each chart updates independently from others. Because of this, the user
+-- can specify "auto-update period" for each chart. Some of data (by its nature)
+-- shoudn't be updated too frequently.
+--
+-- All points will be added to all datasets (corresponding to the number of connected nodes)
+-- using one single FFI-call, for better performance.
+addAllPointsToChart
+  :: ConnectedNodes
+  -> History
+  -> DatasetsIndices
+  -> DatasetsTimestamps
+  -> DataName
+  -> ChartId
+  -> UI ()
+addAllPointsToChart connectedNodes hist datasetIndices datasetTimestamps dataName chartId = do
+  connected <- liftIO $ S.toList <$> readTVarIO connectedNodes
+  dataForPush <-
+    forM connected $ \nodeId ->
+      (liftIO $ getHistoricalData hist nodeId dataName) >>= \case
+        []     -> return Nothing
+        points -> do
+          let (latestTS, _) = last points
+          getLatestDisplayedTS datasetTimestamps nodeId dataName >>= \case
+            Nothing ->
+              -- There is no saved latestTS for this node and chart yet,
+              -- so display all the history and remember the latestTS.
+              getDatasetIx datasetIndices nodeId >>= \case
+                Nothing -> return Nothing
+                Just ix ->
+                  return . Just $ ( (nodeId, latestTS)
+                                  , (ix, replacePointsByAvgPoints points)
+                                  )
+            Just storedTS ->
+              -- Some of the history for this node and chart is already displayed,
+              -- so cut displayed points first. The only points we should add now
+              -- are the points with 'ts' that is bigger than 'storedTS'.
+              getDatasetIx datasetIndices nodeId >>= \case
+                Nothing -> return Nothing
+                Just ix ->
+                  return . Just $ ( (nodeId, latestTS)
+                                  , (ix, replacePointsByAvgPoints $ cutOldPoints storedTS points)
+                                  )
+  let (nodeIdsWithLatestTss, datasetIxsWithPoints) = unzip $ catMaybes dataForPush
+  Chart.addAllPointsChartJS chartId datasetIxsWithPoints
+  forM_ nodeIdsWithLatestTss $ \(nodeId, latestTS) ->
+    saveLatestDisplayedTS datasetTimestamps nodeId dataName latestTS
+
 addPointsToChart
   :: NodeId
   -> History
@@ -174,25 +224,15 @@ addPointsToChart nodeId hist datasetIndices datasetTimestamps dataName chartId =
     let (latestTS, _) = last history
     saveLatestDisplayedTS datasetTimestamps nodeId dataName latestTS
  where
-  cutOldPoints _ [] = []
-  cutOldPoints oldTS (point@(ts, _):newerPoints) =
-    if ts > oldTS
-      then
-        -- This point is newer than 'oldTS', take it and all the following
-        -- as well, because they are definitely newer (points are sorted by ts).
-        point : newerPoints
-      else
-        -- This point are older than 'oldTS', it means that it already was displayed.
-        cutOldPoints oldTS newerPoints
-
   addPointsToChart' [] = return ()
   addPointsToChart' points =
     whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx ->
       Chart.addPointsChartJS chartId datasetIx $ replacePointsByAvgPoints points
 
-  replacePointsByAvgPoints :: [HistoricalPoint] -> [HistoricalPoint]
-  replacePointsByAvgPoints points = map calculateAvgPoint $ chunksOf 15 points
-
+replacePointsByAvgPoints :: [HistoricalPoint] -> [HistoricalPoint]
+replacePointsByAvgPoints [] = []
+replacePointsByAvgPoints points = map calculateAvgPoint $ chunksOf 15 points
+ where
   calculateAvgPoint :: [HistoricalPoint] -> HistoricalPoint
   calculateAvgPoint pointsForAvg =
     let valuesSum = sum [v | (_, v) <- pointsForAvg]
@@ -202,6 +242,21 @@ addPointsToChart nodeId hist datasetIndices datasetTimestamps dataName chartId =
             ValueD d -> ValueD (             d / (fromIntegral $ length pointsForAvg))
         (latestTS, _) = last pointsForAvg
     in (latestTS, avgValue)
+
+cutOldPoints
+  :: POSIXTime
+  -> [HistoricalPoint]
+  -> [HistoricalPoint]
+cutOldPoints _ [] = []
+cutOldPoints oldTS (point@(ts, _):newerPoints) =
+  if ts > oldTS
+    then
+      -- This point is newer than 'oldTS', take it and all the following
+      -- as well, because they are definitely newer (points are sorted by ts).
+      point : newerPoints
+    else
+      -- This point are older than 'oldTS', it means that it already was displayed.
+      cutOldPoints oldTS newerPoints
 
 restoreChartsSettings :: UI ()
 restoreChartsSettings = readSavedChartsSettings >>= setCharts

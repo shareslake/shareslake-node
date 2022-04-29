@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -7,6 +8,7 @@ module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
   , prepareChartsJS
   , addDatasetChartJS
   , addPointsChartJS
+  , addAllPointsChartJS
   , getDatasetsLengthChartJS
   , newTimeChartJS
   , setTimeFormatChartJS
@@ -181,6 +183,28 @@ getDatasetsLengthChartJS chartId = do
   (l :: Int) <- UI.callFunction $ UI.ffi "window.charts.get(%1).data.datasets.length;" (show chartId)
   return $ fromIntegral l
 
+addAllPointsChartJS
+  :: ChartId
+  -> [(Index, [HistoricalPoint])]
+  -> UI ()
+addAllPointsChartJS chartId datasetIxsWithPoints =
+  UI.runFunction $ UI.ffi pushToAllDatasets
+ where
+  pushToAllDatasets =
+       "var chart = window.charts.get('" <> show chartId <> "');"
+    <> concatMap pushToDataset datasetIxsWithPoints
+    <> "chart.update();"
+
+  pushToDataset (Index ix, points) =
+    "chart.data.datasets[" <> show ix <> "].data.push(" <> prepareArrayToPush points <> ");"
+
+  prepareArrayToPush [] = ""
+  prepareArrayToPush points = intercalate ", " $ map mkArray points
+   where
+    mkArray (ts, valueH) =
+      let !tsInMs = ts * 1000 -- ChartJS uses milliseconds since epoch as internal format.
+      in "{x: " <> show tsInMs <> ", y: " <> show valueH <> "}"
+
 addPointsChartJS
   :: ChartId
   -> Index
@@ -199,7 +223,7 @@ addPointsChartJS chartId (Index datasetIx) points =
     <> "); chart.update();"
   pointsList = intercalate ", " $ map mkPointObject points
   mkPointObject (ts, valueH) =
-    let tsInMs = ts * 1000 -- ChartJS uses milliseconds since epoch as internal format.
+    let !tsInMs = ts * 1000 -- ChartJS uses milliseconds since epoch as internal format.
     in "{x: " <> show tsInMs <> ", y: " <> show valueH <> "}"
 
 setTimeFormatChartJS
