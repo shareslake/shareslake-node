@@ -6,8 +6,8 @@ module Cardano.Tracer.Handlers.RTView.UI.HTML.Body
   ( mkPageBody
   ) where
 
-import           Control.Monad (void, when)
-import           Control.Monad.Extra (whenJustM)
+import           Control.Monad (void, unless, when)
+import           Control.Monad.Extra (whenM, whenJustM)
 import           Data.List (intersperse)
 import qualified Data.List.NonEmpty as NE
 import           Data.Text (Text)
@@ -391,7 +391,8 @@ mkChart window chartUpdateTimer chartId chartName = do
   selectUpdatePeriod <-
     UI.select ## (show chartId <> show UpdatePeriodSelect) #+
       -- Values are periods in seconds.
-      [ UI.option # set value "15"   # set text "15 seconds"
+      [ UI.option # set value "0"    # set text "Off"
+      , UI.option # set value "15"   # set text "15 seconds"
       , UI.option # set value "30"   # set text "30 seconds"
       , UI.option # set value "60"   # set text "1 minute"
       , UI.option # set value "300"  # set text "5 minutes"
@@ -408,9 +409,10 @@ mkChart window chartUpdateTimer chartId chartName = do
 
   on UI.selectionChange selectUpdatePeriod . const $
     whenJustM (readMaybe <$> get value selectUpdatePeriod) $ \(periodInSec :: Int) -> do
-      UI.stop chartUpdateTimer
-      void $ return chartUpdateTimer # set UI.interval (periodInSec * 1000)
-      UI.start chartUpdateTimer
+      whenM (get UI.running chartUpdateTimer) $ UI.stop chartUpdateTimer
+      unless (periodInSec == 0) $ do
+        void $ return chartUpdateTimer # set UI.interval (periodInSec * 1000)
+        UI.start chartUpdateTimer
       saveChartsSettings window
 
   UI.div #. "rt-view-chart-container" #+
