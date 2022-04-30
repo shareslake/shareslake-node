@@ -21,15 +21,19 @@ import           System.Posix.Types (CPid (..))
 getProcessId :: UI Word32
 getProcessId =
 #if defined(mingw32_HOST_OS)
-  liftIO getCurrentProcessId 
+  liftIO getCurrentProcessId
 #else
   do CPid pid <- liftIO getProcessID
      return $ fromIntegral pid
 #endif
 
 getPathToChartsConfig, getPathToThemeConfig :: IO FilePath
-getPathToChartsConfig = getXdgDirectory XdgConfig $ rtViewConfigsRoot </> "charts"
-getPathToThemeConfig  = getXdgDirectory XdgConfig $ rtViewConfigsRoot </> "theme"
+getPathToChartsConfig = getPathToConfig "charts"
+getPathToThemeConfig  = getPathToConfig "theme"
 
-rtViewConfigsRoot :: FilePath
-rtViewConfigsRoot = "cardano-rt-view"
+getPathToConfig :: FilePath -> IO FilePath
+getPathToConfig configName = do
+  configDir <- getXdgDirectory XdgConfig ""
+  let pathToRTViewConfigDir = configDir </> "cardano-rt-view"
+  createDirectoryIfMissing True pathToRTViewConfigDir
+  return $ pathToRTViewConfigDir </> configName
