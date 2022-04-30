@@ -46,6 +46,10 @@ span[data-tooltip] {
   border-bottom: none !important;
 }
 
+.field.is-grouped {
+  display: inline-flex !important;
+}
+
 .rt-view-no-nodes-info {
   max-width: 600px !important;
   margin-top: 50px;

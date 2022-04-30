@@ -6,7 +6,7 @@ module Cardano.Tracer.Handlers.RTView.UI.HTML.Body
   ( mkPageBody
   ) where
 
-import           Control.Monad (void)
+import           Control.Monad (void, when)
 import           Control.Monad.Extra (whenJustM)
 import           Data.List (intersperse)
 import qualified Data.List.NonEmpty as NE
@@ -379,7 +379,8 @@ mkChart window chartUpdateTimer chartId = do
   selectTimeRange <-
     UI.select ## (show chartId <> show TimeRangeSelect) #+
       -- Values are ranges in seconds.
-      [ UI.option # set value "300"   # set text "Last 5 minutes"
+      [ UI.option # set value "0"     # set text "All time"
+      , UI.option # set value "300"   # set text "Last 5 minutes"
       , UI.option # set value "900"   # set text "Last 15 minutes"
       , UI.option # set value "1800"  # set text "Last 30 minutes"
       , UI.option # set value "3600"  # set text "Last 1 hour"
@@ -398,9 +399,10 @@ mkChart window chartUpdateTimer chartId = do
       , UI.option # set value "3600" # set text "1 hour"
       ]
 
-  on UI.selectionChange selectTimeRange . const $ 
+  on UI.selectionChange selectTimeRange . const $
     whenJustM (readMaybe <$> get value selectTimeRange) $ \(rangeInSec :: Int) -> do
       Chart.setTimeRange chartId rangeInSec
+      when (rangeInSec == 0) $ Chart.resetZoomChartJS chartId
       saveChartsSettings window
 
   on UI.selectionChange selectUpdatePeriod . const $
@@ -410,20 +412,15 @@ mkChart window chartUpdateTimer chartId = do
       UI.start chartUpdateTimer
       saveChartsSettings window
 
-  resetZoom <- UI.button #. "button is-small is-info is-outlined"
-                         # set text "Reset zoom"
-  on UI.click resetZoom . const $ Chart.resetZoomChartJS chartId
-
   UI.div #. "rt-view-chart-container" #+
-    [ UI.div #+
+    [ UI.div #. "has-text-right" #+
         [ UI.div #. "field is-grouped mt-3" #+
             [ UI.div #. "select is-link is-small mr-4" #+
                 [ element selectTimeRange
                 ]
-            , UI.div #. "select is-link is-small mr-4" #+
+            , UI.div #. "select is-link is-small" #+
                 [ element selectUpdatePeriod
                 ]
-            , element resetZoom
             ]
         ]
     , UI.canvas ## (show chartId) #. "rt-view-chart-area" #+ []

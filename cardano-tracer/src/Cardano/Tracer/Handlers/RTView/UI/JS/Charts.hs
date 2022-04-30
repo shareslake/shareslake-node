@@ -235,13 +235,26 @@ setTimeRange chartId rangeInSec = do
       !maxInMs   = (utc2s now) * 1000
       !minInMs   = maxInMs - fromIntegral rangeInMs 
   -- Set time units depends on selected range.
-  let timeUnit = if | rangeInSec <= 300                      -> "second"
+  let timeUnit = if | rangeInSec == 0                        -> "hour"
+                    | rangeInSec > 0   && rangeInSec <= 300  -> "second"
                     | rangeInSec > 300 && rangeInSec <= 1800 -> "minute"
                     | otherwise                              -> "hour"
-  UI.runFunction $ UI.ffi zoomScaleAndUnitsChartJS (show chartId)
-                                                   (fromIntegral minInMs :: Int)
-                                                   (fromIntegral maxInMs :: Int)
-                                                   timeUnit
+  if rangeInSec == 0
+    then
+      -- Show all time, no zoom, so just set time units.
+      UI.runFunction $ UI.ffi setUnitsChartJS (show chartId) timeUnit
+    else
+      UI.runFunction $ UI.ffi zoomScaleAndUnitsChartJS (show chartId)
+                                                       (fromIntegral minInMs :: Int)
+                                                       (fromIntegral maxInMs :: Int)
+                                                       timeUnit
+
+setUnitsChartJS :: String
+setUnitsChartJS = [s|
+var chart = window.charts.get(%1);
+chart.options.scales.x.time.unit = %2;
+chart.update();
+|]
 
 zoomScaleAndUnitsChartJS :: String
 zoomScaleAndUnitsChartJS = [s|

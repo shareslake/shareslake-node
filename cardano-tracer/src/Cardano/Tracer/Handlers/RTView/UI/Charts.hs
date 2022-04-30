@@ -31,7 +31,7 @@ import           Control.Concurrent.STM (atomically)
 import           Control.Concurrent.STM.TBQueue
 import           Control.Concurrent.STM.TVar
 import           Control.Exception.Extra (ignore, try_)
-import           Control.Monad (forM, forM_, unless)
+import           Control.Monad (forM, forM_, unless, when)
 import           Control.Monad.Extra (whenJustM)
 import           Data.Aeson
 import           Data.List.Extra (chunksOf)
@@ -265,6 +265,7 @@ restoreChartsSettings = readSavedChartsSettings >>= setCharts
       JS.selectOption (show chartId <> show TimeRangeSelect)    tr
       JS.selectOption (show chartId <> show UpdatePeriodSelect) up
       Chart.setTimeRange chartId tr
+      when (tr == 0) $ Chart.resetZoomChartJS chartId
 
 saveChartsSettings :: Window -> UI ()
 saveChartsSettings window = do
@@ -292,7 +293,7 @@ readSavedChartsSettings = liftIO $
     [ (chartId, ChartSettings defaultTimeRangeInS defaultUpdatePeriodInS)
     | chartId <- chartsIds
     ]
-  defaultTimeRangeInS = 300
+  defaultTimeRangeInS = 0 -- All time
   defaultUpdatePeriodInS = 15
 
 changeChartsToLightTheme :: UI ()
