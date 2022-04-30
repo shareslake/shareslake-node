@@ -1,17 +1,22 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Cardano.Tracer.Handlers.RTView.UI.HTML.Body
   ( mkPageBody
   ) where
 
 import           Control.Monad (void)
+import           Control.Monad.Extra (whenJustM)
 import           Data.List (intersperse)
 import qualified Data.List.NonEmpty as NE
 import           Data.Text (Text)
 import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
+import           Text.Read (readMaybe)
 
 import           Cardano.Tracer.Configuration
+import           Cardano.Tracer.Handlers.RTView.State.Historical
 import           Cardano.Tracer.Handlers.RTView.UI.Img.Icons
 import           Cardano.Tracer.Handlers.RTView.UI.HTML.About
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Charts as Chart
@@ -19,28 +24,69 @@ import           Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Cardano.Tracer.Handlers.RTView.UI.Theme
 import           Cardano.Tracer.Handlers.RTView.UI.Types
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
+import           Cardano.Tracer.Types
 
 mkPageBody
   :: UI.Window
   -> Network
+  -> ConnectedNodes
+  -> ResourcesHistory
+  -> BlockchainHistory
+  -> DatasetsIndices
+  -> DatasetsTimestamps
   -> UI Element
-mkPageBody window networkConfig = do
-  -- Resources charts.
-  cpuChart          <- mkChart window CPUChart
-  memoryChart       <- mkChart window MemoryChart
-  gcMajorNumChart   <- mkChart window GCMajorNumChart
-  gcMinorNumChart   <- mkChart window GCMinorNumChart
-  gcLiveMemoryChart <- mkChart window GCLiveMemoryChart
-  cpuTimeGCChart    <- mkChart window CPUTimeGCChart
-  cpuTimeAppChart   <- mkChart window CPUTimeAppChart
-  threadsNumChart   <- mkChart window ThreadsNumChart
-  -- Blockchain charts.
-  chainDensityChart <- mkChart window ChainDensityChart
-  slotNumChart      <- mkChart window SlotNumChart
-  blockNumChart     <- mkChart window BlockNumChart
-  slotInEpochChart  <- mkChart window SlotInEpochChart
-  epochChart        <- mkChart window EpochChart
+mkPageBody window networkConfig connectedNodes
+           (ResHistory rHistory) (ChainHistory cHistory)
+           datasetIndices datasetTimestamps = do
+  -- TODO
+  let per = 15 * 1000
 
+  -- Resources charts.
+  cpuTimer          <-
+    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps CPUData          CPUChart
+  memoryTimer       <-
+    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps MemoryData       MemoryChart
+  gcMajorNumTimer   <-
+    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps GCMajorNumData   GCMajorNumChart
+  gcMinorNumTimer   <-
+    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps GCMinorNumData   GCMinorNumChart
+  gcLiveMemoryTimer <-
+    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps GCLiveMemoryData GCLiveMemoryChart
+  cpuTimeGCTimer    <-
+    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps CPUTimeGCData    CPUTimeGCChart
+  cpuTimeAppTimer   <-
+    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps CPUTimeAppData   CPUTimeAppChart
+  threadsNumTimer   <-
+    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps ThreadsNumData   ThreadsNumChart
+
+  cpuChart          <- mkChart window cpuTimer          CPUChart
+  memoryChart       <- mkChart window memoryTimer       MemoryChart
+  gcMajorNumChart   <- mkChart window gcMajorNumTimer   GCMajorNumChart
+  gcMinorNumChart   <- mkChart window gcMinorNumTimer   GCMinorNumChart
+  gcLiveMemoryChart <- mkChart window gcLiveMemoryTimer GCLiveMemoryChart
+  cpuTimeGCChart    <- mkChart window cpuTimeGCTimer    CPUTimeGCChart
+  cpuTimeAppChart   <- mkChart window cpuTimeAppTimer   CPUTimeAppChart
+  threadsNumChart   <- mkChart window threadsNumTimer   ThreadsNumChart
+
+  -- Blockchain charts.
+  chainDensityTimer <-
+    mkChartTimer connectedNodes per cHistory datasetIndices datasetTimestamps ChainDensityData ChainDensityChart
+  slotNumTimer      <-
+    mkChartTimer connectedNodes per cHistory datasetIndices datasetTimestamps SlotNumData      SlotNumChart
+  blockNumTimer     <-
+    mkChartTimer connectedNodes per cHistory datasetIndices datasetTimestamps BlockNumData     BlockNumChart
+  slotInEpochTimer  <-
+    mkChartTimer connectedNodes per cHistory datasetIndices datasetTimestamps SlotInEpochData  SlotInEpochChart
+  epochTimer        <-
+    mkChartTimer connectedNodes per cHistory datasetIndices datasetTimestamps EpochData        EpochChart
+
+  chainDensityChart <- mkChart window chainDensityTimer ChainDensityChart
+  slotNumChart      <- mkChart window slotNumTimer      SlotNumChart
+  blockNumChart     <- mkChart window blockNumTimer     BlockNumChart
+  slotInEpochChart  <- mkChart window slotInEpochTimer  SlotInEpochChart
+  epochChart        <- mkChart window epochTimer        EpochChart
+
+  -- Visibility of charts gropus.
   showHideChain     <- image "has-tooltip-multiline has-tooltip-right rt-view-show-hide-chart-group" showSVG
                              # set dataTooltip "Click to hide Chain Metrics"
                              # set dataState shownState
@@ -186,6 +232,25 @@ mkPageBody window networkConfig = do
   Chart.newTimeChartJS SlotInEpochChart  "Slot in epoch"         ""
   Chart.newTimeChartJS EpochChart        "Epoch"                 ""
 
+  UI.start cpuTimer
+  UI.start memoryTimer
+  UI.start gcMajorNumTimer
+  UI.start gcMinorNumTimer
+  UI.start gcLiveMemoryTimer
+  UI.start cpuTimeGCTimer
+  UI.start cpuTimeAppTimer
+  UI.start threadsNumTimer
+
+  on UI.disconnect window . const $ do
+    UI.stop cpuTimer
+    UI.stop memoryTimer
+    UI.stop gcMajorNumTimer
+    UI.stop gcMinorNumTimer
+    UI.stop gcLiveMemoryTimer
+    UI.stop cpuTimeGCTimer
+    UI.stop cpuTimeAppTimer
+    UI.stop threadsNumTimer
+
   return body
 
 topNavigation :: UI.Window -> UI Element
@@ -307,62 +372,62 @@ noNodesInfo networkConfig = do
 
 mkChart
   :: UI.Window
+  -> UI.Timer
   -> ChartId
   -> UI Element
-mkChart window chartId = do
-  selectTimeFormat <-
-    UI.select ## (show chartId <> show TimeFormatSelect) #+
-      [ UI.option # set value "0"
-                  # set text "Time only"
-      , UI.option # set value "1"
-                  # set text "Time and date"
-      , UI.option # set value "2"
-                  # set text "Date only"
+mkChart window chartUpdateTimer chartId = do
+  selectTimeRange <-
+    UI.select ## (show chartId <> show TimeRangeSelect) #+
+      -- Values are ranges in seconds.
+      [ UI.option # set value "300"   # set text "Last 5 minutes"
+      , UI.option # set value "900"   # set text "Last 15 minutes"
+      , UI.option # set value "1800"  # set text "Last 30 minutes"
+      , UI.option # set value "3600"  # set text "Last 1 hour"
+      , UI.option # set value "10800" # set text "Last 3 hours"
+      , UI.option # set value "21600" # set text "Last 6 hours"
       ]
-  selectTimeUnit <-
-    UI.select ## (show chartId <> show TimeUnitSelect) #+
-      [ UI.option # set value "0"
-                  # set text "Seconds"
-      , UI.option # set value "1"
-                  # set text "Minutes"
-      , UI.option # set value "2"
-                  # set text "Hours"
+  selectUpdatePeriod <-
+    UI.select ## (show chartId <> show UpdatePeriodSelect) #+
+      -- Values are periods in seconds.
+      [ UI.option # set value "15"   # set text "15 seconds"
+      , UI.option # set value "30"   # set text "30 seconds"
+      , UI.option # set value "60"   # set text "1 minute"
+      , UI.option # set value "300"  # set text "5 minutes"
+      , UI.option # set value "900"  # set text "15 minutes"
+      , UI.option # set value "1800" # set text "30 minutes"
+      , UI.option # set value "3600" # set text "1 hour"
       ]
+
+  on UI.selectionChange selectTimeRange . const $ 
+    whenJustM (readMaybe <$> get value selectTimeRange) $ \(rangeInSec :: Int) -> do
+      Chart.setTimeRange chartId rangeInSec
+      saveChartsSettings window
+
+  on UI.selectionChange selectUpdatePeriod . const $
+    whenJustM (readMaybe <$> get value selectUpdatePeriod) $ \(periodInSec :: Int) -> do
+      UI.stop chartUpdateTimer
+      void $ return chartUpdateTimer # set UI.interval (periodInSec * 1000)
+      UI.start chartUpdateTimer
+      saveChartsSettings window
+
   resetZoom <- UI.button #. "button is-small is-info is-outlined"
                          # set text "Reset zoom"
-  chart <-
-    UI.div #. "rt-view-chart-container" #+
-      [ UI.canvas ## (show chartId) #. "rt-view-chart-area" #+ []
-      , UI.div #. "field is-grouped mt-3" #+
-          [ UI.div #. "select is-link is-small mr-4" #+
-              [ element selectTimeFormat
-              ]
-          , UI.div #. "select is-link is-small mr-4" #+
-              [ element selectTimeUnit
-              ]
-          , element resetZoom
-          ]
-      ]
-
-  on UI.selectionChange selectTimeFormat $ \optionIx -> do
-    case optionIx of
-      Just 0 -> Chart.setTimeFormatChartJS chartId Chart.TimeOnly
-      Just 1 -> Chart.setTimeFormatChartJS chartId Chart.TimeAndDate
-      Just 2 -> Chart.setTimeFormatChartJS chartId Chart.DateOnly
-      _ -> return ()
-    saveChartsSettings window
-
-  on UI.selectionChange selectTimeUnit $ \optionIx -> do
-    case optionIx of
-      Just 0 -> Chart.setTimeUnitChartJS chartId Chart.Seconds
-      Just 1 -> Chart.setTimeUnitChartJS chartId Chart.Minutes
-      Just 2 -> Chart.setTimeUnitChartJS chartId Chart.Hours
-      _ -> return ()
-    saveChartsSettings window
-
   on UI.click resetZoom . const $ Chart.resetZoomChartJS chartId
 
-  return chart
+  UI.div #. "rt-view-chart-container" #+
+    [ UI.div #+
+        [ UI.div #. "field is-grouped mt-3" #+
+            [ UI.div #. "select is-link is-small mr-4" #+
+                [ element selectTimeRange
+                ]
+            , UI.div #. "select is-link is-small mr-4" #+
+                [ element selectUpdatePeriod
+                ]
+            , element resetZoom
+            ]
+        ]
+    , UI.canvas ## (show chartId) #. "rt-view-chart-area" #+ []
+    ]
 
 shownState, hiddenState :: String
 shownState  = "shown"
@@ -388,3 +453,19 @@ changeVisibilityForCharts window showHideIcon areaId areaName = do
       void $ element showHideIcon # set html        showSVG
                                   # set dataState   shownState
                                   # set dataTooltip ("Click to hide " <> areaName)
+
+mkChartTimer
+  :: ConnectedNodes
+  -> Int
+  -> History
+  -> DatasetsIndices
+  -> DatasetsTimestamps
+  -> DataName
+  -> ChartId
+  -> UI UI.Timer
+mkChartTimer connectedNodes periodInMs history
+             datasetIndices datasetTimestamps dataName chartId = do
+  uiUpdateTimer <- UI.timer # set UI.interval periodInMs
+  on UI.tick uiUpdateTimer . const $
+    addAllPointsToChart connectedNodes history datasetIndices datasetTimestamps dataName chartId
+  return uiUpdateTimer

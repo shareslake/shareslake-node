@@ -1,11 +1,15 @@
 {-# LANGUAGE CPP #-}
 
-module Cardano.Tracer.Handlers.RTView.UI.System
-  ( getProcessId
+module Cardano.Tracer.Handlers.RTView.System
+  ( getPathToChartsConfig
+  , getPathToThemeConfig
+  , getProcessId
   ) where
 
 import           Data.Word (Word32)
 import           Graphics.UI.Threepenny.Core
+import           System.Directory
+import           System.FilePath ((</>))
 
 #if defined(mingw32_HOST_OS)
 import           System.Win32.Process (getCurrentProcessId)
@@ -22,3 +26,10 @@ getProcessId =
   do CPid pid <- liftIO getProcessID
      return $ fromIntegral pid
 #endif
+
+getPathToChartsConfig, getPathToThemeConfig :: IO FilePath
+getPathToChartsConfig = getXdgDirectory XdgConfig $ rtViewConfigsRoot </> "charts"
+getPathToThemeConfig  = getXdgDirectory XdgConfig $ rtViewConfigsRoot </> "theme"
+
+rtViewConfigsRoot :: FilePath
+rtViewConfigsRoot = "cardano-rt-view"

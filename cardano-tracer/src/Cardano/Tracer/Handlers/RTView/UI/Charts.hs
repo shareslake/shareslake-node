@@ -39,14 +39,13 @@ import qualified Data.Map.Strict as M
 import           Data.Maybe (catMaybes)
 import qualified Data.Set as S
 import           Data.Text (pack)
-import           Data.Word (Word8)
 import           Graphics.UI.Threepenny.Core
-import           System.Directory
 import           Text.Read (readMaybe)
 
 import           Cardano.Tracer.Types
 import           Cardano.Tracer.Handlers.RTView.State.Displayed
 import           Cardano.Tracer.Handlers.RTView.State.Historical
+import           Cardano.Tracer.Handlers.RTView.System
 import           Cardano.Tracer.Handlers.RTView.UI.CSS.Own
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Charts as Chart
 import qualified Cardano.Tracer.Handlers.RTView.UI.JS.Utils as JS
@@ -262,26 +261,25 @@ restoreChartsSettings :: UI ()
 restoreChartsSettings = readSavedChartsSettings >>= setCharts
  where
   setCharts settings =
-    forM_ settings $ \(chartId, ChartSettings tf tu) -> do
-      JS.selectOption (show chartId <> show TimeFormatSelect) tf
-      JS.selectOption (show chartId <> show TimeUnitSelect)   tu
-      Chart.setTimeFormatChartJS chartId $ Chart.ix2tf tf
-      Chart.setTimeUnitChartJS   chartId $ Chart.ix2tu tu
+    forM_ settings $ \(chartId, ChartSettings tr up) -> do
+      JS.selectOption (show chartId <> show TimeRangeSelect)    tr
+      JS.selectOption (show chartId <> show UpdatePeriodSelect) up
+      Chart.setTimeRange chartId tr
 
 saveChartsSettings :: Window -> UI ()
 saveChartsSettings window = do
   settings <-
     forM chartsIds $ \chartId -> do
-      selectedTF <- getOptionIndex $ show chartId <> show TimeFormatSelect
-      selectedTU <- getOptionIndex $ show chartId <> show TimeUnitSelect
-      return (chartId, ChartSettings (Index selectedTF) (Index selectedTU))
+      selectedTR <- getOptionValue $ show chartId <> show TimeRangeSelect
+      selectedUP <- getOptionValue $ show chartId <> show UpdatePeriodSelect
+      return (chartId, ChartSettings selectedTR selectedUP)
   liftIO . ignore $ do
     pathToChartsConfig <- getPathToChartsConfig
     encodeFile pathToChartsConfig settings
  where
-  getOptionIndex selectId =
+  getOptionValue selectId =
     (readMaybe <$> findAndGetValue window (pack selectId)) >>= \case
-      Just (ix :: Word8) -> return ix
+      Just (valueInS :: Int) -> return valueInS
       Nothing -> return 0
 
 readSavedChartsSettings :: UI ChartsSettings
@@ -291,12 +289,11 @@ readSavedChartsSettings = liftIO $
     _ -> return defaultSettings
  where
   defaultSettings =
-    [ (chartId, ChartSettings (Index 0) (Index 1))
+    [ (chartId, ChartSettings defaultTimeRangeInS defaultUpdatePeriodInS)
     | chartId <- chartsIds
     ]
-
-getPathToChartsConfig :: IO FilePath
-getPathToChartsConfig = getXdgDirectory XdgConfig "rt-view-charts-config"
+  defaultTimeRangeInS = 300
+  defaultUpdatePeriodInS = 15
 
 changeChartsToLightTheme :: UI ()
 changeChartsToLightTheme =

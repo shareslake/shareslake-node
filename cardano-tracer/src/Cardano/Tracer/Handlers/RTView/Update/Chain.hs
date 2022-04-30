@@ -4,24 +4,20 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Cardano.Tracer.Handlers.RTView.Update.Chain
-  ( updateBlockchainCharts
-  , updateBlockchainHistory
+  ( updateBlockchainHistory
   ) where
 
 import           Control.Concurrent.STM.TVar (readTVarIO)
-import           Control.Monad (forM_) -- , unless)
+import           Control.Monad (forM_)
 import           Control.Monad.Extra (whenJust)
 import qualified Data.Map.Strict as M
 import           Data.Time.Clock.System
 import           Graphics.UI.Threepenny.Core
 import           Data.Text (unpack)
---import           Data.Word (Word64)
 import           Text.Read (readMaybe)
 
 import           Cardano.Tracer.Handlers.Metrics.Utils
 import           Cardano.Tracer.Handlers.RTView.State.Historical
-import           Cardano.Tracer.Handlers.RTView.UI.Charts
-import           Cardano.Tracer.Handlers.RTView.UI.Types
 import           Cardano.Tracer.Types
 
 updateBlockchainHistory
@@ -63,19 +59,3 @@ updateBlockchainHistory acceptedMetrics (ChainHistory cHistory) = do
   updateEpoch nodeId valueS now =
     whenJust (readMaybe valueS) $ \(epoch :: Integer) ->
       addHistoricalData cHistory nodeId now EpochData $ ValueI epoch
-
-updateBlockchainCharts
-  :: ConnectedNodes
-  -> BlockchainHistory
-  -> DatasetsIndices
-  -> DatasetsTimestamps
-  -> UI ()
-updateBlockchainCharts connectedNodes (ChainHistory history) dsIxs dsTss = do
-  connected <- liftIO $ readTVarIO connectedNodes
-  forM_ connected $ \nodeId -> do
-    addPointsToChart nodeId history dsIxs dsTss ChainDensityData ChainDensityChart
-    addPointsToChart nodeId history dsIxs dsTss SlotNumData      SlotNumChart
-    addPointsToChart nodeId history dsIxs dsTss BlockNumData     BlockNumChart
-    addPointsToChart nodeId history dsIxs dsTss SlotInEpochData  SlotInEpochChart
-    addPointsToChart nodeId history dsIxs dsTss EpochData        EpochChart
-

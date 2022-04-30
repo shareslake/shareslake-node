@@ -19,7 +19,7 @@ import           Control.Concurrent.STM.TBQueue (TBQueue)
 import           Control.Concurrent.STM.TVar (TVar)
 import           Data.Aeson (FromJSON, ToJSON)
 import           Data.Map.Strict (Map)
-import           Data.Word (Word8)
+import           Data.Word (Word16)
 import           GHC.Generics (Generic)
 
 import           Cardano.Tracer.Types (NodeId (..))
@@ -43,16 +43,16 @@ data ChartId
   deriving (Bounded, Enum, Generic, FromJSON, ToJSON, Show)
 
 data ChartSelectId
-  = TimeFormatSelect
-  | TimeUnitSelect
+  = TimeRangeSelect
+  | UpdatePeriodSelect
   deriving Show
 
-newtype Index = Index Word8
+newtype Index = Index Word16
   deriving (Generic, FromJSON, ToJSON, Show)
 
 data ChartSettings = ChartSettings
-  { csTimeFormatIx :: !Index
-  , csTimeUnitIx   :: !Index
+  { csTimeRangeInS    :: !Int
+  , csUpdatePeriodInS :: !Int
   } deriving (Generic, FromJSON, ToJSON)
 
 type ChartsSettings = [(ChartId, ChartSettings)]

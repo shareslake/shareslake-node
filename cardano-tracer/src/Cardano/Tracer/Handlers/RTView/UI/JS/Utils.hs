@@ -7,8 +7,6 @@ module Cardano.Tracer.Handlers.RTView.UI.JS.Utils
 import           Graphics.UI.Threepenny.Core
 import qualified Graphics.UI.Threepenny as UI
 
-import           Cardano.Tracer.Handlers.RTView.UI.Types
-
 copyTextToClipboard :: String
 copyTextToClipboard = concat
   [ "const listener = function(ev) {"
@@ -33,10 +31,7 @@ downloadCSVFile = concat
 
 selectOption
   :: String
-  -> Index
+  -> Int
   -> UI ()
-selectOption selectId (Index ix) =
-  UI.runFunction $ UI.ffi "document.getElementById(%1).selectedIndex = %2;" selectId ix'
- where
-  ix' :: Int
-  ix' = fromIntegral ix
+selectOption selectId optionValue =
+  UI.runFunction $ UI.ffi "document.getElementById(%1).value = %2;" selectId optionValue

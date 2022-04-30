@@ -15,8 +15,8 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
-import           System.Directory
 
+import           Cardano.Tracer.Handlers.RTView.System
 import           Cardano.Tracer.Handlers.RTView.UI.Img.Icons
 import           Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
@@ -78,6 +78,3 @@ readSavedTheme = liftIO $
   try_ (TIO.readFile =<< getPathToThemeConfig) >>= \case
     Right saved -> return $ T.unpack saved
     Left _      -> return darkState -- Use dark theme by default.
-
-getPathToThemeConfig :: IO FilePath
-getPathToThemeConfig = getXdgDirectory XdgConfig "rt-view-theme-config"

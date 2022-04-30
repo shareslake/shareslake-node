@@ -15,9 +15,9 @@ import           System.Info.Extra (isWindows, isMac)
 
 import           Cardano.Git.Rev (gitRev)
 
+import           Cardano.Tracer.Handlers.RTView.System
 import           Cardano.Tracer.Handlers.RTView.UI.JS.Utils
 import           Cardano.Tracer.Handlers.RTView.UI.Img.Icons
-import           Cardano.Tracer.Handlers.RTView.UI.System
 import           Cardano.Tracer.Handlers.RTView.UI.Utils
 import           Paths_cardano_tracer (version)
 

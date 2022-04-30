@@ -1,59 +1,31 @@
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
-  ( ChartTimeFormat (..)
-  , ChartTimeUnit (..)
-  , prepareChartsJS
+  ( prepareChartsJS
   , addDatasetChartJS
   , addPointsChartJS
   , addAllPointsChartJS
   , getDatasetsLengthChartJS
   , newTimeChartJS
-  , setTimeFormatChartJS
-  , setTimeUnitChartJS
   , resetZoomChartJS
   , changeColorsChartJS
-  , ix2tf
-  , ix2tu
+  , setTimeRange
   ) where
 
 import           Data.List (intercalate)
 import           Data.String.QQ
 import           Data.Text (Text)
-import           Data.Word (Word8)
+import           Data.Time.Clock.System
+import           Data.Word (Word16)
 import qualified Graphics.UI.Threepenny as UI
 import           Graphics.UI.Threepenny.Core
 
 import           Cardano.Tracer.Handlers.RTView.State.Historical
 import           Cardano.Tracer.Handlers.RTView.UI.Types
-
-data ChartTimeFormat
-  = TimeOnly
-  | TimeAndDate
-  | DateOnly
-
-data ChartTimeUnit
-  = Seconds
-  | Minutes
-  | Hours
-
-ix2tf :: Index -> ChartTimeFormat
-ix2tf (Index ix) =
-  case ix of
-    0 -> TimeOnly
-    1 -> TimeAndDate
-    2 -> DateOnly
-    _ -> TimeOnly
-
-ix2tu :: Index -> ChartTimeUnit
-ix2tu (Index ix) =
-  case ix of
-    0 -> Seconds
-    1 -> Minutes
-    2 -> Hours
-    _ -> Seconds
+import           Cardano.Tracer.Handlers.RTView.Update.Utils
 
 prepareChartsJS :: UI ()
 prepareChartsJS =
@@ -107,7 +79,7 @@ var chart = new Chart(ctx, {
       zoom: {
         zoom: {
           drag: {
-            enabled: true
+            enabled: false
           },
           mode: 'x'
         }
@@ -129,9 +101,10 @@ var chart = new Chart(ctx, {
         },
         time: {
           displayFormats: {
-            second: 'MMM D YYYY HH:mm:ss',
-            minute: 'MMM D YYYY HH:mm',
-            hour:   'MMM D YYYY hh a',
+            second: 'HH:mm:ss',
+            minute: 'HH:mm',
+            hour:   'hh a',
+            day:    'MMM D YYYY'
           },
           unit: 'minute'
         },
@@ -178,7 +151,7 @@ chart.data.datasets.push(newDataset);
 chart.update();
 |]
 
-getDatasetsLengthChartJS :: ChartId -> UI Word8
+getDatasetsLengthChartJS :: ChartId -> UI Word16
 getDatasetsLengthChartJS chartId = do
   (l :: Int) <- UI.callFunction $ UI.ffi "window.charts.get(%1).data.datasets.length;" (show chartId)
   return $ fromIntegral l
@@ -226,47 +199,6 @@ addPointsChartJS chartId (Index datasetIx) points =
     let !tsInMs = ts * 1000 -- ChartJS uses milliseconds since epoch as internal format.
     in "{x: " <> show tsInMs <> ", y: " <> show valueH <> "}"
 
-setTimeFormatChartJS
-  :: ChartId
-  -> ChartTimeFormat
-  -> UI ()
-setTimeFormatChartJS chartId format =
-  UI.runFunction $ UI.ffi setTimeFormatChartJS' (show chartId) formatSecond formatMinute formatHour
- where
-  (formatSecond, formatMinute, formatHour) =
-    case format of
-      TimeOnly    -> (timeS,                timeM,                timeH)
-      TimeAndDate -> (date <> " " <> timeS, date <> " " <> timeM, date <> " " <> timeH)
-      DateOnly    -> (date,                 date,                 date)
-  date  = "MMM D YYYY"
-  timeS = "HH:mm:ss"
-  timeM = "HH:mm"
-  timeH = "hh a"
-
-setTimeFormatChartJS' :: String
-setTimeFormatChartJS' = [s|
-var chart = window.charts.get(%1);
-chart.options.scales.x.time.displayFormats.second = %2;
-chart.options.scales.x.time.displayFormats.minute = %3;
-chart.options.scales.x.time.displayFormats.hour = %4;
-chart.update();
-|]
-
-setTimeUnitChartJS
-  :: ChartId
-  -> ChartTimeUnit
-  -> UI ()
-setTimeUnitChartJS chartId Seconds = UI.runFunction $ UI.ffi setTimeUnitChartJS' (show chartId) "second"
-setTimeUnitChartJS chartId Minutes = UI.runFunction $ UI.ffi setTimeUnitChartJS' (show chartId) "minute"
-setTimeUnitChartJS chartId Hours   = UI.runFunction $ UI.ffi setTimeUnitChartJS' (show chartId) "hour"
-
-setTimeUnitChartJS' :: String
-setTimeUnitChartJS' = [s|
-var chart = window.charts.get(%1);
-chart.options.scales.x.time.unit = %2;
-chart.update();
-|]
-
 resetZoomChartJS :: ChartId -> UI ()
 resetZoomChartJS chartId =
   UI.runFunction $ UI.ffi "window.charts.get(%1).resetZoom();" (show chartId)
@@ -290,5 +222,31 @@ chart.options.scales.y.title.color = %2;
 chart.options.scales.y.grid.color = %3;
 chart.options.plugins.title.color = %2;
 chart.options.plugins.legend.title.color = %2;
+chart.update();
+|]
+
+setTimeRange
+  :: ChartId
+  -> Int
+  -> UI ()
+setTimeRange chartId rangeInSec = do
+  now <- liftIO $ systemToUTCTime <$> getSystemTime
+  let !rangeInMs = rangeInSec * 1000
+      !maxInMs   = (utc2s now) * 1000
+      !minInMs   = maxInMs - fromIntegral rangeInMs 
+  -- Set time units depends on selected range.
+  let timeUnit = if | rangeInSec <= 300                      -> "second"
+                    | rangeInSec > 300 && rangeInSec <= 1800 -> "minute"
+                    | otherwise                              -> "hour"
+  UI.runFunction $ UI.ffi zoomScaleAndUnitsChartJS (show chartId)
+                                                   (fromIntegral minInMs :: Int)
+                                                   (fromIntegral maxInMs :: Int)
+                                                   timeUnit
+
+zoomScaleAndUnitsChartJS :: String
+zoomScaleAndUnitsChartJS = [s|
+var chart = window.charts.get(%1);
+chart.zoomScale('x', {min: %2, max: %3});
+chart.options.scales.x.time.unit = %4;
 chart.update();
 |]
