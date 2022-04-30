@@ -34,10 +34,9 @@ prepareChartsJS =
 newTimeChartJS
   :: ChartId
   -> String
-  -> String
   -> UI ()
-newTimeChartJS chartId chartName yValuesLabel =
-  UI.runFunction $ UI.ffi newTimeChartJS' (show chartId) chartName yValuesLabel
+newTimeChartJS chartId yValuesLabel =
+  UI.runFunction $ UI.ffi newTimeChartJS' (show chartId) yValuesLabel
 
 newTimeChartJS' :: String
 newTimeChartJS' = [s|
@@ -68,14 +67,6 @@ var chart = new Chart(ctx, {
     },
     responsive: true,
     plugins: {
-      title: {
-        display: true,
-        align: 'start',
-        font: {
-          size: 18
-        },
-        text: %2
-      },
       zoom: {
         zoom: {
           drag: {
@@ -120,7 +111,7 @@ var chart = new Chart(ctx, {
       y: {
         title: {
           display: true,
-          text: %3
+          text: %2
         }
       }
     }

@@ -186,6 +186,10 @@ span[data-tooltip] {
   border-radius: 6px;
 }
 
+.dark .rt-view-chart-name {
+  color: whitesmoke;
+}
+
 .dark .rt-view-about-title {
   color: whitesmoke;
 }
@@ -383,6 +387,10 @@ span[data-tooltip] {
   margin-bottom: 50px;
   border: 1px solid #dddddd;
   border-radius: 6px;
+}
+
+.light .rt-view-chart-name {
+  color: #444;
 }
 
 .light .rt-view-about-title {

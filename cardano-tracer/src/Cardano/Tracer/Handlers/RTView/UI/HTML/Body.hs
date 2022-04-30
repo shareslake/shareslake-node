@@ -59,14 +59,14 @@ mkPageBody window networkConfig connectedNodes
   threadsNumTimer   <-
     mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps ThreadsNumData   ThreadsNumChart
 
-  cpuChart          <- mkChart window cpuTimer          CPUChart
-  memoryChart       <- mkChart window memoryTimer       MemoryChart
-  gcMajorNumChart   <- mkChart window gcMajorNumTimer   GCMajorNumChart
-  gcMinorNumChart   <- mkChart window gcMinorNumTimer   GCMinorNumChart
-  gcLiveMemoryChart <- mkChart window gcLiveMemoryTimer GCLiveMemoryChart
-  cpuTimeGCChart    <- mkChart window cpuTimeGCTimer    CPUTimeGCChart
-  cpuTimeAppChart   <- mkChart window cpuTimeAppTimer   CPUTimeAppChart
-  threadsNumChart   <- mkChart window threadsNumTimer   ThreadsNumChart
+  cpuChart          <- mkChart window cpuTimer          CPUChart          "CPU usage"
+  memoryChart       <- mkChart window memoryTimer       MemoryChart       "Memory usage"
+  gcMajorNumChart   <- mkChart window gcMajorNumTimer   GCMajorNumChart   "Number of major GCs"
+  gcMinorNumChart   <- mkChart window gcMinorNumTimer   GCMinorNumChart   "Number of minor GCs"
+  gcLiveMemoryChart <- mkChart window gcLiveMemoryTimer GCLiveMemoryChart "GC, live data in heap"
+  cpuTimeGCChart    <- mkChart window cpuTimeGCTimer    CPUTimeGCChart    "CPU time used by GC"
+  cpuTimeAppChart   <- mkChart window cpuTimeAppTimer   CPUTimeAppChart   "CPU time used by app"
+  threadsNumChart   <- mkChart window threadsNumTimer   ThreadsNumChart   "Number of threads"
 
   -- Blockchain charts.
   chainDensityTimer <-
@@ -80,11 +80,11 @@ mkPageBody window networkConfig connectedNodes
   epochTimer        <-
     mkChartTimer connectedNodes per cHistory datasetIndices datasetTimestamps EpochData        EpochChart
 
-  chainDensityChart <- mkChart window chainDensityTimer ChainDensityChart
-  slotNumChart      <- mkChart window slotNumTimer      SlotNumChart
-  blockNumChart     <- mkChart window blockNumTimer     BlockNumChart
-  slotInEpochChart  <- mkChart window slotInEpochTimer  SlotInEpochChart
-  epochChart        <- mkChart window epochTimer        EpochChart
+  chainDensityChart <- mkChart window chainDensityTimer ChainDensityChart "Chain density"
+  slotNumChart      <- mkChart window slotNumTimer      SlotNumChart      "Slot height"
+  blockNumChart     <- mkChart window blockNumTimer     BlockNumChart     "Block height"
+  slotInEpochChart  <- mkChart window slotInEpochTimer  SlotInEpochChart  "Slot in epoch"
+  epochChart        <- mkChart window epochTimer        EpochChart        "Epoch"
 
   -- Visibility of charts gropus.
   showHideChain     <- image "has-tooltip-multiline has-tooltip-right rt-view-show-hide-chart-group" showSVG
@@ -217,20 +217,20 @@ mkPageBody window networkConfig connectedNodes
 
   Chart.prepareChartsJS
 
-  Chart.newTimeChartJS CPUChart          "CPU usage"             "Percent"
-  Chart.newTimeChartJS MemoryChart       "Memory usage"          "MB"
-  Chart.newTimeChartJS GCMajorNumChart   "Number of major GCs"   ""
-  Chart.newTimeChartJS GCMinorNumChart   "Number of minor GCs"   ""
-  Chart.newTimeChartJS GCLiveMemoryChart "GC, live data in heap" "MB"
-  Chart.newTimeChartJS CPUTimeGCChart    "CPU time used by GC"   "milliseconds"
-  Chart.newTimeChartJS CPUTimeAppChart   "CPU time used by app"  "milliseconds"
-  Chart.newTimeChartJS ThreadsNumChart   "Number of threads"     ""
+  Chart.newTimeChartJS CPUChart          "Percent"
+  Chart.newTimeChartJS MemoryChart       "MB"
+  Chart.newTimeChartJS GCMajorNumChart   ""
+  Chart.newTimeChartJS GCMinorNumChart   ""
+  Chart.newTimeChartJS GCLiveMemoryChart "MB"
+  Chart.newTimeChartJS CPUTimeGCChart    "milliseconds"
+  Chart.newTimeChartJS CPUTimeAppChart   "milliseconds"
+  Chart.newTimeChartJS ThreadsNumChart   ""
 
-  Chart.newTimeChartJS ChainDensityChart "Chain density"         "Percent"
-  Chart.newTimeChartJS SlotNumChart      "Slot height"           ""
-  Chart.newTimeChartJS BlockNumChart     "Block height"          ""
-  Chart.newTimeChartJS SlotInEpochChart  "Slot in epoch"         ""
-  Chart.newTimeChartJS EpochChart        "Epoch"                 ""
+  Chart.newTimeChartJS ChainDensityChart "Percent"
+  Chart.newTimeChartJS SlotNumChart      ""
+  Chart.newTimeChartJS BlockNumChart     ""
+  Chart.newTimeChartJS SlotInEpochChart  ""
+  Chart.newTimeChartJS EpochChart        ""
 
   UI.start cpuTimer
   UI.start memoryTimer
@@ -374,8 +374,9 @@ mkChart
   :: UI.Window
   -> UI.Timer
   -> ChartId
+  -> String
   -> UI Element
-mkChart window chartUpdateTimer chartId = do
+mkChart window chartUpdateTimer chartId chartName = do
   selectTimeRange <-
     UI.select ## (show chartId <> show TimeRangeSelect) #+
       -- Values are ranges in seconds.
@@ -413,14 +414,19 @@ mkChart window chartUpdateTimer chartId = do
       saveChartsSettings window
 
   UI.div #. "rt-view-chart-container" #+
-    [ UI.div #. "has-text-right" #+
-        [ UI.div #. "field is-grouped mt-3" #+
-            [ image "has-tooltip-multiline has-tooltip-top rt-view-chart-icon" timeRangeSVG
-                    # set dataTooltip "Select time range"
-            , UI.div #. "select is-link is-small mr-4" #+ [element selectTimeRange]
-            , image "has-tooltip-multiline has-tooltip-top rt-view-chart-icon" refreshSVG
-                    # set dataTooltip "Select update period"
-            , UI.div #. "select is-link is-small" #+ [element selectUpdatePeriod]
+    [ UI.div #. "columns" #+
+        [ UI.div #. "column mt-1" #+
+            [ UI.span #. "rt-view-chart-name" # set text chartName
+            ]
+        , UI.div #. "column has-text-right" #+
+            [ UI.div #. "field is-grouped mt-3" #+
+                [ image "has-tooltip-multiline has-tooltip-top rt-view-chart-icon" timeRangeSVG
+                        # set dataTooltip "Select time range"
+                , UI.div #. "select is-link is-small mr-4" #+ [element selectTimeRange]
+                , image "has-tooltip-multiline has-tooltip-top rt-view-chart-icon" refreshSVG
+                        # set dataTooltip "Select update period"
+                , UI.div #. "select is-link is-small" #+ [element selectUpdatePeriod]
+                ]
             ]
         ]
     , UI.canvas ## (show chartId) #. "rt-view-chart-area" #+ []
