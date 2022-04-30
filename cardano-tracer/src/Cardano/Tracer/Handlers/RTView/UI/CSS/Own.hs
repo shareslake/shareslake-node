@@ -247,6 +247,12 @@ span[data-tooltip] {
   color: #0cc9cb;
 }
 
+.dark .rt-view-chart-icon svg {
+  width: 19px;
+  margin-right: 11px;
+  color: #0cc9cb;
+}
+
 .dark .rt-view-footer {
   background-color: #282841;
   color: #999;
@@ -436,6 +442,12 @@ span[data-tooltip] {
 .light .rt-view-show-hide-chart-group svg {
   width: 21px;
   margin-left: 13px;
+  color: #038b8c;
+}
+
+.light .rt-view-chart-icon svg {
+  width: 19px;
+  margin-right: 11px;
   color: #038b8c;
 }
 

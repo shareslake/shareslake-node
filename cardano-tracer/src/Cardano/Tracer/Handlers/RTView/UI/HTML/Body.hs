@@ -415,12 +415,12 @@ mkChart window chartUpdateTimer chartId = do
   UI.div #. "rt-view-chart-container" #+
     [ UI.div #. "has-text-right" #+
         [ UI.div #. "field is-grouped mt-3" #+
-            [ UI.div #. "select is-link is-small mr-4" #+
-                [ element selectTimeRange
-                ]
-            , UI.div #. "select is-link is-small" #+
-                [ element selectUpdatePeriod
-                ]
+            [ image "has-tooltip-multiline has-tooltip-top rt-view-chart-icon" timeRangeSVG
+                    # set dataTooltip "Select time range"
+            , UI.div #. "select is-link is-small mr-4" #+ [element selectTimeRange]
+            , image "has-tooltip-multiline has-tooltip-top rt-view-chart-icon" refreshSVG
+                    # set dataTooltip "Select update period"
+            , UI.div #. "select is-link is-small" #+ [element selectUpdatePeriod]
             ]
         ]
     , UI.canvas ## (show chartId) #. "rt-view-chart-area" #+ []
