@@ -5,8 +5,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Cardano.Tracer.Handlers.RTView.UI.Charts
-  ( DatasetsTimestamps
-  , initColors
+  ( initColors
   , initDatasetsIndices
   , initDatasetsTimestamps
   , getDatasetIx

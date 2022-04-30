@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -57,7 +58,7 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
           let tns        = utc2ns now
               tDiffInSec = max 0.1 $ fromIntegral (tns - cpuLastNS resourcesForNode) / 1000_000_000 :: Double
               ticksDiff  = cpuTicks - cpuLastTicks resourcesForNode
-              cpuV       = fromIntegral ticksDiff / fromIntegral (100 :: Integer) / tDiffInSec
+              !cpuV      = fromIntegral ticksDiff / fromIntegral (100 :: Integer) / tDiffInSec
               newCPUPct  = if cpuV < 0 then 0.0 else cpuV * 100.0
           addHistoricalData rHistory nodeId now CPUData $ ValueD newCPUPct
           updateLastResources lastResources nodeId $ \current ->
@@ -67,12 +68,12 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
 
   updateRSSMemory nodeId valueS now =
     whenJust (readMaybe valueS) $ \(bytes :: Word64) -> do
-      let memoryInMB = fromIntegral bytes / 1024 / 1024 :: Double
+      let !memoryInMB = fromIntegral bytes / 1024 / 1024 :: Double
       addHistoricalData rHistory nodeId now MemoryData $ ValueD memoryInMB
 
   updateGCLiveMemory nodeId valueS now =
     whenJust (readMaybe valueS) $ \(bytes :: Word64) -> do
-      let memoryInMB = fromIntegral bytes / 1024 / 1024 :: Double
+      let !memoryInMB = fromIntegral bytes / 1024 / 1024 :: Double
       addHistoricalData rHistory nodeId now GCLiveMemoryData $ ValueD memoryInMB
 
   updateGCMajorNum nodeId valueS now =
@@ -86,13 +87,13 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
   updateCPUTimeGC nodeId valueS now =
     whenJust (readMaybe valueS) $ \(cpuTimeGCInCentiS :: Word64) -> do
       -- This is a total CPU time used by the GC, as 1/100 second.
-      let cpuTimeGCInMs = cpuTimeGCInCentiS * 10
+      let !cpuTimeGCInMs = cpuTimeGCInCentiS * 10
       addHistoricalData rHistory nodeId now CPUTimeGCData $ ValueI (fromIntegral cpuTimeGCInMs)
 
   updateCPUTimeApp nodeId valueS now =
     whenJust (readMaybe valueS) $ \(cpuTimeAppInCentiS :: Word64) -> do
       -- This is a total CPU time used by the the node itself, as 1/100 second.
-      let cpuTimeAppInMs = cpuTimeAppInCentiS * 10
+      let !cpuTimeAppInMs = cpuTimeAppInCentiS * 10
       addHistoricalData rHistory nodeId now CPUTimeAppData $ ValueI (fromIntegral cpuTimeAppInMs)
 
   updateThreadsNum nodeId valueS now =

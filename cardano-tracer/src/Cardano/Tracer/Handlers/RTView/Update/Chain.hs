@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -41,7 +42,7 @@ updateBlockchainHistory acceptedMetrics (ChainHistory cHistory) = do
  where
   updateChainDensity nodeId valueS now =
     whenJust (readMaybe valueS) $ \(density :: Double) -> do
-      let density' = 0.05 + density * 100.0
+      let !density' = 0.05 + density * 100.0
       addHistoricalData cHistory nodeId now ChainDensityData $ ValueD density'
 
   updateSlotNum nodeId valueS now =
