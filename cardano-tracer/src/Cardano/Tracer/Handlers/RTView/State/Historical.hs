@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE BangPatterns #-}
 
 module Cardano.Tracer.Handlers.RTView.State.Historical
   ( BlockchainHistory (..)
@@ -147,7 +147,7 @@ addHistoricalData history nodeId now dataName valueH = atomically $
         -- to check them.
         point : otherPoints
 
-  minAge = utc2s now - pointsAgeInSec
+  !minAge = utc2s now - pointsAgeInSec
   pointsAgeInSec = 12 * 60 * 60
 
 getHistoricalData

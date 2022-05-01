@@ -1,7 +1,5 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE FlexibleContexts #-}
 
 module Cardano.Tracer.Handlers.RTView.UI.Types
   ( ChartId (..)
@@ -48,7 +46,7 @@ data ChartSelectId
   deriving Show
 
 newtype Index = Index Word16
-  deriving (Generic, FromJSON, ToJSON, Show)
+  deriving Show
 
 data ChartSettings = ChartSettings
   { csTimeRangeInS    :: !Int

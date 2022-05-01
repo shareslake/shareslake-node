@@ -110,10 +110,7 @@ mkMainPage connectedNodes displayedElements savedTO
   UI.start uiUpdateTimer
 
   on UI.disconnect window . const $ do
-    -- The connection with the browser was dropped (probably user closed the tab),
-    -- so timers should be stopped.
     UI.stop uiUpdateTimer
-    -- To restore current displayed state after DOM-rerendering.
     liftIO $ pageWasReload reloadFlag
 
   void $ UI.element pageBody

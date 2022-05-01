@@ -75,7 +75,10 @@ saveDisplayedValue displayedElements nodeId elId elValue = atomically $
 --
 --   2-nd and 3-d cases can coexist.
 --
-updateDisplayedElements :: DisplayedElements -> Set NodeId -> IO ()
+updateDisplayedElements
+  :: DisplayedElements
+  -> Set NodeId
+  -> IO ()
 updateDisplayedElements displayedElements connected = atomically $
   modifyTVar' displayedElements $ \currentDisplayedEls ->
     let connectedIds = S.toList connected

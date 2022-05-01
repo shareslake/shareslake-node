@@ -30,7 +30,7 @@ mkAboutInfo = do
   copyPath <- image "has-tooltip-multiline has-tooltip-top rt-view-copy-icon" copySVG
                     # set dataTooltip "Click to copy the path"
   on UI.click copyPath . const $
-    UI.runFunction $ UI.ffi copyTextToClipboard pathToConfig
+    copyTextToClipboard pathToConfig
   closeIt <- UI.button #. "delete"
   pid <- getProcessId
   info <-

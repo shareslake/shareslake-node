@@ -1,6 +1,4 @@
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 
 module Cardano.Tracer.Handlers.RTView.UI.HTML.Node.Column
   ( addNodeColumn
@@ -110,7 +108,7 @@ logsSettings loggingConfig anId itIsDarkTheme =
         copyPath <- image "has-tooltip-multiline has-tooltip-top rt-view-copy-icon" copySVG
                           # set dataTooltip "Click to copy the path to a directory with logs from this node"
         on UI.click copyPath . const $
-          UI.runFunction $ UI.ffi copyTextToClipboard pathToSubdir
+          copyTextToClipboard pathToSubdir
         return $
           UI.p #+
             [ UI.span #. logsPathClasses
@@ -126,7 +124,7 @@ logsSettings loggingConfig anId itIsDarkTheme =
         copyId <- image "has-tooltip-multiline has-tooltip-top rt-view-copy-icon" copySVG
                         # set dataTooltip "Click to copy the syslog identifier of this node"
         on UI.click copyId . const $
-          UI.runFunction $ UI.ffi copyTextToClipboard anId
+          copyTextToClipboard anId
         return $
           UI.p #+
             [ UI.span #. ("tag is-info is-light is-rounded mr-3"
