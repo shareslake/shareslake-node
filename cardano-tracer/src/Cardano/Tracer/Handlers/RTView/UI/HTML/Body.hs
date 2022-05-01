@@ -8,7 +8,7 @@ module Cardano.Tracer.Handlers.RTView.UI.HTML.Body
 
 import           Control.Monad (void, unless, when)
 import           Control.Monad.Extra (whenM, whenJustM)
-import           Data.List (intersperse)
+import           Data.List (intercalate)
 import qualified Data.List.NonEmpty as NE
 import           Data.Text (Text)
 import qualified Graphics.UI.Threepenny as UI
@@ -38,26 +38,23 @@ mkPageBody
 mkPageBody window networkConfig connectedNodes
            (ResHistory rHistory) (ChainHistory cHistory)
            datasetIndices datasetTimestamps = do
-  -- TODO
-  let per = 15 * 1000
-
   -- Resources charts.
   cpuTimer          <-
-    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps CPUData          CPUChart
+    mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps CPUData          CPUChart
   memoryTimer       <-
-    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps MemoryData       MemoryChart
+    mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps MemoryData       MemoryChart
   gcMajorNumTimer   <-
-    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps GCMajorNumData   GCMajorNumChart
+    mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps GCMajorNumData   GCMajorNumChart
   gcMinorNumTimer   <-
-    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps GCMinorNumData   GCMinorNumChart
+    mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps GCMinorNumData   GCMinorNumChart
   gcLiveMemoryTimer <-
-    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps GCLiveMemoryData GCLiveMemoryChart
+    mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps GCLiveMemoryData GCLiveMemoryChart
   cpuTimeGCTimer    <-
-    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps CPUTimeGCData    CPUTimeGCChart
+    mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps CPUTimeGCData    CPUTimeGCChart
   cpuTimeAppTimer   <-
-    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps CPUTimeAppData   CPUTimeAppChart
+    mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps CPUTimeAppData   CPUTimeAppChart
   threadsNumTimer   <-
-    mkChartTimer connectedNodes per rHistory datasetIndices datasetTimestamps ThreadsNumData   ThreadsNumChart
+    mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps ThreadsNumData   ThreadsNumChart
 
   cpuChart          <- mkChart window cpuTimer          CPUChart          "CPU usage"
   memoryChart       <- mkChart window memoryTimer       MemoryChart       "Memory usage"
@@ -70,15 +67,15 @@ mkPageBody window networkConfig connectedNodes
 
   -- Blockchain charts.
   chainDensityTimer <-
-    mkChartTimer connectedNodes per cHistory datasetIndices datasetTimestamps ChainDensityData ChainDensityChart
+    mkChartTimer connectedNodes cHistory datasetIndices datasetTimestamps ChainDensityData ChainDensityChart
   slotNumTimer      <-
-    mkChartTimer connectedNodes per cHistory datasetIndices datasetTimestamps SlotNumData      SlotNumChart
+    mkChartTimer connectedNodes cHistory datasetIndices datasetTimestamps SlotNumData      SlotNumChart
   blockNumTimer     <-
-    mkChartTimer connectedNodes per cHistory datasetIndices datasetTimestamps BlockNumData     BlockNumChart
+    mkChartTimer connectedNodes cHistory datasetIndices datasetTimestamps BlockNumData     BlockNumChart
   slotInEpochTimer  <-
-    mkChartTimer connectedNodes per cHistory datasetIndices datasetTimestamps SlotInEpochData  SlotInEpochChart
+    mkChartTimer connectedNodes cHistory datasetIndices datasetTimestamps SlotInEpochData  SlotInEpochChart
   epochTimer        <-
-    mkChartTimer connectedNodes per cHistory datasetIndices datasetTimestamps EpochData        EpochChart
+    mkChartTimer connectedNodes cHistory datasetIndices datasetTimestamps EpochData        EpochChart
 
   chainDensityChart <- mkChart window chainDensityTimer ChainDensityChart "Chain density"
   slotNumChart      <- mkChart window slotNumTimer      SlotNumChart      "Slot height"
@@ -360,7 +357,7 @@ noNodesInfo networkConfig = do
           <> (if manySocks
                then
                  let socks = map (\(LocalSocket p) -> "<code>" <> p <> "</code>") $ NE.toList addrs
-                 in "sockets " <> concat (intersperse ", " socks) <> "."
+                 in "sockets " <> intercalate ", " socks <> "."
                else
                  "socket <code>" <> let LocalSocket p = NE.head addrs in p <> "</code>.")
         , (if manySocks then "nodes" else "node")
@@ -431,7 +428,7 @@ mkChart window chartUpdateTimer chartId chartName = do
                 ]
             ]
         ]
-    , UI.canvas ## (show chartId) #. "rt-view-chart-area" #+ []
+    , UI.canvas ## show chartId #. "rt-view-chart-area" #+ []
     ]
 
 shownState, hiddenState :: String
@@ -461,16 +458,16 @@ changeVisibilityForCharts window showHideIcon areaId areaName = do
 
 mkChartTimer
   :: ConnectedNodes
-  -> Int
   -> History
   -> DatasetsIndices
   -> DatasetsTimestamps
   -> DataName
   -> ChartId
   -> UI UI.Timer
-mkChartTimer connectedNodes periodInMs history
-             datasetIndices datasetTimestamps dataName chartId = do
-  uiUpdateTimer <- UI.timer # set UI.interval periodInMs
+mkChartTimer connectedNodes history datasetIndices datasetTimestamps dataName chartId = do
+  uiUpdateTimer <- UI.timer # set UI.interval defaultUpdatePeriodInMs
   on UI.tick uiUpdateTimer . const $
     addAllPointsToChart connectedNodes history datasetIndices datasetTimestamps dataName chartId
   return uiUpdateTimer
+ where
+  defaultUpdatePeriodInMs = 15 * 1000

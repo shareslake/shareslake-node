@@ -223,8 +223,8 @@ setTimeRange
 setTimeRange chartId rangeInSec = do
   now <- liftIO $ systemToUTCTime <$> getSystemTime
   let !rangeInMs = rangeInSec * 1000
-      !maxInMs   = (utc2s now) * 1000
-      !minInMs   = maxInMs - fromIntegral rangeInMs 
+      !maxInMs   = utc2s now * 1000
+      !minInMs   = maxInMs - fromIntegral rangeInMs
   -- Set time units depends on selected range.
   let timeUnit = if | rangeInSec == 0                        -> "hour"
                     | rangeInSec > 0   && rangeInSec <= 300  -> "second"

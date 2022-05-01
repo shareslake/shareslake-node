@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -33,7 +34,7 @@ import           Control.Monad.Extra (whenJustM)
 import           Data.Aeson
 import           Data.List.Extra (chunksOf)
 import qualified Data.Map.Strict as M
-import           Data.Maybe (catMaybes)
+import           Data.Maybe (catMaybes, fromMaybe)
 import qualified Data.Set as S
 import           Data.Text (pack)
 import           Graphics.UI.Threepenny.Core
@@ -107,7 +108,7 @@ addNodeDatasetsToCharts window nodeId@(NodeId anId) colors datasetIndices displa
   forM_ chartsIds $ \chartId -> do
     newIx <- Chart.getDatasetsLengthChartJS chartId
     nodeName <- liftIO $ getDisplayedValue displayedElements nodeId (anId <> "__node-name")
-    Chart.addDatasetChartJS chartId (maybe anId id nodeName) colorForNode
+    Chart.addDatasetChartJS chartId (fromMaybe anId nodeName) colorForNode
     saveDatasetIx datasetIndices nodeId (Index newIx)
   -- Change color label for node name as well.
   findAndSet (set style [("color", code)]) window (anId <> "__node-chart-label")
@@ -166,7 +167,7 @@ addAllPointsToChart connectedNodes hist datasetIndices datasetTimestamps dataNam
   connected <- liftIO $ S.toList <$> readTVarIO connectedNodes
   dataForPush <-
     forM connected $ \nodeId ->
-      (liftIO $ getHistoricalData hist nodeId dataName) >>= \case
+      liftIO (getHistoricalData hist nodeId dataName) >>= \case
         []     -> return Nothing
         points -> do
           let (latestTS, _) = last points
@@ -188,7 +189,7 @@ addAllPointsToChart connectedNodes hist datasetIndices datasetTimestamps dataNam
                 Nothing -> return Nothing
                 Just ix ->
                   return . Just $ ( (nodeId, latestTS)
-                                  , (ix, replacePointsByAvgPoints $ cutOldPoints storedTS points)
+                                  , (ix, replacePointsByAvgPoints $! cutOldPoints storedTS points)
                                   )
   let (nodeIdsWithLatestTss, datasetIxsWithPoints) = unzip $ catMaybes dataForPush
   Chart.addAllPointsChartJS chartId datasetIxsWithPoints
@@ -215,7 +216,7 @@ addPointsToChart nodeId hist datasetIndices datasetTimestamps dataName chartId =
         -- Some of the history for this node and chart is already displayed,
         -- so cut displayed points first. The only points we should add now
         -- are the points with 'ts' that is bigger than 'storedTS'.
-        let onlyNewPoints = cutOldPoints storedTS history
+        let !onlyNewPoints = cutOldPoints storedTS history
         addPointsToChart' onlyNewPoints
     let (latestTS, _) = last history
     saveLatestDisplayedTS datasetTimestamps nodeId dataName latestTS
@@ -231,11 +232,11 @@ replacePointsByAvgPoints points = map calculateAvgPoint $ chunksOf 15 points
  where
   calculateAvgPoint :: [HistoricalPoint] -> HistoricalPoint
   calculateAvgPoint pointsForAvg =
-    let valuesSum = sum [v | (_, v) <- pointsForAvg]
+    let !valuesSum = sum [v | (_, v) <- pointsForAvg]
         avgValue =
           case valuesSum of
-            ValueI i -> ValueD (fromIntegral i / (fromIntegral $ length pointsForAvg))
-            ValueD d -> ValueD (             d / (fromIntegral $ length pointsForAvg))
+            ValueI i -> ValueD $ fromIntegral i / fromIntegral (length pointsForAvg)
+            ValueD d -> ValueD $              d / fromIntegral (length pointsForAvg)
         (latestTS, _) = last pointsForAvg
     in (latestTS, avgValue)
 

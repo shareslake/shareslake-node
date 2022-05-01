@@ -5,7 +5,6 @@ module Cardano.Tracer.Handlers.RTView.UI.Utils
   ( (##)
   , dataState
   , dataTooltip
-  , findAndDo
   , findByClassAndDo
   , findAndSet
   , findAndSetText
@@ -64,7 +63,7 @@ findAndSetText
   -> UI.Window
   -> Text
   -> UI ()
-findAndSetText t = findAndSet (set UI.text $ unpack t)
+findAndSetText t = findAndSet (set text $ unpack t)
 
 findAndAdd
   :: [UI Element]

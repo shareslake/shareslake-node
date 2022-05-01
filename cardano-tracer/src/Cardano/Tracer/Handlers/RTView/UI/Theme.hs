@@ -28,9 +28,7 @@ switchTheme window  = readSavedTheme >>= setThemeAndSave window . switch
   switch s = if s == darkState then lightState else darkState
 
 isCurrentThemeDark :: UI Bool
-isCurrentThemeDark = do
-  currentTheme <- readSavedTheme
-  return $ currentTheme == darkState
+isCurrentThemeDark = (== darkState) <$> readSavedTheme
 
 setThemeAndSave
   :: UI.Window
