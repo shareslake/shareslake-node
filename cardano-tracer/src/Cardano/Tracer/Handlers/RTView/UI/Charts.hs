@@ -9,7 +9,6 @@ module Cardano.Tracer.Handlers.RTView.UI.Charts
   , initDatasetsTimestamps
   , getDatasetIx
   , addNodeDatasetsToCharts
-  , addPointsToChart
   , addAllPointsToChart
   , getLatestDisplayedTS
   , saveLatestDisplayedTS
@@ -29,8 +28,7 @@ import           Control.Concurrent.STM (atomically)
 import           Control.Concurrent.STM.TBQueue
 import           Control.Concurrent.STM.TVar
 import           Control.Exception.Extra (ignore, try_)
-import           Control.Monad (forM, forM_, unless, when)
-import           Control.Monad.Extra (whenJustM)
+import           Control.Monad (forM, forM_, when)
 import           Data.Aeson
 import           Data.List.Extra (chunksOf)
 import qualified Data.Map.Strict as M
@@ -195,36 +193,6 @@ addAllPointsToChart connectedNodes hist datasetIndices datasetTimestamps dataNam
   Chart.addAllPointsChartJS chartId datasetIxsWithPoints
   forM_ nodeIdsWithLatestTss $ \(nodeId, latestTS) ->
     saveLatestDisplayedTS datasetTimestamps nodeId dataName latestTS
-
-addPointsToChart
-  :: NodeId
-  -> History
-  -> DatasetsIndices
-  -> DatasetsTimestamps
-  -> DataName
-  -> ChartId
-  -> UI ()
-addPointsToChart nodeId hist datasetIndices datasetTimestamps dataName chartId = do
-  history <- liftIO $ getHistoricalData hist nodeId dataName
-  unless (null history) $ do
-    getLatestDisplayedTS datasetTimestamps nodeId dataName >>= \case
-      Nothing ->
-        -- There is no saved latestTS for this node and chart yet,
-        -- so display all the history and remember the latestTS.
-        addPointsToChart' history
-      Just storedTS -> do
-        -- Some of the history for this node and chart is already displayed,
-        -- so cut displayed points first. The only points we should add now
-        -- are the points with 'ts' that is bigger than 'storedTS'.
-        let !onlyNewPoints = cutOldPoints storedTS history
-        addPointsToChart' onlyNewPoints
-    let (latestTS, _) = last history
-    saveLatestDisplayedTS datasetTimestamps nodeId dataName latestTS
- where
-  addPointsToChart' [] = return ()
-  addPointsToChart' points =
-    whenJustM (getDatasetIx datasetIndices nodeId) $ \datasetIx ->
-      Chart.addPointsChartJS chartId datasetIx $ replacePointsByAvgPoints points
 
 replacePointsByAvgPoints :: [HistoricalPoint] -> [HistoricalPoint]
 replacePointsByAvgPoints [] = []

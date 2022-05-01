@@ -6,7 +6,6 @@
 module Cardano.Tracer.Handlers.RTView.UI.JS.Charts
   ( prepareChartsJS
   , addDatasetChartJS
-  , addPointsChartJS
   , addAllPointsChartJS
   , getDatasetsLengthChartJS
   , newTimeChartJS
@@ -168,27 +167,6 @@ addAllPointsChartJS chartId datasetIxsWithPoints =
     mkArray (ts, valueH) =
       let !tsInMs = ts * 1000 -- ChartJS uses milliseconds since epoch as internal format.
       in "{x: " <> show tsInMs <> ", y: " <> show valueH <> "}"
-
-addPointsChartJS
-  :: ChartId
-  -> Index
-  -> [(POSIXTime, ValueH)]
-  -> UI ()
-addPointsChartJS chartId (Index datasetIx) points =
-  UI.runFunction $ UI.ffi pushToDataset
- where
-  pushToDataset =
-    "var chart = window.charts.get('"
-    <> show chartId
-    <> "'); chart.data.datasets["
-    <> show datasetIx
-    <> "].data.push("
-    <> pointsList
-    <> "); chart.update();"
-  pointsList = intercalate ", " $ map mkPointObject points
-  mkPointObject (ts, valueH) =
-    let !tsInMs = ts * 1000 -- ChartJS uses milliseconds since epoch as internal format.
-    in "{x: " <> show tsInMs <> ", y: " <> show valueH <> "}"
 
 resetZoomChartJS :: ChartId -> UI ()
 resetZoomChartJS chartId =
