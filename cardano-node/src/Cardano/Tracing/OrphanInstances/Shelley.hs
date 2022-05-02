@@ -1044,12 +1044,6 @@ instance ToJSON Alonzo.TagMismatchDescription where
 
 instance ToJSON Alonzo.FailureDescription where
   toJSON f = case f of
-    Alonzo.OnePhaseFailure t ->
-      object
-        [ "kind" .= String "FailureDescription"
-        , "error" .= String "OnePhaseFailure"
-        , "description" .= t
-        ]
     Alonzo.PlutusFailure t _bs ->
       object
         [ "kind" .= String "FailureDescription"
@@ -1101,14 +1095,14 @@ instance ( ToJSON (Ledger.Value era)
         mconcat [ "kind" .= String "MalformedScripts"
                 , "scripts" .= s
                 ]
-      -- The datum contains a ByteString that is more
-      -- than 64 bytes in length.
-      -- TODO: Ledger team needs to expose a better
-      -- error type.
-      Babbage.MalformedData datums->
-        mconcat [ "kind" .= String "MalformedData"
-                , "datums" .= datums
-                ]
+      -- -- The datum contains a ByteString that is more
+      -- -- than 64 bytes in length.
+      -- -- TODO: Ledger team needs to expose a better
+      -- -- error type.
+      -- Babbage.MalformedData datums->
+      --   mconcat [ "kind" .= String "MalformedData"
+      --           , "datums" .= datums
+      --           ]
 
 instance Core.Crypto crypto => ToObject (Praos.PraosValidationErr crypto) where
   toObject _ err' =

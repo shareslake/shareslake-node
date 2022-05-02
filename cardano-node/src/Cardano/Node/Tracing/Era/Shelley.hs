@@ -1084,14 +1084,14 @@ instance ( Ledger.Era era
         mconcat [ "kind" .= String "MalformedScripts"
                 , "scripts" .= s
                 ]
-      -- The datum contains a ByteString that is more
-      -- than 64 bytes in length.
-      -- TODO: Ledger team needs to expose a better
-      -- error type.
-      Babbage.MalformedData datums->
-        mconcat [ "kind" .= String "MalformedData"
-                , "datums" .= datums
-                ]
+      -- -- The datum contains a ByteString that is more
+      -- -- than 64 bytes in length.
+      -- -- TODO: Ledger team needs to expose a better
+      -- -- error type.
+      -- Babbage.MalformedData datums->
+      --   mconcat [ "kind" .= String "MalformedData"
+      --           , "datums" .= datums
+      --           ]
 
 instance Core.Crypto crypto => LogFormatting (Praos.PraosValidationErr crypto) where
   forMachine _ err' =
