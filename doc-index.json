@@ -660,7 +660,7 @@
     "link": "lib/Cardano-Api-SerialiseRaw.html#v:serialiseToRawBytesHex"
   },
   {
-    "display_html": "<a href=\"#v:deserialiseFromRawBytesHex\">deserialiseFromRawBytesHex</a> &#8759; <a href=\"Cardano-Api-SerialiseRaw.html#t:SerialiseAsRawBytes\" title=\"Cardano.Api.SerialiseRaw\">SerialiseAsRawBytes</a> a &#8658; <a href=\"Cardano-Api-HasTypeProxy.html#t:AsType\" title=\"Cardano.Api.HasTypeProxy\">AsType</a> a &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/bytestring-0.10.12.0/Data-ByteString.html#t:ByteString\" title=\"Data.ByteString\">ByteString</a> &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> a",
+    "display_html": "<a href=\"#v:deserialiseFromRawBytesHex\">deserialiseFromRawBytesHex</a> &#8759; <a href=\"Cardano-Api-SerialiseRaw.html#t:SerialiseAsRawBytes\" title=\"Cardano.Api.SerialiseRaw\">SerialiseAsRawBytes</a> a &#8658; <a href=\"Cardano-Api-HasTypeProxy.html#t:AsType\" title=\"Cardano.Api.HasTypeProxy\">AsType</a> a &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/bytestring-0.10.12.0/Data-ByteString.html#t:ByteString\" title=\"Data.ByteString\">ByteString</a> &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Either\" title=\"Distribution.Compat.Prelude.Internal\">Either</a> RawBytesHexError a",
     "name": "deserialiseFromRawBytesHex",
     "module": "Cardano.Api.SerialiseRaw",
     "link": "lib/Cardano-Api-SerialiseRaw.html#v:deserialiseFromRawBytesHex"
@@ -1014,10 +1014,16 @@
     "link": "lib/Cardano-Api-Utils.html#v:runParsecParser"
   },
   {
-    "display_html": "<a href=\"#v:note\">note</a> &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:MonadFail\" title=\"Distribution.Compat.Prelude.Internal\">MonadFail</a> m &#8658; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:String\" title=\"Distribution.Compat.Prelude.Internal\">String</a> &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> a &#8594; m a",
-    "name": "note",
+    "display_html": "<a href=\"#v:failEither\">failEither</a> &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:MonadFail\" title=\"Distribution.Compat.Prelude.Internal\">MonadFail</a> m &#8658; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Either\" title=\"Distribution.Compat.Prelude.Internal\">Either</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:String\" title=\"Distribution.Compat.Prelude.Internal\">String</a> a &#8594; m a",
+    "name": "failEither",
     "module": "Cardano.Api.Utils",
-    "link": "lib/Cardano-Api-Utils.html#v:note"
+    "link": "lib/Cardano-Api-Utils.html#v:failEither"
+  },
+  {
+    "display_html": "<a href=\"#v:failEitherWith\">failEitherWith</a> &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:MonadFail\" title=\"Distribution.Compat.Prelude.Internal\">MonadFail</a> m &#8658; (e &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:String\" title=\"Distribution.Compat.Prelude.Internal\">String</a>) &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Either\" title=\"Distribution.Compat.Prelude.Internal\">Either</a> e a &#8594; m a",
+    "name": "failEitherWith",
+    "module": "Cardano.Api.Utils",
+    "link": "lib/Cardano-Api-Utils.html#v:failEitherWith"
   },
   {
     "display_html": "<span class=\"keyword\">class</span> (<a href=\"Cardano-Api-HasTypeProxy.html#t:HasTypeProxy\" title=\"Cardano.Api.HasTypeProxy\">HasTypeProxy</a> a, <a href=\"Cardano-Api-SerialiseRaw.html#t:SerialiseAsRawBytes\" title=\"Cardano.Api.SerialiseRaw\">SerialiseAsRawBytes</a> a) &#8658; <a href=\"#t:SerialiseAsBech32\">SerialiseAsBech32</a> a <span class=\"keyword\">where</span><ul class=\"subs\"><li><a href=\"#v:bech32PrefixFor\">bech32PrefixFor</a> &#8759; a &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/text-1.2.4.1/Data-Text.html#t:Text\" title=\"Data.Text\">Text</a></li><li><a href=\"#v:bech32PrefixesPermitted\">bech32PrefixesPermitted</a> &#8759; <a href=\"Cardano-Api-HasTypeProxy.html#t:AsType\" title=\"Cardano.Api.HasTypeProxy\">AsType</a> a &#8594; [<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/text-1.2.4.1/Data-Text.html#t:Text\" title=\"Data.Text\">Text</a>]</li></ul>",
@@ -1252,6 +1258,156 @@
     "name": "Hash StakePoolKeyHash PaymentKeyHash PaymentExtendedKeyHash StakeKeyHash StakeExtendedKeyHash GenesisKeyHash GenesisExtendedKeyHash GenesisDelegateKeyHash GenesisDelegateExtendedKeyHash GenesisUTxOKeyHash ScriptDataHash",
     "module": "Cardano.Api.ScriptData",
     "link": "lib/Cardano-Api-ScriptData.html#t:Hash"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:ByronKey\">ByronKey</a>",
+    "name": "ByronKey",
+    "module": "Cardano.Api.KeysByron",
+    "link": "lib/Cardano-Api-KeysByron.html#t:ByronKey"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:ByronKeyLegacy\">ByronKeyLegacy</a>",
+    "name": "ByronKeyLegacy",
+    "module": "Cardano.Api.KeysByron",
+    "link": "lib/Cardano-Api-KeysByron.html#t:ByronKeyLegacy"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:AsType\">AsType</a> t",
+    "name": "AsType AsHash AsVerificationKey AsSigningKey AsTextEnvelope AsPaymentKey AsPaymentExtendedKey AsStakeKey AsStakeExtendedKey AsGenesisKey AsGenesisExtendedKey AsGenesisDelegateKey AsGenesisDelegateExtendedKey AsGenesisUTxOKey AsStakePoolKey AsByronKey AsByronKeyLegacy",
+    "module": "Cardano.Api.KeysByron",
+    "link": "lib/Cardano-Api-KeysByron.html#t:AsType"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:VerificationKey\">VerificationKey</a> keyrole &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/Data-Kind.html#t:Type\" title=\"Data.Kind\">Type</a>",
+    "name": "VerificationKey PaymentVerificationKey PaymentExtendedVerificationKey StakeVerificationKey StakeExtendedVerificationKey GenesisVerificationKey GenesisExtendedVerificationKey GenesisDelegateVerificationKey StakePoolVerificationKey GenesisDelegateExtendedVerificationKey GenesisUTxOVerificationKey ByronVerificationKey ByronVerificationKeyLegacy",
+    "module": "Cardano.Api.KeysByron",
+    "link": "lib/Cardano-Api-KeysByron.html#t:VerificationKey"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:SigningKey\">SigningKey</a> keyrole &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/Data-Kind.html#t:Type\" title=\"Data.Kind\">Type</a>",
+    "name": "SigningKey PaymentSigningKey PaymentExtendedSigningKey StakeSigningKey StakeExtendedSigningKey GenesisSigningKey GenesisExtendedSigningKey GenesisDelegateSigningKey StakePoolSigningKey GenesisDelegateExtendedSigningKey GenesisUTxOSigningKey ByronSigningKeyLegacy ByronSigningKey",
+    "module": "Cardano.Api.KeysByron",
+    "link": "lib/Cardano-Api-KeysByron.html#t:SigningKey"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:Hash\">Hash</a> keyrole &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/Data-Kind.html#t:Type\" title=\"Data.Kind\">Type</a>",
+    "name": "Hash StakePoolKeyHash PaymentKeyHash PaymentExtendedKeyHash StakeKeyHash StakeExtendedKeyHash GenesisKeyHash GenesisExtendedKeyHash GenesisDelegateKeyHash GenesisDelegateExtendedKeyHash GenesisUTxOKeyHash ByronKeyHash ByronKeyHashLegacy",
+    "module": "Cardano.Api.KeysByron",
+    "link": "lib/Cardano-Api-KeysByron.html#t:Hash"
+  },
+  {
+    "display_html": "<span class=\"keyword\">class</span> <a href=\"#t:IsByronKey\">IsByronKey</a> key <span class=\"keyword\">where</span><ul class=\"subs\"><li><a href=\"#v:byronKeyFormat\">byronKeyFormat</a> &#8759; <a href=\"Cardano-Api-KeysByron.html#t:ByronKeyFormat\" title=\"Cardano.Api.KeysByron\">ByronKeyFormat</a> key</li></ul>",
+    "name": "IsByronKey byronKeyFormat",
+    "module": "Cardano.Api.KeysByron",
+    "link": "lib/Cardano-Api-KeysByron.html#t:IsByronKey"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:ByronKeyFormat\">ByronKeyFormat</a> key <span class=\"keyword\">where</span><ul class=\"subs\"><li><a href=\"#v:ByronLegacyKeyFormat\">ByronLegacyKeyFormat</a> &#8759; <a href=\"Cardano-Api-KeysByron.html#t:ByronKeyFormat\" title=\"Cardano.Api.KeysByron\">ByronKeyFormat</a> <a href=\"Cardano-Api-KeysByron.html#t:ByronKeyLegacy\" title=\"Cardano.Api.KeysByron\">ByronKeyLegacy</a></li><li><a href=\"#v:ByronModernKeyFormat\">ByronModernKeyFormat</a> &#8759; <a href=\"Cardano-Api-KeysByron.html#t:ByronKeyFormat\" title=\"Cardano.Api.KeysByron\">ByronKeyFormat</a> <a href=\"Cardano-Api-KeysByron.html#t:ByronKey\" title=\"Cardano.Api.KeysByron\">ByronKey</a></li></ul>",
+    "name": "ByronKeyFormat ByronLegacyKeyFormat ByronModernKeyFormat",
+    "module": "Cardano.Api.KeysByron",
+    "link": "lib/Cardano-Api-KeysByron.html#t:ByronKeyFormat"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:SomeByronSigningKey\">SomeByronSigningKey</a><ul class=\"subs\"><li>= <a href=\"#v:AByronSigningKeyLegacy\">AByronSigningKeyLegacy</a> (<a href=\"Cardano-Api-KeysByron.html#t:SigningKey\" title=\"Cardano.Api.KeysByron\">SigningKey</a> <a href=\"Cardano-Api-KeysByron.html#t:ByronKeyLegacy\" title=\"Cardano.Api.KeysByron\">ByronKeyLegacy</a>)</li><li>| <a href=\"#v:AByronSigningKey\">AByronSigningKey</a> (<a href=\"Cardano-Api-KeysByron.html#t:SigningKey\" title=\"Cardano.Api.KeysByron\">SigningKey</a> <a href=\"Cardano-Api-KeysByron.html#t:ByronKey\" title=\"Cardano.Api.KeysByron\">ByronKey</a>)</li></ul>",
+    "name": "SomeByronSigningKey AByronSigningKeyLegacy AByronSigningKey",
+    "module": "Cardano.Api.KeysByron",
+    "link": "lib/Cardano-Api-KeysByron.html#t:SomeByronSigningKey"
+  },
+  {
+    "display_html": "<a href=\"#v:toByronSigningKey\">toByronSigningKey</a> &#8759; <a href=\"Cardano-Api-KeysByron.html#t:SomeByronSigningKey\" title=\"Cardano.Api.KeysByron\">SomeByronSigningKey</a> &#8594; SigningKey",
+    "name": "toByronSigningKey",
+    "module": "Cardano.Api.KeysByron",
+    "link": "lib/Cardano-Api-KeysByron.html#v:toByronSigningKey"
+  },
+  {
+    "display_html": "<span class=\"keyword\">newtype</span> <a href=\"#t:ByronUpdateProposal\">ByronUpdateProposal</a> = <a href=\"#v:ByronUpdateProposal\">ByronUpdateProposal</a> {<ul class=\"subs\"><li><a href=\"#v:unByronUpdateProposal\">unByronUpdateProposal</a> &#8759; AProposal <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/bytestring-0.10.12.0/Data-ByteString.html#t:ByteString\" title=\"Data.ByteString\">ByteString</a></li></ul>}",
+    "name": "ByronUpdateProposal ByronUpdateProposal unByronUpdateProposal",
+    "module": "Cardano.Api.SpecialByron",
+    "link": "lib/Cardano-Api-SpecialByron.html#t:ByronUpdateProposal"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:ByronProtocolParametersUpdate\">ByronProtocolParametersUpdate</a> = <a href=\"#v:ByronProtocolParametersUpdate\">ByronProtocolParametersUpdate</a> {<ul class=\"subs\"><li><a href=\"#v:bPpuScriptVersion\">bPpuScriptVersion</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Word16\" title=\"Distribution.Compat.Prelude.Internal\">Word16</a>)</li><li><a href=\"#v:bPpuSlotDuration\">bPpuSlotDuration</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/GHC-Natural.html#t:Natural\" title=\"GHC.Natural\">Natural</a>)</li><li><a href=\"#v:bPpuMaxBlockSize\">bPpuMaxBlockSize</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/GHC-Natural.html#t:Natural\" title=\"GHC.Natural\">Natural</a>)</li><li><a href=\"#v:bPpuMaxHeaderSize\">bPpuMaxHeaderSize</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/GHC-Natural.html#t:Natural\" title=\"GHC.Natural\">Natural</a>)</li><li><a href=\"#v:bPpuMaxTxSize\">bPpuMaxTxSize</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/GHC-Natural.html#t:Natural\" title=\"GHC.Natural\">Natural</a>)</li><li><a href=\"#v:bPpuMaxProposalSize\">bPpuMaxProposalSize</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/GHC-Natural.html#t:Natural\" title=\"GHC.Natural\">Natural</a>)</li><li><a href=\"#v:bPpuMpcThd\">bPpuMpcThd</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> LovelacePortion)</li><li><a href=\"#v:bPpuHeavyDelThd\">bPpuHeavyDelThd</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> LovelacePortion)</li><li><a href=\"#v:bPpuUpdateVoteThd\">bPpuUpdateVoteThd</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> LovelacePortion)</li><li><a href=\"#v:bPpuUpdateProposalThd\">bPpuUpdateProposalThd</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> LovelacePortion)</li><li><a href=\"#v:bPpuUpdateProposalTTL\">bPpuUpdateProposalTTL</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> SlotNumber)</li><li><a href=\"#v:bPpuSoftforkRule\">bPpuSoftforkRule</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> SoftforkRule)</li><li><a href=\"#v:bPpuTxFeePolicy\">bPpuTxFeePolicy</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> TxFeePolicy)</li><li><a href=\"#v:bPpuUnlockStakeEpoch\">bPpuUnlockStakeEpoch</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> EpochNumber)</li></ul>}",
+    "name": "ByronProtocolParametersUpdate ByronProtocolParametersUpdate bPpuScriptVersion bPpuSlotDuration bPpuMaxBlockSize bPpuMaxHeaderSize bPpuMaxTxSize bPpuMaxProposalSize bPpuMpcThd bPpuHeavyDelThd bPpuUpdateVoteThd bPpuUpdateProposalThd bPpuUpdateProposalTTL bPpuSoftforkRule bPpuTxFeePolicy bPpuUnlockStakeEpoch",
+    "module": "Cardano.Api.SpecialByron",
+    "link": "lib/Cardano-Api-SpecialByron.html#t:ByronProtocolParametersUpdate"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:AsType\">AsType</a> t",
+    "name": "AsType AsByronUpdateProposal AsByronVote",
+    "module": "Cardano.Api.SpecialByron",
+    "link": "lib/Cardano-Api-SpecialByron.html#t:AsType"
+  },
+  {
+    "display_html": "<a href=\"#v:makeProtocolParametersUpdate\">makeProtocolParametersUpdate</a> &#8759; <a href=\"Cardano-Api-SpecialByron.html#t:ByronProtocolParametersUpdate\" title=\"Cardano.Api.SpecialByron\">ByronProtocolParametersUpdate</a> &#8594; ProtocolParametersUpdate",
+    "name": "makeProtocolParametersUpdate",
+    "module": "Cardano.Api.SpecialByron",
+    "link": "lib/Cardano-Api-SpecialByron.html#v:makeProtocolParametersUpdate"
+  },
+  {
+    "display_html": "<a href=\"#v:toByronLedgerUpdateProposal\">toByronLedgerUpdateProposal</a> &#8759; <a href=\"Cardano-Api-SpecialByron.html#t:ByronUpdateProposal\" title=\"Cardano.Api.SpecialByron\">ByronUpdateProposal</a> &#8594; GenTx ByronBlock",
+    "name": "toByronLedgerUpdateProposal",
+    "module": "Cardano.Api.SpecialByron",
+    "link": "lib/Cardano-Api-SpecialByron.html#v:toByronLedgerUpdateProposal"
+  },
+  {
+    "display_html": "<span class=\"keyword\">newtype</span> <a href=\"#t:ByronVote\">ByronVote</a> = <a href=\"#v:ByronVote\">ByronVote</a> {<ul class=\"subs\"><li><a href=\"#v:unByronVote\">unByronVote</a> &#8759; AVote <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/bytestring-0.10.12.0/Data-ByteString.html#t:ByteString\" title=\"Data.ByteString\">ByteString</a></li></ul>}",
+    "name": "ByronVote ByronVote unByronVote",
+    "module": "Cardano.Api.SpecialByron",
+    "link": "lib/Cardano-Api-SpecialByron.html#t:ByronVote"
+  },
+  {
+    "display_html": "<a href=\"#v:makeByronUpdateProposal\">makeByronUpdateProposal</a> &#8759; <a href=\"Cardano-Api-NetworkId.html#t:NetworkId\" title=\"Cardano.Api.NetworkId\">NetworkId</a> &#8594; ProtocolVersion &#8594; SoftwareVersion &#8594; SystemTag &#8594; InstallerHash &#8594; <a href=\"Cardano-Api-KeysByron.html#t:SomeByronSigningKey\" title=\"Cardano.Api.KeysByron\">SomeByronSigningKey</a> &#8594; <a href=\"Cardano-Api-SpecialByron.html#t:ByronProtocolParametersUpdate\" title=\"Cardano.Api.SpecialByron\">ByronProtocolParametersUpdate</a> &#8594; <a href=\"Cardano-Api-SpecialByron.html#t:ByronUpdateProposal\" title=\"Cardano.Api.SpecialByron\">ByronUpdateProposal</a>",
+    "name": "makeByronUpdateProposal",
+    "module": "Cardano.Api.SpecialByron",
+    "link": "lib/Cardano-Api-SpecialByron.html#v:makeByronUpdateProposal"
+  },
+  {
+    "display_html": "<a href=\"#v:makeByronVote\">makeByronVote</a> &#8759; <a href=\"Cardano-Api-NetworkId.html#t:NetworkId\" title=\"Cardano.Api.NetworkId\">NetworkId</a> &#8594; <a href=\"Cardano-Api-KeysByron.html#t:SomeByronSigningKey\" title=\"Cardano.Api.KeysByron\">SomeByronSigningKey</a> &#8594; <a href=\"Cardano-Api-SpecialByron.html#t:ByronUpdateProposal\" title=\"Cardano.Api.SpecialByron\">ByronUpdateProposal</a> &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Bool\" title=\"Distribution.Compat.Prelude.Internal\">Bool</a> &#8594; <a href=\"Cardano-Api-SpecialByron.html#t:ByronVote\" title=\"Cardano.Api.SpecialByron\">ByronVote</a>",
+    "name": "makeByronVote",
+    "module": "Cardano.Api.SpecialByron",
+    "link": "lib/Cardano-Api-SpecialByron.html#v:makeByronVote"
+  },
+  {
+    "display_html": "<a href=\"#v:toByronLedgertoByronVote\">toByronLedgertoByronVote</a> &#8759; <a href=\"Cardano-Api-SpecialByron.html#t:ByronVote\" title=\"Cardano.Api.SpecialByron\">ByronVote</a> &#8594; GenTx ByronBlock",
+    "name": "toByronLedgertoByronVote",
+    "module": "Cardano.Api.SpecialByron",
+    "link": "lib/Cardano-Api-SpecialByron.html#v:toByronLedgertoByronVote"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:KesKey\">KesKey</a>",
+    "name": "KesKey",
+    "module": "Cardano.Api.KeysPraos",
+    "link": "lib/Cardano-Api-KeysPraos.html#t:KesKey"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:VrfKey\">VrfKey</a>",
+    "name": "VrfKey",
+    "module": "Cardano.Api.KeysPraos",
+    "link": "lib/Cardano-Api-KeysPraos.html#t:VrfKey"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:AsType\">AsType</a> t",
+    "name": "AsType AsHash AsVerificationKey AsSigningKey AsTextEnvelope AsKesKey AsVrfKey",
+    "module": "Cardano.Api.KeysPraos",
+    "link": "lib/Cardano-Api-KeysPraos.html#t:AsType"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:Hash\">Hash</a> keyrole &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/Data-Kind.html#t:Type\" title=\"Data.Kind\">Type</a>",
+    "name": "Hash KesKeyHash VrfKeyHash",
+    "module": "Cardano.Api.KeysPraos",
+    "link": "lib/Cardano-Api-KeysPraos.html#t:Hash"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:VerificationKey\">VerificationKey</a> keyrole &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/Data-Kind.html#t:Type\" title=\"Data.Kind\">Type</a>",
+    "name": "VerificationKey KesVerificationKey VrfVerificationKey",
+    "module": "Cardano.Api.KeysPraos",
+    "link": "lib/Cardano-Api-KeysPraos.html#t:VerificationKey"
+  },
+  {
+    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:SigningKey\">SigningKey</a> keyrole &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/Data-Kind.html#t:Type\" title=\"Data.Kind\">Type</a>",
+    "name": "SigningKey KesSigningKey VrfSigningKey",
+    "module": "Cardano.Api.KeysPraos",
+    "link": "lib/Cardano-Api-KeysPraos.html#t:SigningKey"
   },
   {
     "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:SimpleScriptV1\">SimpleScriptV1</a>",
@@ -1650,156 +1806,6 @@
     "link": "lib/Cardano-Api-Script.html#t:Hash"
   },
   {
-    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:ByronKey\">ByronKey</a>",
-    "name": "ByronKey",
-    "module": "Cardano.Api.KeysByron",
-    "link": "lib/Cardano-Api-KeysByron.html#t:ByronKey"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:ByronKeyLegacy\">ByronKeyLegacy</a>",
-    "name": "ByronKeyLegacy",
-    "module": "Cardano.Api.KeysByron",
-    "link": "lib/Cardano-Api-KeysByron.html#t:ByronKeyLegacy"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:AsType\">AsType</a> t",
-    "name": "AsType AsHash AsVerificationKey AsSigningKey AsTextEnvelope AsPaymentKey AsPaymentExtendedKey AsStakeKey AsStakeExtendedKey AsGenesisKey AsGenesisExtendedKey AsGenesisDelegateKey AsGenesisDelegateExtendedKey AsGenesisUTxOKey AsStakePoolKey AsByronKey AsByronKeyLegacy",
-    "module": "Cardano.Api.KeysByron",
-    "link": "lib/Cardano-Api-KeysByron.html#t:AsType"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:VerificationKey\">VerificationKey</a> keyrole &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/Data-Kind.html#t:Type\" title=\"Data.Kind\">Type</a>",
-    "name": "VerificationKey PaymentVerificationKey PaymentExtendedVerificationKey StakeVerificationKey StakeExtendedVerificationKey GenesisVerificationKey GenesisExtendedVerificationKey GenesisDelegateVerificationKey StakePoolVerificationKey GenesisDelegateExtendedVerificationKey GenesisUTxOVerificationKey ByronVerificationKey ByronVerificationKeyLegacy",
-    "module": "Cardano.Api.KeysByron",
-    "link": "lib/Cardano-Api-KeysByron.html#t:VerificationKey"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:SigningKey\">SigningKey</a> keyrole &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/Data-Kind.html#t:Type\" title=\"Data.Kind\">Type</a>",
-    "name": "SigningKey PaymentSigningKey PaymentExtendedSigningKey StakeSigningKey StakeExtendedSigningKey GenesisSigningKey GenesisExtendedSigningKey GenesisDelegateSigningKey StakePoolSigningKey GenesisDelegateExtendedSigningKey GenesisUTxOSigningKey ByronSigningKeyLegacy ByronSigningKey",
-    "module": "Cardano.Api.KeysByron",
-    "link": "lib/Cardano-Api-KeysByron.html#t:SigningKey"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:Hash\">Hash</a> keyrole &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/Data-Kind.html#t:Type\" title=\"Data.Kind\">Type</a>",
-    "name": "Hash StakePoolKeyHash PaymentKeyHash PaymentExtendedKeyHash StakeKeyHash StakeExtendedKeyHash GenesisKeyHash GenesisExtendedKeyHash GenesisDelegateKeyHash GenesisDelegateExtendedKeyHash GenesisUTxOKeyHash ByronKeyHash ByronKeyHashLegacy",
-    "module": "Cardano.Api.KeysByron",
-    "link": "lib/Cardano-Api-KeysByron.html#t:Hash"
-  },
-  {
-    "display_html": "<span class=\"keyword\">class</span> <a href=\"#t:IsByronKey\">IsByronKey</a> key <span class=\"keyword\">where</span><ul class=\"subs\"><li><a href=\"#v:byronKeyFormat\">byronKeyFormat</a> &#8759; <a href=\"Cardano-Api-KeysByron.html#t:ByronKeyFormat\" title=\"Cardano.Api.KeysByron\">ByronKeyFormat</a> key</li></ul>",
-    "name": "IsByronKey byronKeyFormat",
-    "module": "Cardano.Api.KeysByron",
-    "link": "lib/Cardano-Api-KeysByron.html#t:IsByronKey"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:ByronKeyFormat\">ByronKeyFormat</a> key <span class=\"keyword\">where</span><ul class=\"subs\"><li><a href=\"#v:ByronLegacyKeyFormat\">ByronLegacyKeyFormat</a> &#8759; <a href=\"Cardano-Api-KeysByron.html#t:ByronKeyFormat\" title=\"Cardano.Api.KeysByron\">ByronKeyFormat</a> <a href=\"Cardano-Api-KeysByron.html#t:ByronKeyLegacy\" title=\"Cardano.Api.KeysByron\">ByronKeyLegacy</a></li><li><a href=\"#v:ByronModernKeyFormat\">ByronModernKeyFormat</a> &#8759; <a href=\"Cardano-Api-KeysByron.html#t:ByronKeyFormat\" title=\"Cardano.Api.KeysByron\">ByronKeyFormat</a> <a href=\"Cardano-Api-KeysByron.html#t:ByronKey\" title=\"Cardano.Api.KeysByron\">ByronKey</a></li></ul>",
-    "name": "ByronKeyFormat ByronLegacyKeyFormat ByronModernKeyFormat",
-    "module": "Cardano.Api.KeysByron",
-    "link": "lib/Cardano-Api-KeysByron.html#t:ByronKeyFormat"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:SomeByronSigningKey\">SomeByronSigningKey</a><ul class=\"subs\"><li>= <a href=\"#v:AByronSigningKeyLegacy\">AByronSigningKeyLegacy</a> (<a href=\"Cardano-Api-KeysByron.html#t:SigningKey\" title=\"Cardano.Api.KeysByron\">SigningKey</a> <a href=\"Cardano-Api-KeysByron.html#t:ByronKeyLegacy\" title=\"Cardano.Api.KeysByron\">ByronKeyLegacy</a>)</li><li>| <a href=\"#v:AByronSigningKey\">AByronSigningKey</a> (<a href=\"Cardano-Api-KeysByron.html#t:SigningKey\" title=\"Cardano.Api.KeysByron\">SigningKey</a> <a href=\"Cardano-Api-KeysByron.html#t:ByronKey\" title=\"Cardano.Api.KeysByron\">ByronKey</a>)</li></ul>",
-    "name": "SomeByronSigningKey AByronSigningKeyLegacy AByronSigningKey",
-    "module": "Cardano.Api.KeysByron",
-    "link": "lib/Cardano-Api-KeysByron.html#t:SomeByronSigningKey"
-  },
-  {
-    "display_html": "<a href=\"#v:toByronSigningKey\">toByronSigningKey</a> &#8759; <a href=\"Cardano-Api-KeysByron.html#t:SomeByronSigningKey\" title=\"Cardano.Api.KeysByron\">SomeByronSigningKey</a> &#8594; SigningKey",
-    "name": "toByronSigningKey",
-    "module": "Cardano.Api.KeysByron",
-    "link": "lib/Cardano-Api-KeysByron.html#v:toByronSigningKey"
-  },
-  {
-    "display_html": "<span class=\"keyword\">newtype</span> <a href=\"#t:ByronUpdateProposal\">ByronUpdateProposal</a> = <a href=\"#v:ByronUpdateProposal\">ByronUpdateProposal</a> {<ul class=\"subs\"><li><a href=\"#v:unByronUpdateProposal\">unByronUpdateProposal</a> &#8759; AProposal <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/bytestring-0.10.12.0/Data-ByteString.html#t:ByteString\" title=\"Data.ByteString\">ByteString</a></li></ul>}",
-    "name": "ByronUpdateProposal ByronUpdateProposal unByronUpdateProposal",
-    "module": "Cardano.Api.SpecialByron",
-    "link": "lib/Cardano-Api-SpecialByron.html#t:ByronUpdateProposal"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:ByronProtocolParametersUpdate\">ByronProtocolParametersUpdate</a> = <a href=\"#v:ByronProtocolParametersUpdate\">ByronProtocolParametersUpdate</a> {<ul class=\"subs\"><li><a href=\"#v:bPpuScriptVersion\">bPpuScriptVersion</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Word16\" title=\"Distribution.Compat.Prelude.Internal\">Word16</a>)</li><li><a href=\"#v:bPpuSlotDuration\">bPpuSlotDuration</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/GHC-Natural.html#t:Natural\" title=\"GHC.Natural\">Natural</a>)</li><li><a href=\"#v:bPpuMaxBlockSize\">bPpuMaxBlockSize</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/GHC-Natural.html#t:Natural\" title=\"GHC.Natural\">Natural</a>)</li><li><a href=\"#v:bPpuMaxHeaderSize\">bPpuMaxHeaderSize</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/GHC-Natural.html#t:Natural\" title=\"GHC.Natural\">Natural</a>)</li><li><a href=\"#v:bPpuMaxTxSize\">bPpuMaxTxSize</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/GHC-Natural.html#t:Natural\" title=\"GHC.Natural\">Natural</a>)</li><li><a href=\"#v:bPpuMaxProposalSize\">bPpuMaxProposalSize</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/GHC-Natural.html#t:Natural\" title=\"GHC.Natural\">Natural</a>)</li><li><a href=\"#v:bPpuMpcThd\">bPpuMpcThd</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> LovelacePortion)</li><li><a href=\"#v:bPpuHeavyDelThd\">bPpuHeavyDelThd</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> LovelacePortion)</li><li><a href=\"#v:bPpuUpdateVoteThd\">bPpuUpdateVoteThd</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> LovelacePortion)</li><li><a href=\"#v:bPpuUpdateProposalThd\">bPpuUpdateProposalThd</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> LovelacePortion)</li><li><a href=\"#v:bPpuUpdateProposalTTL\">bPpuUpdateProposalTTL</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> SlotNumber)</li><li><a href=\"#v:bPpuSoftforkRule\">bPpuSoftforkRule</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> SoftforkRule)</li><li><a href=\"#v:bPpuTxFeePolicy\">bPpuTxFeePolicy</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> TxFeePolicy)</li><li><a href=\"#v:bPpuUnlockStakeEpoch\">bPpuUnlockStakeEpoch</a> &#8759; !(<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> EpochNumber)</li></ul>}",
-    "name": "ByronProtocolParametersUpdate ByronProtocolParametersUpdate bPpuScriptVersion bPpuSlotDuration bPpuMaxBlockSize bPpuMaxHeaderSize bPpuMaxTxSize bPpuMaxProposalSize bPpuMpcThd bPpuHeavyDelThd bPpuUpdateVoteThd bPpuUpdateProposalThd bPpuUpdateProposalTTL bPpuSoftforkRule bPpuTxFeePolicy bPpuUnlockStakeEpoch",
-    "module": "Cardano.Api.SpecialByron",
-    "link": "lib/Cardano-Api-SpecialByron.html#t:ByronProtocolParametersUpdate"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:AsType\">AsType</a> t",
-    "name": "AsType AsByronUpdateProposal AsByronVote",
-    "module": "Cardano.Api.SpecialByron",
-    "link": "lib/Cardano-Api-SpecialByron.html#t:AsType"
-  },
-  {
-    "display_html": "<a href=\"#v:makeProtocolParametersUpdate\">makeProtocolParametersUpdate</a> &#8759; <a href=\"Cardano-Api-SpecialByron.html#t:ByronProtocolParametersUpdate\" title=\"Cardano.Api.SpecialByron\">ByronProtocolParametersUpdate</a> &#8594; ProtocolParametersUpdate",
-    "name": "makeProtocolParametersUpdate",
-    "module": "Cardano.Api.SpecialByron",
-    "link": "lib/Cardano-Api-SpecialByron.html#v:makeProtocolParametersUpdate"
-  },
-  {
-    "display_html": "<a href=\"#v:toByronLedgerUpdateProposal\">toByronLedgerUpdateProposal</a> &#8759; <a href=\"Cardano-Api-SpecialByron.html#t:ByronUpdateProposal\" title=\"Cardano.Api.SpecialByron\">ByronUpdateProposal</a> &#8594; GenTx ByronBlock",
-    "name": "toByronLedgerUpdateProposal",
-    "module": "Cardano.Api.SpecialByron",
-    "link": "lib/Cardano-Api-SpecialByron.html#v:toByronLedgerUpdateProposal"
-  },
-  {
-    "display_html": "<span class=\"keyword\">newtype</span> <a href=\"#t:ByronVote\">ByronVote</a> = <a href=\"#v:ByronVote\">ByronVote</a> {<ul class=\"subs\"><li><a href=\"#v:unByronVote\">unByronVote</a> &#8759; AVote <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/bytestring-0.10.12.0/Data-ByteString.html#t:ByteString\" title=\"Data.ByteString\">ByteString</a></li></ul>}",
-    "name": "ByronVote ByronVote unByronVote",
-    "module": "Cardano.Api.SpecialByron",
-    "link": "lib/Cardano-Api-SpecialByron.html#t:ByronVote"
-  },
-  {
-    "display_html": "<a href=\"#v:makeByronUpdateProposal\">makeByronUpdateProposal</a> &#8759; <a href=\"Cardano-Api-NetworkId.html#t:NetworkId\" title=\"Cardano.Api.NetworkId\">NetworkId</a> &#8594; ProtocolVersion &#8594; SoftwareVersion &#8594; SystemTag &#8594; InstallerHash &#8594; <a href=\"Cardano-Api-KeysByron.html#t:SomeByronSigningKey\" title=\"Cardano.Api.KeysByron\">SomeByronSigningKey</a> &#8594; <a href=\"Cardano-Api-SpecialByron.html#t:ByronProtocolParametersUpdate\" title=\"Cardano.Api.SpecialByron\">ByronProtocolParametersUpdate</a> &#8594; <a href=\"Cardano-Api-SpecialByron.html#t:ByronUpdateProposal\" title=\"Cardano.Api.SpecialByron\">ByronUpdateProposal</a>",
-    "name": "makeByronUpdateProposal",
-    "module": "Cardano.Api.SpecialByron",
-    "link": "lib/Cardano-Api-SpecialByron.html#v:makeByronUpdateProposal"
-  },
-  {
-    "display_html": "<a href=\"#v:makeByronVote\">makeByronVote</a> &#8759; <a href=\"Cardano-Api-NetworkId.html#t:NetworkId\" title=\"Cardano.Api.NetworkId\">NetworkId</a> &#8594; <a href=\"Cardano-Api-KeysByron.html#t:SomeByronSigningKey\" title=\"Cardano.Api.KeysByron\">SomeByronSigningKey</a> &#8594; <a href=\"Cardano-Api-SpecialByron.html#t:ByronUpdateProposal\" title=\"Cardano.Api.SpecialByron\">ByronUpdateProposal</a> &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Bool\" title=\"Distribution.Compat.Prelude.Internal\">Bool</a> &#8594; <a href=\"Cardano-Api-SpecialByron.html#t:ByronVote\" title=\"Cardano.Api.SpecialByron\">ByronVote</a>",
-    "name": "makeByronVote",
-    "module": "Cardano.Api.SpecialByron",
-    "link": "lib/Cardano-Api-SpecialByron.html#v:makeByronVote"
-  },
-  {
-    "display_html": "<a href=\"#v:toByronLedgertoByronVote\">toByronLedgertoByronVote</a> &#8759; <a href=\"Cardano-Api-SpecialByron.html#t:ByronVote\" title=\"Cardano.Api.SpecialByron\">ByronVote</a> &#8594; GenTx ByronBlock",
-    "name": "toByronLedgertoByronVote",
-    "module": "Cardano.Api.SpecialByron",
-    "link": "lib/Cardano-Api-SpecialByron.html#v:toByronLedgertoByronVote"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:KesKey\">KesKey</a>",
-    "name": "KesKey",
-    "module": "Cardano.Api.KeysPraos",
-    "link": "lib/Cardano-Api-KeysPraos.html#t:KesKey"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:VrfKey\">VrfKey</a>",
-    "name": "VrfKey",
-    "module": "Cardano.Api.KeysPraos",
-    "link": "lib/Cardano-Api-KeysPraos.html#t:VrfKey"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:AsType\">AsType</a> t",
-    "name": "AsType AsHash AsVerificationKey AsSigningKey AsTextEnvelope AsKesKey AsVrfKey",
-    "module": "Cardano.Api.KeysPraos",
-    "link": "lib/Cardano-Api-KeysPraos.html#t:AsType"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:Hash\">Hash</a> keyrole &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/Data-Kind.html#t:Type\" title=\"Data.Kind\">Type</a>",
-    "name": "Hash KesKeyHash VrfKeyHash",
-    "module": "Cardano.Api.KeysPraos",
-    "link": "lib/Cardano-Api-KeysPraos.html#t:Hash"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:VerificationKey\">VerificationKey</a> keyrole &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/Data-Kind.html#t:Type\" title=\"Data.Kind\">Type</a>",
-    "name": "VerificationKey KesVerificationKey VrfVerificationKey",
-    "module": "Cardano.Api.KeysPraos",
-    "link": "lib/Cardano-Api-KeysPraos.html#t:VerificationKey"
-  },
-  {
-    "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:SigningKey\">SigningKey</a> keyrole &#8759; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/base-4.14.3.0/Data-Kind.html#t:Type\" title=\"Data.Kind\">Type</a>",
-    "name": "SigningKey KesSigningKey VrfSigningKey",
-    "module": "Cardano.Api.KeysPraos",
-    "link": "lib/Cardano-Api-KeysPraos.html#t:SigningKey"
-  },
-  {
     "display_html": "<span class=\"keyword\">data</span> <a href=\"#t:StakePoolMetadata\">StakePoolMetadata</a> = <a href=\"#v:StakePoolMetadata\">StakePoolMetadata</a> {<ul class=\"subs\"><li><a href=\"#v:stakePoolName\">stakePoolName</a> &#8759; !<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/text-1.2.4.1/Data-Text.html#t:Text\" title=\"Data.Text\">Text</a></li><li><a href=\"#v:stakePoolDescription\">stakePoolDescription</a> &#8759; !<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/text-1.2.4.1/Data-Text.html#t:Text\" title=\"Data.Text\">Text</a></li><li><a href=\"#v:stakePoolTicker\">stakePoolTicker</a> &#8759; !<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/text-1.2.4.1/Data-Text.html#t:Text\" title=\"Data.Text\">Text</a></li><li><a href=\"#v:stakePoolHomepage\">stakePoolHomepage</a> &#8759; !<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/text-1.2.4.1/Data-Text.html#t:Text\" title=\"Data.Text\">Text</a></li></ul>}",
     "name": "StakePoolMetadata StakePoolMetadata stakePoolName stakePoolDescription stakePoolTicker stakePoolHomepage",
     "module": "Cardano.Api.StakePoolMetadata",
@@ -1819,7 +1825,7 @@
   },
   {
     "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:AsType\">AsType</a> t",
-    "name": "AsType AsByronEra AsShelleyEra AsAllegraEra AsMaryEra AsAlonzoEra AsBabbageEra AsByron AsShelley AsAllegra AsMary AsAlonzo AsBabbage AsHash AsVerificationKey AsSigningKey AsTextEnvelope AsPaymentKey AsPaymentExtendedKey AsStakeKey AsStakeExtendedKey AsGenesisKey AsGenesisExtendedKey AsGenesisDelegateKey AsGenesisDelegateExtendedKey AsGenesisUTxOKey AsStakePoolKey AsScriptData AsSimpleScriptV1 AsSimpleScriptV2 AsPlutusScriptV1 AsPlutusScriptV2 AsScript AsScriptInAnyLang AsScriptInEra AsScriptHash AsSimpleScript AsPlutusScript AsByronKey AsByronKeyLegacy AsKesKey AsVrfKey AsStakePoolMetadata",
+    "name": "AsType AsByronEra AsShelleyEra AsAllegraEra AsMaryEra AsAlonzoEra AsBabbageEra AsByron AsShelley AsAllegra AsMary AsAlonzo AsBabbage AsHash AsVerificationKey AsSigningKey AsTextEnvelope AsPaymentKey AsPaymentExtendedKey AsStakeKey AsStakeExtendedKey AsGenesisKey AsGenesisExtendedKey AsGenesisDelegateKey AsGenesisDelegateExtendedKey AsGenesisUTxOKey AsStakePoolKey AsScriptData AsByronKey AsByronKeyLegacy AsKesKey AsVrfKey AsSimpleScriptV1 AsSimpleScriptV2 AsPlutusScriptV1 AsPlutusScriptV2 AsScript AsScriptInAnyLang AsScriptInEra AsScriptHash AsSimpleScript AsPlutusScript AsStakePoolMetadata",
     "module": "Cardano.Api.StakePoolMetadata",
     "link": "lib/Cardano-Api-StakePoolMetadata.html#t:AsType"
   },
@@ -2437,7 +2443,7 @@
   },
   {
     "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:AsType\">AsType</a> t",
-    "name": "AsType AsByronAddr AsShelleyAddr AsByronAddress AsShelleyAddress AsAddress AsAddressAny AsAddressInEra AsStakeAddress AsByronEra AsShelleyEra AsAllegraEra AsMaryEra AsAlonzoEra AsBabbageEra AsByron AsShelley AsAllegra AsMary AsAlonzo AsBabbage AsHash AsVerificationKey AsSigningKey AsTextEnvelope AsTxMetadata AsPaymentKey AsPaymentExtendedKey AsStakeKey AsStakeExtendedKey AsGenesisKey AsGenesisExtendedKey AsGenesisDelegateKey AsGenesisDelegateExtendedKey AsGenesisUTxOKey AsStakePoolKey AsScriptData AsSimpleScriptV1 AsSimpleScriptV2 AsPlutusScriptV1 AsPlutusScriptV2 AsScript AsScriptInAnyLang AsScriptInEra AsScriptHash AsSimpleScript AsPlutusScript AsByronKey AsByronKeyLegacy AsKesKey AsVrfKey AsStakePoolMetadata AsPolicyId AsAssetName AsPraosNonce AsUpdateProposal",
+    "name": "AsType AsByronAddr AsShelleyAddr AsByronAddress AsShelleyAddress AsAddress AsAddressAny AsAddressInEra AsStakeAddress AsByronEra AsShelleyEra AsAllegraEra AsMaryEra AsAlonzoEra AsBabbageEra AsByron AsShelley AsAllegra AsMary AsAlonzo AsBabbage AsHash AsVerificationKey AsSigningKey AsTextEnvelope AsTxMetadata AsPaymentKey AsPaymentExtendedKey AsStakeKey AsStakeExtendedKey AsGenesisKey AsGenesisExtendedKey AsGenesisDelegateKey AsGenesisDelegateExtendedKey AsGenesisUTxOKey AsStakePoolKey AsScriptData AsByronKey AsByronKeyLegacy AsKesKey AsVrfKey AsSimpleScriptV1 AsSimpleScriptV2 AsPlutusScriptV1 AsPlutusScriptV2 AsScript AsScriptInAnyLang AsScriptInEra AsScriptHash AsSimpleScript AsPlutusScript AsStakePoolMetadata AsPolicyId AsAssetName AsPraosNonce AsUpdateProposal",
     "module": "Cardano.Api.ProtocolParameters",
     "link": "lib/Cardano-Api-ProtocolParameters.html#t:AsType"
   },
@@ -2563,7 +2569,7 @@
   },
   {
     "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:AsType\">AsType</a> t",
-    "name": "AsType AsByronAddr AsShelleyAddr AsByronAddress AsShelleyAddress AsAddress AsAddressAny AsAddressInEra AsStakeAddress AsByronEra AsShelleyEra AsAllegraEra AsMaryEra AsAlonzoEra AsBabbageEra AsByron AsShelley AsAllegra AsMary AsAlonzo AsBabbage AsHash AsVerificationKey AsSigningKey AsTextEnvelope AsPaymentKey AsPaymentExtendedKey AsStakeKey AsStakeExtendedKey AsGenesisKey AsGenesisExtendedKey AsGenesisDelegateKey AsGenesisDelegateExtendedKey AsGenesisUTxOKey AsStakePoolKey AsScriptData AsSimpleScriptV1 AsSimpleScriptV2 AsPlutusScriptV1 AsPlutusScriptV2 AsScript AsScriptInAnyLang AsScriptInEra AsScriptHash AsSimpleScript AsPlutusScript AsByronKey AsByronKeyLegacy AsKesKey AsVrfKey AsStakePoolMetadata AsPolicyId AsAssetName AsCertificate",
+    "name": "AsType AsByronAddr AsShelleyAddr AsByronAddress AsShelleyAddress AsAddress AsAddressAny AsAddressInEra AsStakeAddress AsByronEra AsShelleyEra AsAllegraEra AsMaryEra AsAlonzoEra AsBabbageEra AsByron AsShelley AsAllegra AsMary AsAlonzo AsBabbage AsHash AsVerificationKey AsSigningKey AsTextEnvelope AsPaymentKey AsPaymentExtendedKey AsStakeKey AsStakeExtendedKey AsGenesisKey AsGenesisExtendedKey AsGenesisDelegateKey AsGenesisDelegateExtendedKey AsGenesisUTxOKey AsStakePoolKey AsScriptData AsByronKey AsByronKeyLegacy AsKesKey AsVrfKey AsSimpleScriptV1 AsSimpleScriptV2 AsPlutusScriptV1 AsPlutusScriptV2 AsScript AsScriptInAnyLang AsScriptInEra AsScriptHash AsSimpleScript AsPlutusScript AsStakePoolMetadata AsPolicyId AsAssetName AsCertificate",
     "module": "Cardano.Api.Certificate",
     "link": "lib/Cardano-Api-Certificate.html#t:AsType"
   },
@@ -3421,7 +3427,7 @@
   },
   {
     "display_html": "<span class=\"keyword\">data family</span> <a href=\"#t:AsType\">AsType</a> t",
-    "name": "AsType AsByronAddr AsShelleyAddr AsByronAddress AsShelleyAddress AsAddress AsAddressAny AsAddressInEra AsStakeAddress AsByronEra AsShelleyEra AsAllegraEra AsMaryEra AsAlonzoEra AsBabbageEra AsByron AsShelley AsAllegra AsMary AsAlonzo AsBabbage AsHash AsVerificationKey AsSigningKey AsTx AsByronTx AsShelleyTx AsMaryTx AsAllegraTx AsAlonzoTx AsKeyWitness AsByronWitness AsShelleyWitness AsTextEnvelope AsTxMetadata AsPaymentKey AsPaymentExtendedKey AsStakeKey AsStakeExtendedKey AsGenesisKey AsGenesisExtendedKey AsGenesisDelegateKey AsGenesisDelegateExtendedKey AsGenesisUTxOKey AsStakePoolKey AsScriptData AsSimpleScriptV1 AsSimpleScriptV2 AsPlutusScriptV1 AsPlutusScriptV2 AsScript AsScriptInAnyLang AsScriptInEra AsScriptHash AsSimpleScript AsPlutusScript AsByronKey AsByronKeyLegacy AsKesKey AsVrfKey AsStakePoolMetadata AsPolicyId AsAssetName AsPraosNonce AsUpdateProposal AsCertificate AsOperationalCertificate AsOperationalCertificateIssueCounter",
+    "name": "AsType AsByronAddr AsShelleyAddr AsByronAddress AsShelleyAddress AsAddress AsAddressAny AsAddressInEra AsStakeAddress AsByronEra AsShelleyEra AsAllegraEra AsMaryEra AsAlonzoEra AsBabbageEra AsByron AsShelley AsAllegra AsMary AsAlonzo AsBabbage AsHash AsVerificationKey AsSigningKey AsTx AsByronTx AsShelleyTx AsMaryTx AsAllegraTx AsAlonzoTx AsKeyWitness AsByronWitness AsShelleyWitness AsTextEnvelope AsTxMetadata AsPaymentKey AsPaymentExtendedKey AsStakeKey AsStakeExtendedKey AsGenesisKey AsGenesisExtendedKey AsGenesisDelegateKey AsGenesisDelegateExtendedKey AsGenesisUTxOKey AsStakePoolKey AsScriptData AsByronKey AsByronKeyLegacy AsKesKey AsVrfKey AsSimpleScriptV1 AsSimpleScriptV2 AsPlutusScriptV1 AsPlutusScriptV2 AsScript AsScriptInAnyLang AsScriptInEra AsScriptHash AsSimpleScript AsPlutusScript AsStakePoolMetadata AsPolicyId AsAssetName AsPraosNonce AsUpdateProposal AsCertificate AsOperationalCertificate AsOperationalCertificateIssueCounter",
     "module": "Cardano.Api.OperationalCertificate",
     "link": "lib/Cardano-Api-OperationalCertificate.html#t:AsType"
   },
@@ -6048,7 +6054,7 @@
     "link": "lib/Cardano-Api.html#v:serialiseToRawBytesHex"
   },
   {
-    "display_html": "<a href=\"#v:deserialiseFromRawBytesHex\">deserialiseFromRawBytesHex</a> &#8759; <a href=\"Cardano-Api.html#t:SerialiseAsRawBytes\" title=\"Cardano.Api\">SerialiseAsRawBytes</a> a &#8658; <a href=\"Cardano-Api.html#t:AsType\" title=\"Cardano.Api\">AsType</a> a &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/bytestring-0.10.12.0/Data-ByteString.html#t:ByteString\" title=\"Data.ByteString\">ByteString</a> &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Maybe\" title=\"Distribution.Compat.Prelude.Internal\">Maybe</a> a",
+    "display_html": "<a href=\"#v:deserialiseFromRawBytesHex\">deserialiseFromRawBytesHex</a> &#8759; <a href=\"Cardano-Api.html#t:SerialiseAsRawBytes\" title=\"Cardano.Api\">SerialiseAsRawBytes</a> a &#8658; <a href=\"Cardano-Api.html#t:AsType\" title=\"Cardano.Api\">AsType</a> a &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/bytestring-0.10.12.0/Data-ByteString.html#t:ByteString\" title=\"Data.ByteString\">ByteString</a> &#8594; <a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Either\" title=\"Distribution.Compat.Prelude.Internal\">Either</a> RawBytesHexError a",
     "name": "deserialiseFromRawBytesHex",
     "module": "Cardano.Api",
     "link": "lib/Cardano-Api.html#v:deserialiseFromRawBytesHex"
