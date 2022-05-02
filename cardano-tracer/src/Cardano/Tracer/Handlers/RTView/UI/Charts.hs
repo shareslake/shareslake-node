@@ -196,7 +196,8 @@ addAllPointsToChart connectedNodes hist datasetIndices datasetTimestamps dataNam
 
 replacePointsByAvgPoints :: [HistoricalPoint] -> [HistoricalPoint]
 replacePointsByAvgPoints [] = []
-replacePointsByAvgPoints points = map calculateAvgPoint $ chunksOf 15 points
+replacePointsByAvgPoints points =
+  map calculateAvgPoint $ chunksOf numberOfPointsToAverage points
  where
   calculateAvgPoint :: [HistoricalPoint] -> HistoricalPoint
   calculateAvgPoint pointsForAvg =
@@ -207,6 +208,13 @@ replacePointsByAvgPoints points = map calculateAvgPoint $ chunksOf 15 points
             ValueD d -> ValueD $              d / fromIntegral (length pointsForAvg)
         (latestTS, _) = last pointsForAvg
     in (latestTS, avgValue)
+  -- TODO: calculate it, remove hardcoded value!
+  -- P1 - Period of calling 'addAllPointsToChart'
+  -- P2 - Period of asking of EKG.Metrics
+  -- Number of new points received since last call of 'addAllPointsToChart'
+  -- is P1/P2
+  -- Maximum number of points to calculate avg = 15 s.
+  numberOfPointsToAverage = 15
 
 cutOldPoints
   :: POSIXTime
