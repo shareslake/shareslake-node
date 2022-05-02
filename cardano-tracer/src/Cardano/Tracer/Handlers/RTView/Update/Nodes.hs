@@ -29,6 +29,7 @@ import           Text.Read (readMaybe)
 import           Cardano.Tracer.Configuration
 import           Cardano.Tracer.Handlers.Metrics.Utils
 import           Cardano.Tracer.Handlers.RTView.State.Displayed
+import           Cardano.Tracer.Handlers.RTView.State.TraceObjects
 import           Cardano.Tracer.Handlers.RTView.UI.HTML.Node.Column
 import           Cardano.Tracer.Handlers.RTView.UI.Charts
 import           Cardano.Tracer.Handlers.RTView.UI.Types
@@ -41,13 +42,14 @@ updateNodesUI
   -> ConnectedNodes
   -> DisplayedElements
   -> AcceptedMetrics
+  -> SavedTraceObjects
   -> DataPointRequestors
   -> NonEmpty LoggingParams
   -> Colors
   -> DatasetsIndices
   -> UI ()
 updateNodesUI window connectedNodes displayedElements acceptedMetrics
-              dpRequestors loggingConfig colors datasetIndices = do
+              savedTO dpRequestors loggingConfig colors datasetIndices = do
   (connected, displayedEls) <- liftIO . atomically $ (,)
     <$> readTVar connectedNodes
     <*> readTVar displayedElements
@@ -64,6 +66,7 @@ updateNodesUI window connectedNodes displayedElements acceptedMetrics
     liftIO $ updateDisplayedElements displayedElements connected
   setUptimeForNodes window connected displayedElements
   setBlockReplayProgress window connected displayedElements acceptedMetrics
+  setChunkValidationProgress window connected savedTO
 
 addColumnsForConnected
   :: UI.Window
@@ -171,3 +174,31 @@ setBlockReplayProgress window connected displayedElements acceptedMetrics = do
       let nodeBlockReplayPctElId = anId <> "__node-block-replay-pct"
       findAndSet (set UI.class_ "rt-view-percent-done") window nodeBlockReplayElId
       findAndSet (set UI.class_ "rt-view-percent-done") window nodeBlockReplayPctElId
+
+setChunkValidationProgress
+  :: UI.Window
+  -> Set NodeId
+  -> SavedTraceObjects
+  -> UI ()
+setChunkValidationProgress window connected savedTO = do
+  savedTraceObjects <- liftIO $ readTVarIO savedTO
+  forM_ connected $ \nodeId@(NodeId anId) ->
+    whenJust (M.lookup nodeId savedTraceObjects) $ \savedTOForNode -> do
+      let nodeChunkValidationElId = anId <> "__node-chunk-validation"
+      forM_ (M.toList savedTOForNode) $ \(namespace, trObValue) ->
+        case namespace of
+          "Cardano.Node.ChainDB.ImmDbEvent.ChunkValidation.ValidatedChunk" ->
+            -- In this case we don't need to check if the value differs from displayed one,
+            -- because this 'TraceObject' is forwarded only with new values, and after 100%
+            -- the node doesn't forward it anymore.
+            --
+            -- Example: "Validated chunk no. 2262 out of 2423. Progress: 93.36%"
+            case T.words trObValue of
+              [_, _, _, current, _, _, from, _, progressPct] ->
+                findAndSetHTML (T.init progressPct <> "&nbsp;%: no. " <> current <> " from " <> T.init from)
+                               window nodeChunkValidationElId
+              _ -> return ()
+          "Cardano.Node.ChainDB.ImmDbEvent.ValidatedLastLocation" -> do
+            findAndSetHTML "100.0&nbsp;%" window nodeChunkValidationElId
+            findAndSet (set UI.class_ "rt-view-percent-done") window nodeChunkValidationElId
+          _ -> return () 

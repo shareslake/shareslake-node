@@ -70,6 +70,9 @@ addNodeColumn window loggingConfig (NodeId anId) = do
                              , UI.span ## (id' <> "__node-block-replay-pct")
                                        # set html "&nbsp;%"
                              ]
+  addNodeCell "chunk-validation" [ UI.span ## (id' <> "__node-chunk-validation")
+                                           # set text "—"
+                                 ]
  where
   addNodeCellH rowId cellContent =
     whenJustM (UI.getElementById window ("node-" <> rowId <> "-row")) $ \el ->

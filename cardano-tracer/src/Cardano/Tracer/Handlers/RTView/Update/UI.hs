@@ -40,6 +40,7 @@ updateUI window connectedNodes displayedElements acceptedMetrics savedTO
     connectedNodes
     displayedElements
     acceptedMetrics
+    savedTO
     dpRequestors
     loggingConfig
     colors

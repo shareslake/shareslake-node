@@ -180,6 +180,11 @@ mkPageBody window networkConfig connectedNodes
                                          , string "Block replay"
                                          ]
                               ]
+                          , UI.tr ## "node-chunk-validation-row" #+
+                              [ UI.td #+ [ image "rt-view-overview-icon" dbSVG
+                                         , string "Chunk validation"
+                                         ]
+                              ]
                           ]
                       ]
                   ]

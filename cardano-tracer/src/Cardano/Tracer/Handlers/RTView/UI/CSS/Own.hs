@@ -213,8 +213,8 @@ span[data-tooltip] {
 }
 
 .dark .rt-view-main-table td {
-  padding-top: 25px;
-  padding-bottom: 25px;
+  padding-top: 17px;
+  padding-bottom: 17px;
   border-bottom: 1px solid #444;
 }
 
@@ -420,8 +420,8 @@ span[data-tooltip] {
 }
 
 .light .rt-view-main-table td {
-  padding-top: 25px;
-  padding-bottom: 25px;
+  padding-top: 17px;
+  padding-bottom: 17px;
 }
 
 .light .rt-view-main-table th {
