@@ -169,7 +169,8 @@ span[data-tooltip] {
   color: whitesmoke;
 }
 
-.dark .rt-view-charts-container {  
+.dark .rt-view-charts-container {
+  padding-bottom: 15px;
 }
 
 .dark .rt-view-chart-container {
@@ -180,7 +181,6 @@ span[data-tooltip] {
   padding-right: 20px;
   margin-left: 16px;
   margin-right: 16px;
-  margin-top: 30px;
   margin-bottom: 50px;
   border: 1px solid #444;
   border-radius: 6px;
@@ -241,13 +241,13 @@ span[data-tooltip] {
   color: whitesmoke;
   font-weight: bold;
   margin-left: 15px;
-  margin-bottom: 8px;
-  font-size: 110%;
+  font-size: 115%;
 }
 
 .dark .rt-view-show-hide-chart-group svg {
   width: 21px;
-  margin-left: 13px;
+  margin-left: 17px;
+  margin-right: 3px;
   color: #0cc9cb;
 }
 
@@ -373,6 +373,7 @@ span[data-tooltip] {
 }
 
 .light .rt-view-charts-container {
+  padding-bottom: 15px;
 }
 
 .light .rt-view-chart-container {
@@ -383,7 +384,6 @@ span[data-tooltip] {
   padding-right: 20px;
   margin-left: 16px;
   margin-right: 16px;
-  margin-top: 30px;
   margin-bottom: 50px;
   border: 1px solid #dddddd;
   border-radius: 6px;
@@ -443,13 +443,13 @@ span[data-tooltip] {
   color: #444;
   font-weight: bold;
   margin-left: 15px;
-  margin-bottom: 8px;
   font-size: 110%;
 }
 
 .light .rt-view-show-hide-chart-group svg {
   width: 21px;
-  margin-left: 13px;
+  margin-left: 17px;
+  margin-right: 3px;
   color: #038b8c;
 }
 

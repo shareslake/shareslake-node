@@ -96,13 +96,13 @@ mkPageBody window networkConfig connectedNodes
   epochChart        <- mkChart window epochTimer        EpochChart        "Epoch"
 
   -- Visibility of charts gropus.
-  showHideTxs       <- image "has-tooltip-multiline has-tooltip-right rt-view-show-hide-chart-group" showSVG
+  showHideTxs       <- image "has-tooltip-multiline has-tooltip-top rt-view-show-hide-chart-group" showSVG
                              # set dataTooltip "Click to hide Transactions Metrics"
                              # set dataState shownState
-  showHideChain     <- image "has-tooltip-multiline has-tooltip-right rt-view-show-hide-chart-group" showSVG
+  showHideChain     <- image "has-tooltip-multiline has-tooltip-top rt-view-show-hide-chart-group" showSVG
                              # set dataTooltip "Click to hide Chain Metrics"
                              # set dataState shownState
-  showHideResources <- image "has-tooltip-multiline has-tooltip-right rt-view-show-hide-chart-group" showSVG
+  showHideResources <- image "has-tooltip-multiline has-tooltip-top rt-view-show-hide-chart-group" showSVG
                              # set dataTooltip "Click to hide Resources Metrics"
                              # set dataState shownState
 
@@ -192,9 +192,9 @@ mkPageBody window networkConfig connectedNodes
           , UI.div ## "main-charts-container"
                    #. "container is-fluid rt-view-charts-container"
                    # hideIt #+
-              [ UI.p #+
-                  [ UI.span #. "rt-view-chart-group-title" # set text "Chain Metrics"
-                  , element showHideChain
+              [ UI.p #. "mb-5" #+
+                  [ element showHideChain
+                  , UI.span #. "rt-view-chart-group-title" # set text "Chain Metrics"
                   ]
               , UI.div ## "chain-charts" #. "columns" #+
                   [ UI.div #. "column" #+
@@ -208,9 +208,9 @@ mkPageBody window networkConfig connectedNodes
                       ]
                   ]
               -- Transactions charts.
-              , UI.p #+
-                  [ UI.span #. "rt-view-chart-group-title" # set text "Transactions Metrics"
-                  , element showHideTxs
+              , UI.p #. "mb-5" #+
+                  [ element showHideTxs
+                  , UI.span #. "rt-view-chart-group-title" # set text "Transactions Metrics"
                   ]
               , UI.div ## "transactions-charts" #. "columns" #+
                   [ UI.div #. "column" #+
@@ -222,9 +222,9 @@ mkPageBody window networkConfig connectedNodes
                       ]
                   ]
               -- Resources charts.
-              , UI.p #+
-                  [ UI.span #. "rt-view-chart-group-title" # set text "Resources Metrics"
-                  , element showHideResources
+              , UI.p #. "mb-5" #+
+                  [ element showHideResources
+                  , UI.span #. "rt-view-chart-group-title" # set text "Resources Metrics"
                   ]
               , UI.div ## "resources-charts" #. "columns" #+
                   [ UI.div #. "column" #+
