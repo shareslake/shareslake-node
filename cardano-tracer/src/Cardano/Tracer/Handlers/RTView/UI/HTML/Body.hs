@@ -175,16 +175,11 @@ mkPageBody window networkConfig connectedNodes
                                          , string "Logs"
                                          ]
                               ]
-                          --, UI.tr ## "node-peers-row" #+
-                          --    [ UI.td #+ [ image "rt-view-overview-icon" peersSVG
-                          --               , string "Peers"
-                          --               ]
-                          --    ]
-                          --, UI.tr ## "node-errors-row" #+
-                          --    [ UI.td #+ [ image "rt-view-overview-icon" errorsSVG
-                          --               , string "Errors"
-                          --               ]
-                          --    ]
+                          , UI.tr ## "node-block-replay-row" #+
+                              [ UI.td #+ [ image "rt-view-overview-icon" blocksSVG
+                                         , string "Block replay"
+                                         ]
+                              ]
                           ]
                       ]
                   ]

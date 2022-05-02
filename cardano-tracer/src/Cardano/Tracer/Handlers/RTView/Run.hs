@@ -57,6 +57,7 @@ runRTView TracerConfig{logging, network, hasRTView}
          mkMainPage
            connectedNodes
            displayedElements
+           acceptedMetrics
            savedTO
            dpRequestors
            reloadFlag

@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -26,6 +27,7 @@ import           Graphics.UI.Threepenny.Core
 import           Text.Read (readMaybe)
 
 import           Cardano.Tracer.Configuration
+import           Cardano.Tracer.Handlers.Metrics.Utils
 import           Cardano.Tracer.Handlers.RTView.State.Displayed
 import           Cardano.Tracer.Handlers.RTView.UI.HTML.Node.Column
 import           Cardano.Tracer.Handlers.RTView.UI.Charts
@@ -38,13 +40,14 @@ updateNodesUI
   :: UI.Window
   -> ConnectedNodes
   -> DisplayedElements
+  -> AcceptedMetrics
   -> DataPointRequestors
   -> NonEmpty LoggingParams
   -> Colors
   -> DatasetsIndices
   -> UI ()
-updateNodesUI window connectedNodes displayedElements dpRequestors
-              loggingConfig colors datasetIndices = do
+updateNodesUI window connectedNodes displayedElements acceptedMetrics
+              dpRequestors loggingConfig colors datasetIndices = do
   (connected, displayedEls) <- liftIO . atomically $ (,)
     <$> readTVar connectedNodes
     <*> readTVar displayedElements
@@ -60,6 +63,7 @@ updateNodesUI window connectedNodes displayedElements dpRequestors
     addDatasetsForConnected window newlyConnected colors datasetIndices displayedElements
     liftIO $ updateDisplayedElements displayedElements connected
   setUptimeForNodes window connected displayedElements
+  setBlockReplayProgress window connected displayedElements acceptedMetrics
 
 addColumnsForConnected
   :: UI.Window
@@ -131,3 +135,39 @@ setUptimeForNodes window connected displayedElements = do
         findAndSetText (T.pack uptimeWithDays) window nodeUptimeElId
  where
   nullTime = UTCTime (ModifiedJulianDay 0) 0
+
+setBlockReplayProgress
+  :: UI.Window
+  -> Set NodeId
+  -> DisplayedElements
+  -> AcceptedMetrics
+  -> UI ()
+setBlockReplayProgress window connected displayedElements acceptedMetrics = do
+  allMetrics <- liftIO $ readTVarIO acceptedMetrics
+  forM_ connected $ \nodeId ->
+    case M.lookup nodeId allMetrics of
+      Nothing -> return ()
+      Just (ekgStore, _) -> do
+        metrics <- liftIO $ getListOfMetrics ekgStore
+        case lookup "Block replay progress (%)" metrics of
+          Nothing -> return ()
+          Just metricValue -> updateBlockReplayProgress nodeId $ T.unpack metricValue
+ where
+  updateBlockReplayProgress nodeId@(NodeId anId) valueS =
+    whenJust (readMaybe valueS) $ \(progressPct :: Double) -> do
+      let progressPctS = T.pack $ show progressPct
+          nodeBlockReplayElId = anId <> "__node-block-replay"
+      liftIO (getDisplayedValue displayedElements nodeId nodeBlockReplayElId) >>= \case
+        Nothing ->
+          setAndRemember progressPctS nodeId nodeBlockReplayElId
+        Just displayedProgress ->
+          unless (progressPctS == displayedProgress) $
+            setAndRemember progressPctS nodeId nodeBlockReplayElId
+
+  setAndRemember progressPctS nodeId@(NodeId anId) nodeBlockReplayElId = do
+    findAndSetText progressPctS window nodeBlockReplayElId
+    liftIO $ saveDisplayedValue displayedElements nodeId nodeBlockReplayElId progressPctS
+    when ("100" `T.isInfixOf` progressPctS) $ do
+      let nodeBlockReplayPctElId = anId <> "__node-block-replay-pct"
+      findAndSet (set UI.class_ "rt-view-percent-done") window nodeBlockReplayElId
+      findAndSet (set UI.class_ "rt-view-percent-done") window nodeBlockReplayPctElId

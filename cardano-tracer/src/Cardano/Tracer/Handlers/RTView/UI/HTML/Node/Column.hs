@@ -65,15 +65,11 @@ addNodeColumn window loggingConfig (NodeId anId) = do
   addNodeCell "logs"     [ UI.span ## (id' <> "__node-logs")
                                    #+ ls
                          ]
-  addNodeCell "peers"    [ UI.span ## (id' <> "__node-peers")
-                                   # set text "—"
-                         ]
-  addNodeCell "chain"    [ UI.span ## (id' <> "__node-chain")
-                                   # set text "—"
-                         ]
-  addNodeCell "errors"   [ UI.span ## (id' <> "__node-errors")
-                                   # set text "No errors"
-                         ]
+  addNodeCell "block-replay" [ UI.span ## (id' <> "__node-block-replay")
+                                       # set text "0"
+                             , UI.span ## (id' <> "__node-block-replay-pct")
+                                       # set html "&nbsp;%"
+                             ]
  where
   addNodeCellH rowId cellContent =
     whenJustM (UI.getElementById window ("node-" <> rowId <> "-row")) $ \el ->

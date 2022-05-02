@@ -26,18 +26,20 @@ updateUI
   :: UI.Window
   -> ConnectedNodes
   -> DisplayedElements
+  -> AcceptedMetrics
   -> SavedTraceObjects
   -> DataPointRequestors
   -> NonEmpty LoggingParams
   -> Colors
   -> DatasetsIndices
   -> UI ()
-updateUI window connectedNodes displayedElements savedTO
+updateUI window connectedNodes displayedElements acceptedMetrics savedTO
          dpRequestors loggingConfig colors datasetIndices = do
   updateNodesUI
     window
     connectedNodes
     displayedElements
+    acceptedMetrics
     dpRequestors
     loggingConfig
     colors
@@ -48,23 +50,6 @@ updateUI window connectedNodes displayedElements savedTO
     forM_ (M.toList savedTOForNode) $ \(namespace, trObValue) ->
       case namespace of
         "Cardano.Node.Peers" -> updatePeers window nodeId displayedElements trObValue
-        "density" -> return () -- updateElement
-        "slotNum" -> return ()
-        "blockNum" -> return ()
-        "slotInEpoch" -> return ()
-        "epoch" -> return ()
-        "forks" -> return ()
-        "txsInMempool"  -> return ()
-        "mempoolBytes"  -> return ()
-        "txsProcessedNum"  -> return ()
-        "blocksForgedNum"  -> return ()
-        "nodeCannotForge"  -> return ()
-        "nodeIsLeaderNum"  -> return ()
-        "slotsMissedNum" -> return ()
-        "operationalCertificateStartKESPeriod"  -> return ()
-        "operationalCertificateExpiryKESPeriod"  -> return ()
-        "currentKESPeriod"  -> return ()
-        "remainingKESPeriods" -> return ()
         _ -> return ()
 
 updateUIAfterReload

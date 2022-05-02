@@ -31,6 +31,7 @@ import           Cardano.Tracer.Types
 mkMainPage
   :: ConnectedNodes
   -> DisplayedElements
+  -> AcceptedMetrics
   -> SavedTraceObjects
   -> DataPointRequestors
   -> PageReloadedFlag
@@ -41,7 +42,7 @@ mkMainPage
   -> TransactionsHistory
   -> UI.Window
   -> UI ()
-mkMainPage connectedNodes displayedElements savedTO
+mkMainPage connectedNodes displayedElements acceptedMetrics savedTO
            dpRequestors reloadFlag loggingConfig networkConfig
            resourcesHistory chainHistory txHistory window = do
   void $ return window # set UI.title pageTitle
@@ -104,6 +105,7 @@ mkMainPage connectedNodes displayedElements savedTO
       window
       connectedNodes
       displayedElements
+      acceptedMetrics
       savedTO
       dpRequestors
       loggingConfig

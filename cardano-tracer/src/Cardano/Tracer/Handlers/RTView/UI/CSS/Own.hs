@@ -272,6 +272,10 @@ span[data-tooltip] {
   color: #0cc9cb;
 }
 
+.dark .rt-view-percent-done {
+  color: #07e949;
+}
+
 /**** Light Theme ****/
 
 .light {
@@ -472,6 +476,10 @@ span[data-tooltip] {
   width: 23px;
   margin-top: 1px;
   color: #038b8c;
+}
+
+.light .rt-view-percent-done {
+  color: #048b04;
 }
 |]
 
