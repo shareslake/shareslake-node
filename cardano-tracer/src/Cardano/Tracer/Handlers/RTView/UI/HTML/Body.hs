@@ -32,28 +32,40 @@ mkPageBody
   -> ConnectedNodes
   -> ResourcesHistory
   -> BlockchainHistory
+  -> TransactionsHistory
   -> DatasetsIndices
   -> DatasetsTimestamps
   -> UI Element
 mkPageBody window networkConfig connectedNodes
-           (ResHistory rHistory) (ChainHistory cHistory)
+           (ResHistory rHistory) (ChainHistory cHistory) (TXHistory tHistory)
            datasetIndices datasetTimestamps = do
+  txsProcessedNumTimer <-
+    mkChartTimer connectedNodes tHistory datasetIndices datasetTimestamps TxsProcessedNumData TxsProcessedNumChart
+  mempoolBytesTimer <-
+    mkChartTimer connectedNodes tHistory datasetIndices datasetTimestamps MempoolBytesData    MempoolBytesChart
+  txsInMempoolTimer <-
+    mkChartTimer connectedNodes tHistory datasetIndices datasetTimestamps TxsInMempoolData    TxsInMempoolChart
+
+  txsProcessedNumChart <- mkChart window txsProcessedNumTimer TxsProcessedNumChart "Processed txs"
+  mempoolBytesChart    <- mkChart window mempoolBytesTimer    MempoolBytesChart    "Mempool size"
+  txsInMempoolChart    <- mkChart window txsInMempoolTimer    TxsInMempoolChart    "Txs in mempool"
+
   -- Resources charts.
-  cpuTimer          <-
+  cpuTimer <-
     mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps CPUData          CPUChart
-  memoryTimer       <-
+  memoryTimer <-
     mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps MemoryData       MemoryChart
-  gcMajorNumTimer   <-
+  gcMajorNumTimer <-
     mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps GCMajorNumData   GCMajorNumChart
-  gcMinorNumTimer   <-
+  gcMinorNumTimer <-
     mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps GCMinorNumData   GCMinorNumChart
   gcLiveMemoryTimer <-
     mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps GCLiveMemoryData GCLiveMemoryChart
-  cpuTimeGCTimer    <-
+  cpuTimeGCTimer <-
     mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps CPUTimeGCData    CPUTimeGCChart
-  cpuTimeAppTimer   <-
+  cpuTimeAppTimer <-
     mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps CPUTimeAppData   CPUTimeAppChart
-  threadsNumTimer   <-
+  threadsNumTimer <-
     mkChartTimer connectedNodes rHistory datasetIndices datasetTimestamps ThreadsNumData   ThreadsNumChart
 
   cpuChart          <- mkChart window cpuTimer          CPUChart          "CPU usage"
@@ -68,13 +80,13 @@ mkPageBody window networkConfig connectedNodes
   -- Blockchain charts.
   chainDensityTimer <-
     mkChartTimer connectedNodes cHistory datasetIndices datasetTimestamps ChainDensityData ChainDensityChart
-  slotNumTimer      <-
+  slotNumTimer <-
     mkChartTimer connectedNodes cHistory datasetIndices datasetTimestamps SlotNumData      SlotNumChart
-  blockNumTimer     <-
+  blockNumTimer <-
     mkChartTimer connectedNodes cHistory datasetIndices datasetTimestamps BlockNumData     BlockNumChart
-  slotInEpochTimer  <-
+  slotInEpochTimer <-
     mkChartTimer connectedNodes cHistory datasetIndices datasetTimestamps SlotInEpochData  SlotInEpochChart
-  epochTimer        <-
+  epochTimer <-
     mkChartTimer connectedNodes cHistory datasetIndices datasetTimestamps EpochData        EpochChart
 
   chainDensityChart <- mkChart window chainDensityTimer ChainDensityChart "Chain density"
@@ -84,6 +96,9 @@ mkPageBody window networkConfig connectedNodes
   epochChart        <- mkChart window epochTimer        EpochChart        "Epoch"
 
   -- Visibility of charts gropus.
+  showHideTxs       <- image "has-tooltip-multiline has-tooltip-right rt-view-show-hide-chart-group" showSVG
+                             # set dataTooltip "Click to hide Transactions Metrics"
+                             # set dataState shownState
   showHideChain     <- image "has-tooltip-multiline has-tooltip-right rt-view-show-hide-chart-group" showSVG
                              # set dataTooltip "Click to hide Chain Metrics"
                              # set dataState shownState
@@ -91,6 +106,14 @@ mkPageBody window networkConfig connectedNodes
                              # set dataTooltip "Click to hide Resources Metrics"
                              # set dataState shownState
 
+  on UI.click showHideTxs . const $
+    changeVisibilityForCharts window showHideTxs "transactions-charts" "Transactions Metrics"
+  on UI.click showHideChain . const $
+    changeVisibilityForCharts window showHideChain "chain-charts" "Chain Metrics"
+  on UI.click showHideResources . const $
+    changeVisibilityForCharts window showHideResources "resources-charts" "Resources Metrics"
+
+  -- Body.
   body <-
     UI.getBody window #+
       [ UI.div ## "wrapper" #+
@@ -184,6 +207,21 @@ mkPageBody window networkConfig connectedNodes
                       , element slotNumChart
                       ]
                   ]
+              -- Transactions charts.
+              , UI.p #+
+                  [ UI.span #. "rt-view-chart-group-title" # set text "Transactions Metrics"
+                  , element showHideTxs
+                  ]
+              , UI.div ## "transactions-charts" #. "columns" #+
+                  [ UI.div #. "column" #+
+                      [ element mempoolBytesChart
+                      , element txsProcessedNumChart
+                      ]
+                  , UI.div #. "column" #+
+                      [ element txsInMempoolChart
+                      ]
+                  ]
+              -- Resources charts.
               , UI.p #+
                   [ UI.span #. "rt-view-chart-group-title" # set text "Resources Metrics"
                   , element showHideResources
@@ -205,14 +243,13 @@ mkPageBody window networkConfig connectedNodes
               ]
           , footer
           ]
-      ]
-
-  on UI.click showHideChain . const $
-    changeVisibilityForCharts window showHideChain "chain-charts" "Chain Metrics"
-  on UI.click showHideResources . const $
-    changeVisibilityForCharts window showHideResources "resources-charts" "Resources Metrics"
+      ] 
 
   Chart.prepareChartsJS
+
+  Chart.newTimeChartJS TxsProcessedNumChart ""
+  Chart.newTimeChartJS MempoolBytesChart    "MB"
+  Chart.newTimeChartJS TxsInMempoolChart    ""
 
   Chart.newTimeChartJS CPUChart          "Percent"
   Chart.newTimeChartJS MemoryChart       "MB"
@@ -229,6 +266,12 @@ mkPageBody window networkConfig connectedNodes
   Chart.newTimeChartJS SlotInEpochChart  ""
   Chart.newTimeChartJS EpochChart        ""
 
+  -- Start all timer.
+
+  UI.start txsProcessedNumTimer
+  UI.start mempoolBytesTimer
+  UI.start txsInMempoolTimer
+
   UI.start cpuTimer
   UI.start memoryTimer
   UI.start gcMajorNumTimer
@@ -238,7 +281,17 @@ mkPageBody window networkConfig connectedNodes
   UI.start cpuTimeAppTimer
   UI.start threadsNumTimer
 
+  UI.start chainDensityTimer
+  UI.start slotNumTimer
+  UI.start blockNumTimer
+  UI.start slotInEpochTimer
+  UI.start epochTimer
+
   on UI.disconnect window . const $ do
+    UI.stop txsProcessedNumTimer
+    UI.stop mempoolBytesTimer
+    UI.stop txsInMempoolTimer
+
     UI.stop cpuTimer
     UI.stop memoryTimer
     UI.stop gcMajorNumTimer
@@ -247,6 +300,12 @@ mkPageBody window networkConfig connectedNodes
     UI.stop cpuTimeGCTimer
     UI.stop cpuTimeAppTimer
     UI.stop threadsNumTimer
+
+    UI.stop chainDensityTimer
+    UI.stop slotNumTimer
+    UI.stop blockNumTimer
+    UI.stop slotInEpochTimer
+    UI.stop epochTimer
 
   return body
 

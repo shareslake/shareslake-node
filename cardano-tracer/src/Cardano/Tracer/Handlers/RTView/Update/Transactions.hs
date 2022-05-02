@@ -36,8 +36,9 @@ updateTransactionsHistory nodeId (TXHistory tHistory) metricName metricValue now
       addHistoricalData tHistory nodeId now TxsProcessedNumData $ ValueI txsNum
 
   updateMempoolBytes =
-    whenJust (readMaybe valueS) $ \(mempoolBytes :: Integer) ->
-      addHistoricalData tHistory nodeId now MempoolBytesData $ ValueI mempoolBytes
+    whenJust (readMaybe valueS) $ \(mempoolBytes :: Integer) -> do
+      let !mempoolInMB = fromIntegral mempoolBytes / 1024 / 1024 :: Double
+      addHistoricalData tHistory nodeId now MempoolBytesData $ ValueD mempoolInMB
 
   updateTxsInMempool =
     whenJust (readMaybe valueS) $ \(txsInMempool :: Integer) ->

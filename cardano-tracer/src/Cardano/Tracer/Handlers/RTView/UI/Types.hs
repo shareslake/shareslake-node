@@ -38,6 +38,10 @@ data ChartId
   | BlockNumChart
   | SlotInEpochChart
   | EpochChart
+  -- TX
+  | TxsProcessedNumChart
+  | MempoolBytesChart
+  | TxsInMempoolChart
   deriving (Bounded, Enum, Generic, FromJSON, ToJSON, Show)
 
 data ChartSelectId

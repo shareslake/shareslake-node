@@ -63,7 +63,8 @@ runRTView TracerConfig{logging, network, hasRTView}
            logging
            network
            resourcesHistory
-           chainHistory)
+           chainHistory
+           txHistory)
       (runHistoricalUpdater
          savedTO
          acceptedMetrics

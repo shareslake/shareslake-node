@@ -38,11 +38,12 @@ mkMainPage
   -> Network
   -> ResourcesHistory
   -> BlockchainHistory
+  -> TransactionsHistory
   -> UI.Window
   -> UI ()
 mkMainPage connectedNodes displayedElements savedTO
-           dpRequestors reloadFlag loggingConfig
-           networkConfig resourcesHistory chainHistory window = do
+           dpRequestors reloadFlag loggingConfig networkConfig
+           resourcesHistory chainHistory txHistory window = do
   void $ return window # set UI.title pageTitle
   void $ UI.getHead window #+
     [ UI.link # set UI.rel "icon"
@@ -70,6 +71,7 @@ mkMainPage connectedNodes displayedElements savedTO
       connectedNodes
       resourcesHistory
       chainHistory
+      txHistory
       datasetIndices
       datasetTimestamps
 
