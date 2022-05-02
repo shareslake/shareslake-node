@@ -87,6 +87,10 @@ data DataName
   | BlockNumData
   | SlotInEpochData
   | EpochData
+  -- TX
+  | TxsProcessedNumData
+  | MempoolBytesData
+  | TxsInMempoolData
   deriving (Eq, Ord)
 
 type HistoricalData = Map DataName HistoricalPoints

@@ -75,6 +75,7 @@ library
                        Cardano.Tracer.Handlers.RTView.Update.Nodes
                        Cardano.Tracer.Handlers.RTView.Update.Peers
                        Cardano.Tracer.Handlers.RTView.Update.Resources
+                       Cardano.Tracer.Handlers.RTView.Update.Transactions
                        Cardano.Tracer.Handlers.RTView.Update.UI
                        Cardano.Tracer.Handlers.RTView.Update.Utils
 

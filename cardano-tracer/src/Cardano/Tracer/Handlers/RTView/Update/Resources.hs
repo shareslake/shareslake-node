@@ -8,11 +8,9 @@ module Cardano.Tracer.Handlers.RTView.Update.Resources
   ) where
 
 import           Control.Concurrent.STM.TVar (readTVarIO)
-import           Control.Monad (forM_)
 import           Control.Monad.Extra (whenJust)
 import qualified Data.Map.Strict as M
-import           Data.Time.Clock.System
-import           Graphics.UI.Threepenny.Core
+import           Data.Time.Clock
 import           Data.Text (unpack)
 import           Data.Word (Word64)
 import           Text.Read (readMaybe)
@@ -24,29 +22,28 @@ import           Cardano.Tracer.Handlers.RTView.Update.Utils
 import           Cardano.Tracer.Types
 
 updateResourcesHistory
-  :: AcceptedMetrics
+  :: NodeId
   -> ResourcesHistory
   -> LastResources
+  -> MetricName
+  -> MetricValue
+  -> UTCTime
   -> IO ()
-updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
-  now <- systemToUTCTime <$> getSystemTime
-  allMetrics <- readTVarIO acceptedMetrics
-  forM_ (M.toList allMetrics) $ \(nodeId, (ekgStore, _)) -> do
-    metrics <- liftIO $ getListOfMetrics ekgStore
-    forM_ metrics $ \(metricName, metricValue) -> do
-      let valueS = unpack metricValue
-      case metricName of
-        "stat.cputicks"    -> updateCPUUsage     nodeId valueS now
-        "mem.resident"     -> updateRSSMemory    nodeId valueS now
-        "rts.gcLiveBytes"  -> updateGCLiveMemory nodeId valueS now
-        "rts.gcMajorNum"   -> updateGCMajorNum   nodeId valueS now
-        "rts.gcMinorNum"   -> updateGCMinorNum   nodeId valueS now
-        "rts.gcticks"      -> updateCPUTimeGC    nodeId valueS now
-        "rts.mutticks"     -> updateCPUTimeApp   nodeId valueS now
-        "rts.stat.threads" -> updateThreadsNum   nodeId valueS now
-        _ -> return ()
+updateResourcesHistory nodeId (ResHistory rHistory) lastResources metricName metricValue now =
+  case metricName of
+    "stat.cputicks"    -> updateCPUUsage
+    "mem.resident"     -> updateRSSMemory
+    "rts.gcLiveBytes"  -> updateGCLiveMemory
+    "rts.gcMajorNum"   -> updateGCMajorNum
+    "rts.gcMinorNum"   -> updateGCMinorNum
+    "rts.gcticks"      -> updateCPUTimeGC
+    "rts.mutticks"     -> updateCPUTimeApp
+    "rts.stat.threads" -> updateThreadsNum
+    _ -> return ()
  where
-  updateCPUUsage nodeId valueS now =
+  valueS = unpack metricValue
+
+  updateCPUUsage =
     whenJust (readMaybe valueS) $ \(cpuTicks :: Integer) -> do
       lastOnes <- readTVarIO lastResources
       case M.lookup nodeId lastOnes of
@@ -65,36 +62,36 @@ updateResourcesHistory acceptedMetrics (ResHistory rHistory) lastResources = do
                     , cpuLastNS = tns
                     }
 
-  updateRSSMemory nodeId valueS now =
+  updateRSSMemory =
     whenJust (readMaybe valueS) $ \(bytes :: Word64) -> do
       let !memoryInMB = fromIntegral bytes / 1024 / 1024 :: Double
       addHistoricalData rHistory nodeId now MemoryData $ ValueD memoryInMB
 
-  updateGCLiveMemory nodeId valueS now =
+  updateGCLiveMemory =
     whenJust (readMaybe valueS) $ \(bytes :: Word64) -> do
       let !memoryInMB = fromIntegral bytes / 1024 / 1024 :: Double
       addHistoricalData rHistory nodeId now GCLiveMemoryData $ ValueD memoryInMB
 
-  updateGCMajorNum nodeId valueS now =
+  updateGCMajorNum =
     whenJust (readMaybe valueS) $ \(gcMajorNum :: Integer) ->
       addHistoricalData rHistory nodeId now GCMajorNumData $ ValueI gcMajorNum
 
-  updateGCMinorNum nodeId valueS now =
+  updateGCMinorNum =
     whenJust (readMaybe valueS) $ \(gcMinorNum :: Integer) ->
       addHistoricalData rHistory nodeId now GCMinorNumData $ ValueI gcMinorNum
 
-  updateCPUTimeGC nodeId valueS now =
+  updateCPUTimeGC =
     whenJust (readMaybe valueS) $ \(cpuTimeGCInCentiS :: Word64) -> do
       -- This is a total CPU time used by the GC, as 1/100 second.
       let !cpuTimeGCInMs = cpuTimeGCInCentiS * 10
       addHistoricalData rHistory nodeId now CPUTimeGCData $ ValueI (fromIntegral cpuTimeGCInMs)
 
-  updateCPUTimeApp nodeId valueS now =
+  updateCPUTimeApp =
     whenJust (readMaybe valueS) $ \(cpuTimeAppInCentiS :: Word64) -> do
       -- This is a total CPU time used by the the node itself, as 1/100 second.
       let !cpuTimeAppInMs = cpuTimeAppInCentiS * 10
       addHistoricalData rHistory nodeId now CPUTimeAppData $ ValueI (fromIntegral cpuTimeAppInMs)
 
-  updateThreadsNum nodeId valueS now =
+  updateThreadsNum =
     whenJust (readMaybe valueS) $ \(threadsNum :: Integer) ->
       addHistoricalData rHistory nodeId now ThreadsNumData $ ValueI threadsNum

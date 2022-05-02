@@ -51,6 +51,7 @@ runRTView TracerConfig{logging, network, hasRTView}
     resourcesHistory <- initResourcesHistory
     lastResources <- initLastResources
     chainHistory <- initBlockchainHistory
+    txHistory <- initTransactionsHistory
     concurrently_
       (UI.startGUI (config host port) $
          mkMainPage
@@ -68,7 +69,8 @@ runRTView TracerConfig{logging, network, hasRTView}
          acceptedMetrics
          resourcesHistory
          lastResources
-         chainHistory)
+         chainHistory
+         txHistory)
  where
   config h p = UI.defaultConfig
     { UI.jsPort = Just . fromIntegral $ p
