@@ -67,6 +67,7 @@ updateNodesUI window connectedNodes displayedElements acceptedMetrics
   setUptimeForNodes window connected displayedElements
   setBlockReplayProgress window connected displayedElements acceptedMetrics
   setChunkValidationProgress window connected savedTO
+  setLeadershipStats window connected displayedElements acceptedMetrics
 
 addColumnsForConnected
   :: UI.Window
@@ -148,13 +149,10 @@ setBlockReplayProgress
 setBlockReplayProgress window connected displayedElements acceptedMetrics = do
   allMetrics <- liftIO $ readTVarIO acceptedMetrics
   forM_ connected $ \nodeId ->
-    case M.lookup nodeId allMetrics of
-      Nothing -> return ()
-      Just (ekgStore, _) -> do
-        metrics <- liftIO $ getListOfMetrics ekgStore
-        case lookup "Block replay progress (%)" metrics of
-          Nothing -> return ()
-          Just metricValue -> updateBlockReplayProgress nodeId $ T.unpack metricValue
+    whenJust (M.lookup nodeId allMetrics) $ \(ekgStore, _) -> do
+      metrics <- liftIO $ getListOfMetrics ekgStore
+      whenJust (lookup "Block replay progress (%)" metrics) $ \metricValue ->
+        updateBlockReplayProgress nodeId $ T.unpack metricValue
  where
   updateBlockReplayProgress nodeId@(NodeId anId) valueS =
     whenJust (readMaybe valueS) $ \(progressPct :: Double) -> do
@@ -201,4 +199,28 @@ setChunkValidationProgress window connected savedTO = do
           "Cardano.Node.ChainDB.ImmDbEvent.ValidatedLastLocation" -> do
             findAndSetHTML "100.0&nbsp;%" window nodeChunkValidationElId
             findAndSet (set UI.class_ "rt-view-percent-done") window nodeChunkValidationElId
-          _ -> return () 
+          _ -> return ()
+
+setLeadershipStats
+  :: UI.Window
+  -> Set NodeId
+  -> DisplayedElements
+  -> AcceptedMetrics
+  -> UI ()
+setLeadershipStats _window connected _displayedElements acceptedMetrics = do
+  allMetrics <- liftIO $ readTVarIO acceptedMetrics
+  forM_ connected $ \nodeId ->
+    whenJust (M.lookup nodeId allMetrics) $ \(ekgStore, _) -> do
+      metrics <- liftIO $ getListOfMetrics ekgStore
+      forM_ metrics $ \(metricName, _metricValue) ->
+        case metricName of
+          "cardano.node.forgedSlotLast"        -> return ()
+          "cardano.node.forgedInvalidSlotLast" -> return ()
+          "cardano.node.couldNotForgeSlotLast" -> return ()
+          "cardano.node.adoptedSlotLast"       -> return ()
+          "cardano.node.notAdoptedSlotLast"    -> return ()
+          "cardano.node.aboutToLeadSlotLast"   -> return ()
+          "cardano.node.nodeIsLeader"          -> return ()
+          "cardano.node.nodeNotLeader"         -> return ()
+          "cardano.node.nodeCannotForge"       -> return ()
+          _ -> return ()
