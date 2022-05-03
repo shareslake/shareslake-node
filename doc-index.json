@@ -11694,7 +11694,7 @@
     "link": "lib/Cardano-Node-Tracing-Tracers-ForgingThreadStats.html#v:forgeThreadStats"
   },
   {
-    "display_html": "<a href=\"#v:docForgeStats\">docForgeStats</a> &#8759; Documented <a href=\"Cardano-Node-Tracing-Tracers-ForgingThreadStats.html#t:ForgeThreadStats\" title=\"Cardano.Node.Tracing.Tracers.ForgingThreadStats\">ForgeThreadStats</a>",
+    "display_html": "<a href=\"#v:docForgeStats\">docForgeStats</a> &#8759; Documented (<a href=\"file:///home/runner/.ghcup/ghc/8.10.7/share/doc/ghc-8.10.7/html/libraries/Cabal-3.2.1.0/Distribution-Compat-Prelude-Internal.html#t:Either\" title=\"Distribution.Compat.Prelude.Internal\">Either</a> (TraceLabelCreds (TraceForgeEvent blk)) (TraceLabelCreds <a href=\"Cardano-Node-Tracing-Tracers-StartLeadershipCheck.html#t:TraceStartLeadershipCheckPlus\" title=\"Cardano.Node.Tracing.Tracers.StartLeadershipCheck\">TraceStartLeadershipCheckPlus</a>))",
     "name": "docForgeStats",
     "module": "Cardano.Node.Tracing.Tracers.ForgingThreadStats",
     "link": "lib/Cardano-Node-Tracing-Tracers-ForgingThreadStats.html#v:docForgeStats"
