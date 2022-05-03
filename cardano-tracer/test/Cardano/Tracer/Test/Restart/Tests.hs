@@ -28,12 +28,14 @@ tests = localOption (QuickCheckTests 1) $ testGroup "Test.Restart"
   ]
 
 propNetworkForwarder :: FilePath -> FilePath -> IO Property
-propNetworkForwarder rootDir localSock =
+propNetworkForwarder rootDir localSock = do
+  let config = mkConfig rootDir localSock
+      itIsCheckMode = False
+  brake <- initProtocolsBrake
+  dpRequestors <- initDataPointRequestors
   propNetwork' rootDir
     ( launchForwardersSimple Initiator localSock 1000 10000
-    , lift3M doRunCardanoTracer (return $ mkConfig rootDir localSock)
-                                initProtocolsBrake
-                                initDataPointRequestors
+    , doRunCardanoTracer config itIsCheckMode brake dpRequestors
     )
 
 propNetwork'

@@ -36,6 +36,8 @@ library
                        Cardano.Tracer.Acceptors.Server
                        Cardano.Tracer.Acceptors.Utils
 
+                       Cardano.Tracer.Handlers.CheckMode
+
                        Cardano.Tracer.Handlers.Logs.File
                        Cardano.Tracer.Handlers.Logs.Journal
                        Cardano.Tracer.Handlers.Logs.Rotator
